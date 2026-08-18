@@ -1,12 +1,9 @@
 <script lang="ts">
     import { isSelfHosted } from '$lib/system';
-    import { connectGitHub, connectGitea, connectOrigin } from '$lib/stores/git';
+    import { connectVcsProvider, enabledVcsProviders } from '$lib/stores/git';
     import Button from '$lib/elements/forms/button.svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Alert, Card, Empty, Icon, Layout } from '@appwrite.io/pink-svelte';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
-    import IconGitea from './IconGitea.svelte';
-    import IconOrigin from './IconOrigin.svelte';
 
     export let callbackState: Record<string, string> = null;
 
@@ -14,10 +11,7 @@
     // Not in the SDK's generated types yet -- server already returns it.
     let vcsProviders = ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })
         ?._APP_VCS_PROVIDERS;
-    // Gitea is a self-hosted-only feature, not offered on Appwrite Cloud.
-    let isGiteaEnabled = isSelfHosted && (vcsProviders?.includes('gitea') ?? false);
-    // Origin (Cursor's git hosting) is a cloud service, so no self-hosted gate.
-    let isOriginEnabled = vcsProviders?.includes('origin') ?? false;
+    let providers = enabledVcsProviders(vcsProviders);
 </script>
 
 <Layout.Stack>
@@ -45,31 +39,15 @@
             description="Add an installation to connect repositories">
             <svelte:fragment slot="actions">
                 <Layout.Stack direction="row">
-                    <Button
-                        secondary
-                        href={connectGitHub(callbackState).toString()}
-                        disabled={!isVcsEnabled}>
-                        <Icon slot="start" icon={IconGithub} />
-                        Connect to GitHub
-                    </Button>
-                    {#if isOriginEnabled}
+                    {#each providers as provider (provider.id)}
                         <Button
                             secondary
-                            href={connectOrigin(callbackState).toString()}
+                            href={connectVcsProvider(provider.id, callbackState).toString()}
                             disabled={!isVcsEnabled}>
-                            <Icon slot="start" icon={IconOrigin} />
-                            Connect to Origin
+                            <Icon slot="start" icon={provider.icon} />
+                            Connect to {provider.label}
                         </Button>
-                    {/if}
-                    {#if isGiteaEnabled}
-                        <Button
-                            secondary
-                            href={connectGitea(callbackState).toString()}
-                            disabled={!isVcsEnabled}>
-                            <Icon slot="start" icon={IconGitea} />
-                            Connect to Gitea
-                        </Button>
-                    {/if}
+                    {/each}
                 </Layout.Stack>
             </svelte:fragment>
         </Empty>

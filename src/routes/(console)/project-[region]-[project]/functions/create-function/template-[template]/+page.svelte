@@ -10,7 +10,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount, untrack } from 'svelte';
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
@@ -32,7 +31,7 @@
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
     import Permissions from './permissions.svelte';
-    import { connectGitHub } from '$lib/stores/git';
+    import { connectVcsProvider, enabledVcsProviders } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
@@ -348,10 +347,17 @@
                                 title="Connect Git repository"
                                 description="Create and deploy a Site with a connected git repository.">
                                 <svelte:fragment slot="actions">
-                                    <Button secondary href={connectGitHub().toString()} size="s">
-                                        <Icon icon={IconGithub} slot="start" />
-                                        Connect to GitHub
-                                    </Button>
+                                    <Layout.Stack direction="row">
+                                        {#each enabledVcsProviders(($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })?._APP_VCS_PROVIDERS) as provider (provider.id)}
+                                            <Button
+                                                secondary
+                                                href={connectVcsProvider(provider.id).toString()}
+                                                size="s">
+                                                <Icon icon={provider.icon} slot="start" />
+                                                Connect to {provider.label}
+                                            </Button>
+                                        {/each}
+                                    </Layout.Stack>
                                 </svelte:fragment>
                             </Empty>
                         </Card>

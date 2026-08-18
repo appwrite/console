@@ -1,6 +1,7 @@
 <script lang="ts">
     import { SvgIcon } from '$lib/components';
     import { page } from '$app/state';
+    import { getVcsProvider } from '$lib/stores/git';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import { isSelfHosted } from '$lib/system';
@@ -116,7 +117,11 @@
                                 <Link
                                     variant="quiet"
                                     external
-                                    href={`https://github.com/settings/installations/${$installation.providerInstallationId}`}>
+                                    href={getVcsProvider(
+                                        $installation.provider
+                                    ).installationSettingsUrl(
+                                        $installation.providerInstallationId
+                                    )}>
                                     <Layout.Stack direction="row" gap="xs">
                                         Missing a repository? check your permissions <Icon
                                             icon={IconArrowSmRight} />

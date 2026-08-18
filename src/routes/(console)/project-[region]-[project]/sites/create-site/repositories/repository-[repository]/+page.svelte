@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { getVcsProvider } from '$lib/stores/git';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/state';
@@ -10,7 +11,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { Layout, Icon, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
@@ -197,7 +197,9 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
+                        <Icon
+                            icon={getVcsProvider($installation?.provider).icon}
+                            color="--fgcolor-neutral-primary" />
                         <Typography.Text variation="m-500" color="--fgcolor-neutral-primary">
                             {data.repository?.organization}/{data.repository?.name}
                         </Typography.Text>

@@ -12,8 +12,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
+    import { Alert } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
-    import { connectGitHub } from '$lib/stores/git';
+
+    import { connectVcsProvider, getVcsProvider } from '$lib/stores/git';
 
     let {
         show = $bindable(false),
@@ -37,6 +39,17 @@
     let selectedInstallationId = $state('');
     let selectedRepository = $state('');
     let installations = $state({ installations: [], total: 0 });
+    const selectedProvider = $derived(
+        getVcsProvider(
+            installations?.installations?.find((entry) => entry.$id === selectedInstallationId)
+                ?.provider ??
+                $installation?.provider ??
+                'github'
+        )
+    );
+    // Origin's partner API has no repository creation for apps; repositories
+    // made on cursor.com appear in the picker automatically.
+    const creationUnsupported = $derived(selectedProvider.id === 'origin');
     let error = $state('');
 
     onMount(async () => {
@@ -105,6 +118,14 @@
                     bind:repositoryPrivate
                     bind:selectedInstallationId
                     {installations} />
+                {#if creationUnsupported}
+                    <Alert.Inline status="info" title="Create the repository on Cursor">
+                        Origin does not allow apps to create repositories. Create it in the
+                        <Link external href="https://cursor.com/codebase"
+                            >Codebase section on cursor.com</Link>
+                        and it will appear in the repository list here.
+                    </Alert.Inline>
+                {/if}
             {:else}
                 <Repositories
                     bind:selectedRepository
@@ -143,16 +164,33 @@
     <svelte:fragment slot="footer">
         {#if repositoryBehaviour === 'existing'}
             <Layout.Stack>
-                <Link variant="quiet" href={connectGitHub(callbackState).toString()}>
-                    <Layout.Stack direction="row" gap="xs">
-                        Missing a repository? check your permissions <Icon
-                            icon={IconArrowSmRight} />
-                    </Layout.Stack>
-                </Link>
+                {#if $installation?.provider === 'origin'}
+                    <Link variant="quiet" external href="https://cursor.com/codebase/settings/apps">
+                        <Layout.Stack direction="row" gap="xs">
+                            Missing a repository? check your repository access <Icon
+                                icon={IconArrowSmRight} />
+                        </Layout.Stack>
+                    </Link>
+                {:else}
+                    <Link
+                        variant="quiet"
+                        href={connectVcsProvider(
+                            $installation?.provider ?? 'github',
+                            callbackState
+                        ).toString()}>
+                        <Layout.Stack direction="row" gap="xs">
+                            Missing a repository? check your permissions <Icon
+                                icon={IconArrowSmRight} />
+                        </Layout.Stack>
+                    </Link>
+                {/if}
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-            <Button size="s" submit disabled={!repositoryName || !$installation?.$id}>
+            <Button
+                size="s"
+                submit
+                disabled={!repositoryName || !$installation?.$id || creationUnsupported}>
                 Create
             </Button>
         {/if}
