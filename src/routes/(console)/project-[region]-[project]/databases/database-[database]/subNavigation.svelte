@@ -125,7 +125,7 @@
                 class="database-name u-flex u-cross-center body-text-2 u-gap-8 is-not-mobile u-padding-block-8 u-padding-inline-start-4">
                 <Icon icon={IconDatabase} size="s" color="--fgcolor-neutral-weak" />
 
-                {data.database?.name}
+                <span class="database-name-text">{data.database?.name}</span>
             </a>
             <div class="entity-content" style:padding-bottom={entityContentPadding}>
                 {#if loading}
@@ -295,12 +295,20 @@
         margin-block-end: 4px;
         font-size: var(--font-size-sm);
         color: var(--fgcolor-neutral-secondary);
+        overflow: hidden;
 
         &:hover {
             color: var(--fgcolor-neutral-primary);
             border-radius: var(--border-radius-s, 6px);
             background: var(--bgcolor-neutral-secondary);
         }
+    }
+
+    .database-name-text {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .entity-content {
