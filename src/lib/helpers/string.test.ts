@@ -1,4 +1,4 @@
-import { singular, camelize, capitalize } from '$lib/helpers/string';
+import { singular, camelize, capitalize, normalizeSmartQuotes } from '$lib/helpers/string';
 import { expect, test } from 'vitest';
 
 /*
@@ -96,4 +96,21 @@ test('capitalize should handle strings with no lowercase letters', () => {
 
 test('capitalize should handle strings with only one character', () => {
     expect(capitalize('a')).toBe('A');
+});
+
+/*
+NORMALIZE SMART QUOTES
+*/
+
+test('normalizeSmartQuotes replaces curly double and single quotes', () => {
+    const curly = '{ \u201Ctest\u201D: \u2018value\u2019 }';
+    expect(normalizeSmartQuotes(curly)).toBe('{ "test": \'value\' }');
+});
+
+test('normalizeSmartQuotes leaves ASCII quotes unchanged', () => {
+    expect(normalizeSmartQuotes('{ "test": \'value\' }')).toBe('{ "test": \'value\' }');
+});
+
+test('normalizeSmartQuotes handles empty input', () => {
+    expect(normalizeSmartQuotes('')).toBe('');
 });

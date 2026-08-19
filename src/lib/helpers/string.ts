@@ -127,3 +127,15 @@ export function hash(input: string | string[], delimiter: string = ','): string 
     }
     return Math.abs(hash).toString(36);
 }
+
+/**
+ * Replace typographic / “smart” quotes with ASCII quotes.
+ * Safari (and some other editors) substitute curly quotes while typing, which
+ * breaks JSON request bodies.
+ */
+export function normalizeSmartQuotes(str: string): string {
+    if (!str) return str;
+    return str
+        .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
+        .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+}
