@@ -584,14 +584,14 @@
                                                         color="--fgcolor-neutral-secondary">
                                                         Deploy the Appwrite MCP server with a single
                                                         click, or view the <Link.Anchor
-                                                            href="https://appwrite.io/docs"
+                                                            href="https://appwrite.io/docs/tooling/ai/mcp-servers"
                                                             target="_blank">docs</Link.Anchor> for instructions.
                                                     </Typography.Text>
                                                 </Layout.Stack>
                                                 <Layout.Stack gap="s">
                                                     <Typography.Text
                                                         color="--fgcolor-neutral-tertiary"
-                                                        size="s">One-click install</Typography.Text>
+                                                        size="s">Quick install</Typography.Text>
                                                     <Layout.Stack
                                                         direction="row"
                                                         gap="s"

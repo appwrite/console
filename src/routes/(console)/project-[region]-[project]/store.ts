@@ -6,7 +6,7 @@ import { page } from '$app/stores';
 import CursorIcon from './overview/components/CursorIcon.svelte';
 import ClaudeIcon from './overview/components/ClaudeIcon.svelte';
 import VSCodeIcon from './overview/components/VSCodeIcon.svelte';
-import WindsurfIcon from './overview/components/WindsurfIcon.svelte';
+import CodexIcon from './overview/components/CodexIcon.svelte';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
 
@@ -80,23 +80,23 @@ export const stats = createStats();
 
 export const mcpTools = [
     {
-        href: 'https://apwr.dev/docs-mcp-cursor?ref=docs',
+        href: 'https://cursor.com/install-mcp?name=appwrite&config=eyJ1cmwiOiJodHRwczovL21jcC5hcHB3cml0ZS5pby8ifQ==',
         icon: CursorIcon,
         label: 'Cursor'
     },
     {
-        href: 'https://appwrite.io/docs/tooling/mcp/claude',
+        href: 'https://appwrite.io/docs/tooling/ai/agents/claude-code',
         icon: ClaudeIcon,
-        label: 'Claude Desktop'
+        label: 'Claude Code'
     },
     {
-        href: 'https://apwr.dev/docs-mcp-vscode?ref=docs',
+        href: 'vscode:mcp/install?%7B%22name%22%3A%22appwrite%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.appwrite.io%2F%22%7D',
         icon: VSCodeIcon,
-        label: 'VS code'
+        label: 'VS Code'
     },
     {
-        href: 'https://appwrite.io/docs/tooling/mcp/windsurf',
-        icon: WindsurfIcon,
-        label: 'Windsurf editor'
+        href: 'https://appwrite.io/docs/tooling/ai/agents/codex',
+        icon: CodexIcon,
+        label: 'Codex'
     }
 ];
