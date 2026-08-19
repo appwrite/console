@@ -43,10 +43,7 @@
     let selectedInstallation: Models.Installation;
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
 
-    // Not in the SDK's generated types yet -- server already returns it.
-    const providers = enabledVcsProviders(
-        ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })?._APP_VCS_PROVIDERS
-    );
+    const providers = enabledVcsProviders($regionalConsoleVariables?._APP_VCS_PROVIDERS);
 
     function getInstallationLink(installation: Models.Installation) {
         return (
@@ -213,7 +210,7 @@
                     title="No installation was added to the project yet"
                     description="Add an installation to connect repositories">
                     <svelte:fragment slot="actions">
-                        <Layout.Stack direction="row">
+                        <Layout.Stack direction="row" justifyContent="center">
                             {#each providers as provider (provider.id)}
                                 <FormButton
                                     secondary

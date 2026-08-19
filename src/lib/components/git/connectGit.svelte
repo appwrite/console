@@ -8,10 +8,7 @@
     export let callbackState: Record<string, string> = null;
 
     let isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
-    // Not in the SDK's generated types yet -- server already returns it.
-    let vcsProviders = ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })
-        ?._APP_VCS_PROVIDERS;
-    let providers = enabledVcsProviders(vcsProviders);
+    let providers = enabledVcsProviders($regionalConsoleVariables?._APP_VCS_PROVIDERS);
 </script>
 
 <Layout.Stack>
@@ -38,7 +35,7 @@
             title="No installation was added to the project yet"
             description="Add an installation to connect repositories">
             <svelte:fragment slot="actions">
-                <Layout.Stack direction="row">
+                <Layout.Stack direction="row" justifyContent="center">
                     {#each providers as provider (provider.id)}
                         <Button
                             secondary
