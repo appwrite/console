@@ -1,4 +1,4 @@
-import { singular, camelize, capitalize, normalizeSmartQuotes } from '$lib/helpers/string';
+import { singular, camelize, capitalize, normalizeSmartQuotes, repairSmartQuotedJson } from '$lib/helpers/string';
 import { expect, test } from 'vitest';
 
 /*
@@ -113,4 +113,19 @@ test('normalizeSmartQuotes leaves ASCII quotes unchanged', () => {
 
 test('normalizeSmartQuotes handles empty input', () => {
     expect(normalizeSmartQuotes('')).toBe('');
+});
+
+test('repairSmartQuotedJson fixes curly structural quotes', () => {
+    const curly = '{ \u201Ctest\u201D: \u201Cvalue\u201D }';
+    expect(repairSmartQuotedJson(curly)).toBe('{ "test": "value" }');
+});
+
+test('repairSmartQuotedJson leaves valid JSON with curly quotes in values', () => {
+    const valid = '{ "quote": "He said \u201Chello\u201D" }';
+    expect(repairSmartQuotedJson(valid)).toBe(valid);
+});
+
+test('repairSmartQuotedJson leaves non-JSON bodies unchanged', () => {
+    const plain = 'Hello \u201Cworld\u201D';
+    expect(repairSmartQuotedJson(plain)).toBe(plain);
 });

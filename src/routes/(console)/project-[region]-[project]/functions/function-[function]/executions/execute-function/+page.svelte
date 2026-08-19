@@ -25,7 +25,7 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
-    import { normalizeSmartQuotes } from '$lib/helpers/string';
+    import { repairSmartQuotedJson } from '$lib/helpers/string';
     import {
         Accordion,
         Alert,
@@ -102,7 +102,8 @@
                 .functions.createExecution({
                     functionId: func.$id,
                     // Safari may substitute curly/smart quotes while typing JSON.
-                    body: normalizeSmartQuotes(body),
+                    // Only rewrite when that made the body invalid JSON.
+                    body: repairSmartQuotedJson(body),
                     async: true,
                     xpath: path,
                     method,
