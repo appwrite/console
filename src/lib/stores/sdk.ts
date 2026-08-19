@@ -9,7 +9,6 @@ import {
     Client,
     Console,
     Functions,
-    Health,
     Locale,
     Messaging,
     Migrations,
@@ -31,7 +30,8 @@ import {
     Webhooks,
     Realtime,
     Organizations,
-    VectorsDB
+    VectorsDB,
+    Embeddings
 } from '@appwrite.io/console';
 import { buildRegionalV1Endpoint } from '$lib/helpers/apiEndpoint';
 import { Sources } from '$lib/sdk/sources';
@@ -54,7 +54,6 @@ function createConsoleSdk(client: Client) {
         oauth2: new Oauth2(client),
         avatars: new Avatars(client),
         functions: new Functions(client),
-        health: new Health(client),
         locale: new Locale(client),
         projects: new Projects(client),
         teams: new Teams(client),
@@ -115,7 +114,6 @@ const sdkForProject = {
     avatars: new Avatars(clientProject),
     backups: new Backups(clientProject),
     functions: new Functions(clientProject),
-    health: new Health(clientProject),
     locale: new Locale(clientProject),
     messaging: new Messaging(clientProject),
     project: new Project(clientProject),
@@ -131,6 +129,7 @@ const sdkForProject = {
     tablesDB: new TablesDB(clientProject),
     documentsDB: new DocumentsDB(clientProject),
     vectorsDB: new VectorsDB(clientProject),
+    embeddings: new Embeddings(clientProject),
     webhooks: new Webhooks(clientProject),
     console: new Console(clientProject) // for suggestions API
 };

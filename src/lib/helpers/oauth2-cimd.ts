@@ -83,7 +83,10 @@ export function cimdDocumentToApp(clientId: string, document: unknown): Models.A
         deviceFlow: Array.isArray(doc.grant_types) && doc.grant_types.includes(DEVICE_GRANT_TYPE),
         teamId: '',
         userId: '',
-        secrets: []
+        secrets: [],
+        labels: [],
+        installationScopes: [],
+        installationRedirectUrl: ''
     };
 }
 

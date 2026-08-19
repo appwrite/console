@@ -101,7 +101,8 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createCSVExport({
-                    resourceId: `${page.params.database}:${page.params.table}`,
+                    databaseId: page.params.database,
+                    collectionId: page.params.table,
                     filename: filename,
                     columns: selectedCols,
                     queries: exportWithFilters ? Array.from(localQueries.values()) : [],

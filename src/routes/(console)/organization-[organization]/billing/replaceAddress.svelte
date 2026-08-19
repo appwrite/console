@@ -13,7 +13,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    export let locale: Models.CloudLocale;
+    export let locale: Models.Locale;
     export let countryList: Models.CountryList;
 
     let loading = true;

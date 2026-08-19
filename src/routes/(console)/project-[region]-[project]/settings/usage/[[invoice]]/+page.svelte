@@ -13,17 +13,14 @@
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usageHelpers';
-    import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
     import { Accordion, Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
     import { IconChartSquareBar } from '@appwrite.io/pink-icons-svelte';
-    import { page } from '$app/state';
     import { BillingPlanGroup } from '@appwrite.io/console';
 
     export let data;
 
-    $: baseRoute = `${base}/project-${page.params.region}-${page.params.project}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
@@ -321,26 +318,6 @@
                             data: [...executions.map((e) => [e.date, e.value])]
                         }
                     ]} />
-                {#if data.usage.executionsBreakdown?.length > 0}
-                    <Table.Root columns={2} let:root>
-                        <svelte:fragment slot="header" let:root>
-                            <Table.Header.Cell {root}>Function</Table.Header.Cell>
-                            <Table.Header.Cell {root}>Usage</Table.Header.Cell>
-                        </svelte:fragment>
-                        {#each data.usage.executionsBreakdown as func}
-                            <Table.Row.Link
-                                href={`${baseRoute}/functions/function-${func.resourceId}`}
-                                {root}>
-                                <Table.Cell {root}>
-                                    {func.name ?? func.resourceId}
-                                </Table.Cell>
-                                <Table.Cell {root}>
-                                    {formatNum(func.value)} executions
-                                </Table.Cell>
-                            </Table.Row.Link>
-                        {/each}
-                    </Table.Root>
-                {/if}
             {:else}
                 <Card isDashed>
                     <Layout.Stack gap="xs" alignItems="center" justifyContent="center">

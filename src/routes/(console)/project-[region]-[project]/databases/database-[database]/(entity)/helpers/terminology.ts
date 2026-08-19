@@ -1,15 +1,19 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type TablesDBIndexType, type Models } from '@appwrite.io/console';
+import {
+    AppwriteException,
+    type DatabaseType as ConsoleDatabaseType,
+    type TablesDBIndexType,
+    type Models
+} from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
-/* manual type for the time being because vectorsdb is pending */
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+export type DatabaseType = `${ConsoleDatabaseType}`;
 export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
 
 export const DEFAULT_VECTOR_DIMENSION = 768;

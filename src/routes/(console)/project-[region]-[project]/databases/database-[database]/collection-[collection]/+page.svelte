@@ -105,7 +105,8 @@
                 .migrations.createJSONImport({
                     bucketId: pendingFile.bucketId,
                     fileId: pendingFile.$id,
-                    resourceId: `${page.params.database}:${page.params.collection}`,
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
                     internalFile: pendingLocalFile,
                     onDuplicate: importOnDuplicate
                 });
