@@ -1,4 +1,10 @@
-import { singular, camelize, capitalize, normalizeSmartQuotes, repairSmartQuotedJson } from '$lib/helpers/string';
+import {
+    singular,
+    camelize,
+    capitalize,
+    normalizeSmartQuotes,
+    repairSmartQuotedJson
+} from '$lib/helpers/string';
 import { expect, test } from 'vitest';
 
 /*
@@ -102,9 +108,9 @@ test('capitalize should handle strings with only one character', () => {
 NORMALIZE SMART QUOTES
 */
 
-test('normalizeSmartQuotes replaces curly double and single quotes', () => {
+test('normalizeSmartQuotes replaces curly double quotes only', () => {
     const curly = '{ \u201Ctest\u201D: \u2018value\u2019 }';
-    expect(normalizeSmartQuotes(curly)).toBe('{ "test": \'value\' }');
+    expect(normalizeSmartQuotes(curly)).toBe('{ "test": \u2018value\u2019 }');
 });
 
 test('normalizeSmartQuotes leaves ASCII quotes unchanged', () => {
@@ -123,6 +129,11 @@ test('repairSmartQuotedJson fixes curly structural quotes', () => {
 test('repairSmartQuotedJson leaves valid JSON with curly quotes in values', () => {
     const valid = '{ "quote": "He said \u201Chello\u201D" }';
     expect(repairSmartQuotedJson(valid)).toBe(valid);
+});
+
+test('repairSmartQuotedJson preserves apostrophes when repairing delimiters', () => {
+    const curly = '{ \u201Cname\u201D: \u201CO\u2019Brien\u201D }';
+    expect(repairSmartQuotedJson(curly)).toBe('{ "name": "O\u2019Brien" }');
 });
 
 test('repairSmartQuotedJson leaves non-JSON bodies unchanged', () => {

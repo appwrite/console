@@ -129,21 +129,21 @@ export function hash(input: string | string[], delimiter: string = ','): string 
 }
 
 /**
- * Replace typographic / “smart” quotes with ASCII quotes.
+ * Replace typographic / “smart” double quotes with ASCII `"`.
  * Safari (and some other editors) substitute curly quotes while typing, which
- * breaks JSON request bodies.
+ * breaks JSON request bodies. Single quotes / apostrophes are left alone —
+ * JSON string delimiters are always double quotes.
  */
 export function normalizeSmartQuotes(str: string): string {
     if (!str) return str;
-    return str
-        .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
-        .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+    return str.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
 }
 
 /**
- * Fix Safari-style smart quotes when they make an otherwise-JSON body invalid.
- * Leaves already-valid JSON and non-JSON bodies unchanged so intentional
- * typographic characters in string values or plain text are preserved.
+ * Fix Safari-style smart double quotes when they make an otherwise-JSON body
+ * invalid. Leaves already-valid JSON and non-JSON bodies unchanged so
+ * intentional typographic characters in string values or plain text are
+ * preserved. Only double quotes are rewritten (JSON delimiters).
  */
 export function repairSmartQuotedJson(str: string): string {
     if (!str) return str;
