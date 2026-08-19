@@ -28,10 +28,7 @@
     import { onMount, untrack, onDestroy } from 'svelte';
     import { debounce } from '$lib/helpers/debounce';
 
-    // Not in the SDK's generated types yet -- server already returns it.
-    const vcsProviders = enabledVcsProviders(
-        ($regionalConsoleVariables as { _APP_VCS_PROVIDERS?: string[] })?._APP_VCS_PROVIDERS
-    );
+    const vcsProviders = enabledVcsProviders($regionalConsoleVariables?._APP_VCS_PROVIDERS);
 
     let {
         action = $bindable('select'),
