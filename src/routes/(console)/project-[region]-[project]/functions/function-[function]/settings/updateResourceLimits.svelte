@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import Link from '$lib/elements/link.svelte';
     import { Alert, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -17,7 +17,8 @@
     import { page } from '$app/state';
 
     export let func: Models.Function;
-    export let specs: Models.SpecificationList;
+    export let buildSpecs: Models.SpecificationList;
+    export let runtimeSpecs: Models.SpecificationList;
 
     let buildSpecification = func.buildSpecification;
     let runtimeSpecification = func.runtimeSpecification;
@@ -48,18 +49,19 @@
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
                 timeout: func.timeout || undefined,
-                enabled: func.enabled || undefined,
-                logging: func.logging || undefined,
+                enabled: func.enabled ?? undefined,
+                logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as Scopes[]) || undefined,
+                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,
-                providerSilentMode: func.providerSilentMode || undefined,
+                providerSilentMode: func.providerSilentMode ?? undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
                 buildSpecification: buildSpecification || undefined,
-                runtimeSpecification: runtimeSpecification || undefined
+                runtimeSpecification: runtimeSpecification || undefined,
+                deploymentRetention: func.deploymentRetention ?? undefined
             });
 
             await invalidate(Dependencies.FUNCTION);
@@ -78,7 +80,12 @@
         }
     }
 
-    const options = (specs?.specifications ?? []).map((spec) => ({
+    const buildOptions = buildSpecs.specifications.map((spec) => ({
+        label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
+        value: spec.slug,
+        disabled: !spec.enabled
+    }));
+    const runtimeOptions = runtimeSpecs.specifications.map((spec) => ({
         label: `${spec.cpus} CPU, ${spec.memory} MB RAM`,
         value: spec.slug,
         disabled: !spec.enabled
@@ -99,9 +106,9 @@
                 label="Build specification"
                 id="build-specification"
                 required
-                disabled={options.length < 1}
+                disabled={buildOptions.length < 1}
                 bind:value={buildSpecification}
-                {options}>
+                options={buildOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">
@@ -113,9 +120,9 @@
                 label="Runtime specification"
                 id="runtime-specification"
                 required
-                disabled={options.length < 1}
+                disabled={runtimeOptions.length < 1}
                 bind:value={runtimeSpecification}
-                {options}>
+                options={runtimeOptions}>
                 <Tooltip slot="info">
                     <Icon icon={IconInfo} size="s" />
                     <span slot="tooltip">

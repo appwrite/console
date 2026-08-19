@@ -43,10 +43,9 @@
 
         try {
             const teamId = data.organization.$id;
-            const project = await sdk.forConsole.projects.create({
+            const project = await sdk.forConsole.organization(teamId).createProject({
                 projectId: projectId ?? ID.unique(),
                 name: projectName,
-                teamId,
                 region: isCloud ? projectRegion : undefined
             });
 

@@ -135,7 +135,7 @@
 
         // null on non-org/project path like `onboarding`.
         loadedProjects =
-            (await sdk.forConsole.projects.list({
+            (await sdk.forConsole.organization(organization.$id).listProjects({
                 queries: [
                     Query.equal('teamId', organizationId ?? page.data.currentOrgId),
                     Query.limit(5),

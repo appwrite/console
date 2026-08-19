@@ -13,8 +13,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { writable } from 'svelte/store';
-    import Scopes from '../api-keys/scopes.svelte';
-    import { ID, type Scopes as ScopesType } from '@appwrite.io/console';
+    import ScopesSelector from '../api-keys/scopes.svelte';
+    import { ID, type ProjectKeyScopes } from '@appwrite.io/console';
     import { page } from '$app/state';
     import { copy } from '$lib/helpers/copy';
 
@@ -22,7 +22,7 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let scopes: ScopesType[] = [];
+    let scopes: ProjectKeyScopes[] = [];
     let name = '';
     let expire: string | null = null;
 
@@ -101,7 +101,7 @@
                         Choose which permission scopes to grant your application. It is best
                         practice to allow only the permissions you need to meet your project goals.
                     </Typography.Text>
-                    <Scopes bind:scopes />
+                    <ScopesSelector bind:scopes />
                 </Layout.Stack>
             </Fieldset>
         </Layout.Stack>

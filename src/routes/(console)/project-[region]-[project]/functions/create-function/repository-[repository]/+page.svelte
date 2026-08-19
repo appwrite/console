@@ -22,7 +22,11 @@
     import RepoCard from './repoCard.svelte';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
-    import { normalizeDetectedVariables, mergeVariables } from '$lib/helpers/variables';
+    import {
+        normalizeDetectedVariables,
+        mergeVariables,
+        validateVariables
+    } from '$lib/helpers/variables';
 
     export let data;
 
@@ -104,6 +108,13 @@
 
     async function create() {
         try {
+            // Reject an unusable key before the resource is created, so a
+            // rejected variable can't leave a half-configured resource behind.
+            const validationError = validateVariables(variables);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             const func = await sdk
                 .forProject(page.params.region, page.params.project)
                 .functions.create({

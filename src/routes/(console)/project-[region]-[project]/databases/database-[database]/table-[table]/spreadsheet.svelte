@@ -31,7 +31,6 @@
         columnsWidth,
         showCreateIndexSheet,
         Deletion,
-        rowActivitySheet,
         paginatedRows,
         paginatedRowsLoading,
         databaseRelatedRowSheetOptions,
@@ -99,6 +98,7 @@
         expandTabs,
         type Columns,
         buildWildcardEntitiesQuery,
+        loadGridRows,
         type SortState,
         randomDataModalState,
         spreadsheetLoading,
@@ -427,16 +427,23 @@
     async function handleDelete() {
         showDelete = false;
         let hadErrors = false;
+        const rowIdsToDelete = selectedRowForDelete ? [selectedRowForDelete] : [...selectedRows];
+        const deletedRowsCount = rowIdsToDelete.length || 1;
 
         try {
-            if (selectedRowForDelete) {
+            $spreadsheetLoading = true;
+            selectedRows = [];
+            selectedRowForDelete = null;
+            spreadsheetRenderKey.set(hash(rowIdsToDelete));
+
+            if (rowIdsToDelete.length === 1) {
                 await sdk.forProject(page.params.region, page.params.project).tablesDB.deleteRow({
                     databaseId,
                     tableId,
-                    rowId: selectedRowForDelete
+                    rowId: rowIdsToDelete[0]
                 });
             } else {
-                if (selectedRows.length) {
+                if (rowIdsToDelete.length) {
                     const hasAnyRelationships = table.fields.some(isRelationship) ?? false;
 
                     const tablesSDK = sdk.forProject(
@@ -445,7 +452,7 @@
                     ).tablesDB;
 
                     if (hasAnyRelationships) {
-                        for (const batch of chunks(selectedRows)) {
+                        for (const batch of chunks(rowIdsToDelete)) {
                             try {
                                 await Promise.all(
                                     batch.map((rowId) =>
@@ -469,7 +476,7 @@
                             });
                         }
                     } else {
-                        for (const batch of chunks(selectedRows, 100)) {
+                        for (const batch of chunks(rowIdsToDelete, 100)) {
                             await tablesSDK.deleteRows({
                                 databaseId,
                                 tableId,
@@ -487,17 +494,11 @@
                 // error is already shown above!
                 addNotification({
                     type: 'success',
-                    message: `${selectedRows.length ? selectedRows.length : 1} row${selectedRows.length > 1 ? 's' : ''} deleted`
+                    message: `${deletedRowsCount} row${deletedRowsCount > 1 ? 's' : ''} deleted`
                 });
             }
 
-            spreadsheetRenderKey.set(
-                hash([
-                    data.rows.total.toString(),
-                    ...(selectedRows as string[]),
-                    selectedRowForDelete
-                ])
-            );
+            spreadsheetRenderKey.set(hash([data.rows.total.toString(), ...rowIdsToDelete]));
         } catch (error) {
             addNotification({ type: 'error', message: error.message });
             trackError(error, Submit.RowDelete);
@@ -505,6 +506,7 @@
             selectedRows = [];
             showDelete = false;
             selectedRowForDelete = null;
+            $spreadsheetLoading = false;
         }
     }
 
@@ -563,6 +565,7 @@
                 return;
             }
             if (action === 'update') {
+                $databaseColumnSheetOptions.column = column;
                 $databaseColumnSheetOptions.show = true;
                 $databaseColumnSheetOptions.isEdit = true;
                 $databaseColumnSheetOptions.title = 'Update column';
@@ -675,32 +678,34 @@
                 showDelete = true;
                 selectedRowForDelete = row.$id;
             }
-
-            if (action === 'activity') {
-                $rowActivitySheet.row = row;
-                $rowActivitySheet.show = true;
-            }
         }
     }
 
-    async function updateRowContents(row: Models.Row) {
+    async function updateRowContents(row: Models.Row): Promise<Models.Row | false> {
         try {
             const payload = buildPayload(table.fields, row);
 
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
-                databaseId,
-                tableId: table.$id,
-                rowId: row.$id,
-                data: payload,
-                permissions: row.$permissions
-            });
+            const updated = await sdk
+                .forProject(page.params.region, page.params.project)
+                .tablesDB.updateRow({
+                    databaseId,
+                    tableId: table.$id,
+                    rowId: row.$id,
+                    data: payload,
+                    permissions: row.$permissions
+                });
+
+            // Keep client-side relationship expansions; refresh system fields from the API
+            // so columns like $updatedAt reflect the write (inline edit does not invalidate Dependencies).
+            row.$updatedAt = updated.$updatedAt;
+            row.$permissions = updated.$permissions;
 
             trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',
                 type: 'success'
             });
-            return true;
+            return row;
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -725,22 +730,26 @@
         }
 
         const parsedQueries = data.parsedQueries;
-        const filterQueries = parsedQueries.size ? data.parsedQueries.values() : [];
+        // materialized: the fallback in `loadGridRows` builds the queries more than once.
+        const filterQueries = parsedQueries.size ? Array.from(data.parsedQueries.values()) : [];
 
         $paginatedRowsLoading = true;
-        const loadedRows = await sdk
-            .forProject(page.params.region, page.params.project)
-            .tablesDB.listRows({
-                databaseId,
-                tableId,
-                queries: [
-                    getCorrectOrderQuery(),
-                    Query.limit(SPREADSHEET_PAGE_LIMIT),
-                    Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
-                    ...filterQueries /* filter queries */,
-                    ...buildWildcardEntitiesQuery(table)
-                ]
-            });
+        const loadedRows = await loadGridRows(
+            table,
+            (includeRelationships) => [
+                getCorrectOrderQuery(),
+                Query.limit(SPREADSHEET_PAGE_LIMIT),
+                Query.offset(pageToOffset(pageNumber, SPREADSHEET_PAGE_LIMIT)),
+                ...filterQueries /* filter queries */,
+                ...(includeRelationships
+                    ? buildWildcardEntitiesQuery(table)
+                    : [Query.select(['*'])])
+            ],
+            (queries) =>
+                sdk
+                    .forProject(page.params.region, page.params.project)
+                    .tablesDB.listRows({ databaseId, tableId, queries })
+        );
 
         paginatedRows.setPage(pageNumber, loadedRows.rows);
         $paginatedRowsLoading = false;
@@ -756,18 +765,21 @@
             paginatedRows.setMaxPage(targetPageNum);
             $paginatedRowsLoading = true;
 
-            const loadedRows = await sdk
-                .forProject(page.params.region, page.params.project)
-                .tablesDB.listRows({
-                    databaseId,
-                    tableId,
-                    queries: [
-                        getCorrectOrderQuery(),
-                        Query.limit(SPREADSHEET_PAGE_LIMIT),
-                        Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
-                        ...buildWildcardEntitiesQuery(table)
-                    ]
-                });
+            const loadedRows = await loadGridRows(
+                table,
+                (includeRelationships) => [
+                    getCorrectOrderQuery(),
+                    Query.limit(SPREADSHEET_PAGE_LIMIT),
+                    Query.offset(pageToOffset(targetPageNum, SPREADSHEET_PAGE_LIMIT)),
+                    ...(includeRelationships
+                        ? buildWildcardEntitiesQuery(table)
+                        : [Query.select(['*'])])
+                ],
+                (queries) =>
+                    sdk
+                        .forProject(page.params.region, page.params.project)
+                        .tablesDB.listRows({ databaseId, tableId, queries })
+            );
 
             paginatedRows.setPage(targetPageNum, loadedRows.rows);
             $paginatedRowsLoading = false;
@@ -1119,7 +1131,8 @@
                                         {@const value = row[columnId]}
                                         {@const formatted = formatColumn(row[columnId])}
                                         {@const isEmptyArray = formatted === 'Empty'}
-                                        {@const isDatetimeAttribute = rowColumn.type === 'datetime'}
+                                        {@const isDatetimeAttribute =
+                                            rowColumn?.type === 'datetime'}
                                         {@const isEncryptedAttribute =
                                             isTextType(rowColumn) &&
                                             'encrypt' in rowColumn &&
@@ -1173,12 +1186,13 @@
                                             {row}
                                             column={rowColumn}
                                             onRowStructureUpdate={async (row) => {
-                                                const success = await updateRowContents(row);
-                                                if (success) {
+                                                const updated = await updateRowContents(row);
+                                                if (updated) {
                                                     // database update succeeded!
-                                                    paginatedRows.update(index, row);
+                                                    paginatedRows.update(index, updated);
+                                                    return true;
                                                 }
-                                                return success;
+                                                return false;
                                             }}
                                             noInlineEdit={isRelatedToMany && hasItems}
                                             onChange={(row) => paginatedRows.update(index, row)}

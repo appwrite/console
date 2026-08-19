@@ -2,22 +2,27 @@
     import { base } from '$app/paths';
     import { page } from '$app/state';
     import { goto } from '$app/navigation';
-    import { Empty, MultiSelectionTable } from '$lib/components';
+    import { Empty, MultiSelectionTable, PaginationWithLimit } from '$lib/components';
     import { canWriteKeys } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
     import { diffDays } from '$lib/helpers/date';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
-    import { devKeyColumns, keyColumns, showDevKeysCreateModal } from '../store';
-    import { Badge, Layout, Table } from '@appwrite.io/pink-svelte';
+    import { devKeyColumns, keyColumns } from '../store';
+    import { Button } from '$lib/elements/forms';
+    import { Badge, Card, Empty as EmptyState, Layout, Table } from '@appwrite.io/pink-svelte';
     import DeleteBatch from './deleteBatch.svelte';
     import { capitalize } from '$lib/helpers/string';
 
     let {
         keyType = 'api',
-        keys
+        keys,
+        limit,
+        offset
     }: {
         keyType?: 'api' | 'dev';
         keys: Models.KeyList | Models.DevKeyList;
+        limit?: number;
+        offset?: number;
     } = $props();
 
     let selectedKeys = $state([]);
@@ -116,7 +121,14 @@
             {/each}
         {/snippet}
     </MultiSelectionTable>
-{:else}
+    {#if limit !== undefined && offset !== undefined}
+        <PaginationWithLimit
+            name={`${capitalize(label)} keys`}
+            {limit}
+            {offset}
+            total={keys.total} />
+    {/if}
+{:else if isApiKey}
     <Empty
         single
         allowCreate={$canWriteKeys}
@@ -124,14 +136,23 @@
         target="{label} key"
         description={getDescription()}
         on:click={async () => {
-            if (isApiKey) {
-                await goto(
-                    `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}/create`
-                );
-            } else {
-                $showDevKeysCreateModal = true;
-            }
+            await goto(
+                `${base}/project-${page.params.region}-${page.params.project}/overview/${slug}/create`
+            );
         }} />
+{:else}
+    <Card.Base padding="none">
+        <EmptyState title="No dev keys" description={getDescription()}>
+            <svelte:fragment slot="actions">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/advanced/platform/{slug}"
+                    text
+                    size="s"
+                    ariaLabel="dev keys documentation">Documentation</Button>
+            </svelte:fragment>
+        </EmptyState>
+    </Card.Base>
 {/if}
 
 <DeleteBatch {keyType} bind:keyIds={selectedKeys} bind:showDelete={showDeleteModal} />

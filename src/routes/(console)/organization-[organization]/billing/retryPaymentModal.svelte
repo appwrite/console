@@ -20,6 +20,7 @@
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { resolve } from '$app/paths';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
     import type { PaymentMethod as StripePaymentMethod } from '@stripe/stripe-js';
     import type { Models } from '@appwrite.io/console';
 
@@ -36,6 +37,12 @@
     let paymentMethod: StripePaymentMethod | null = null;
 
     const endpoint = getApiEndpoint();
+
+    function invoiceUrl(invoiceId: string) {
+        return $impersonatedResourceUrl(
+            `${endpoint}/organizations/${page.params.organization}/invoices/${invoiceId}/view`
+        );
+    }
 
     onMount(async () => {
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
@@ -173,11 +180,7 @@
         )} has failed. Retry your payment to avoid service interruptions with your projects.
     </p>
 
-    <Button
-        external
-        href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
-        View invoice
-    </Button>
+    <Button external href={invoiceUrl(invoice.$id)}>View invoice</Button>
 
     <PaymentBoxes
         bind:paymentMethod

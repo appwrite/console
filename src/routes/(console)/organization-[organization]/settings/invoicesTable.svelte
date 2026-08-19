@@ -5,6 +5,7 @@
     import { Button } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { trackEvent } from '$lib/actions/analytics';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
     import { ActionMenu, Badge, Icon, Link, Popover, Table } from '@appwrite.io/pink-svelte';
     import {
         IconDotsHorizontal,
@@ -23,6 +24,12 @@
     function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
+    }
+
+    function invoiceUrl(invoiceId: string, action: 'view' | 'download') {
+        return $impersonatedResourceUrl(
+            `${endpoint}/organizations/${page.params.organization}/invoices/${invoiceId}/${action}`
+        );
     }
 </script>
 
@@ -106,12 +113,12 @@
                                 <ActionMenu.Item.Anchor
                                     trailingIcon={IconExternalLink}
                                     external
-                                    href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/view`}>
+                                    href={invoiceUrl(invoice.$id, 'view')}>
                                     View invoice
                                 </ActionMenu.Item.Anchor>
                                 <ActionMenu.Item.Anchor
                                     trailingIcon={IconDownload}
-                                    href={`${endpoint}/organizations/${page.params.organization}/invoices/${invoice.$id}/download`}>
+                                    href={invoiceUrl(invoice.$id, 'download')}>
                                     Download PDF
                                 </ActionMenu.Item.Anchor>
                                 {#if status === 'overdue' || status === 'failed'}

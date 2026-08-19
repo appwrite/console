@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
+    import { Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import { Typography } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
 
@@ -27,15 +27,16 @@
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
                 timeout: func.timeout || undefined,
-                enabled: func.enabled || undefined,
+                enabled: func.enabled ?? undefined,
                 logging,
+                deploymentRetention: func.deploymentRetention ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as Scopes[]) || undefined,
+                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: func.providerBranch || undefined,
-                providerSilentMode: func.providerSilentMode || undefined,
+                providerSilentMode: func.providerSilentMode ?? undefined,
                 providerRootDirectory: func.providerRootDirectory || undefined,
                 buildSpecification: func.buildSpecification || undefined
             });

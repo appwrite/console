@@ -1,18 +1,24 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { isSupportOnline } from './store';
 
 describe('isSupportOnline', () => {
     beforeEach(() => {
-        vi.restoreAllMocks();
+        vi.useFakeTimers();
     });
 
-    // Helper function to create a mock date
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    // day: 0=Sun, 1=Mon, ..., 6=Sat
     const mockDate = (hour: number, day: number) => {
-        const mockDate = new Date();
-        vi.spyOn(mockDate, 'getUTCDay').mockReturnValue(day);
-        vi.spyOn(mockDate, 'getUTCHours').mockReturnValue(hour);
-        vi.spyOn(global, 'Date').mockImplementation(() => mockDate);
-        return mockDate;
+        // Find a real date that matches the desired UTC day and hour
+        const base = new Date('2024-01-01T00:00:00Z'); // Monday
+        const daysToAdd = (day - base.getUTCDay() + 7) % 7;
+        const date = new Date(base);
+        date.setUTCDate(base.getUTCDate() + daysToAdd);
+        date.setUTCHours(hour, 0, 0, 0);
+        vi.setSystemTime(date);
     };
 
     describe('weekday support hours (Monday-Friday)', () => {

@@ -3,13 +3,19 @@
     import { CopyInput, Modal } from '$lib/components';
     import {
         Button,
+        InputNumber,
         InputPassword,
         InputSwitch,
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
     import { updateOAuth } from '../updateOAuth';
-    import { OAuthProvider, type Models, type Models as ConsoleModels } from '@appwrite.io/console';
+    import {
+        OAuthProvider,
+        ProjectOAuth2OidcPrompt,
+        type Models as ConsoleModels
+    } from '@appwrite.io/console';
+    import type { AuthProvider } from '../updateOAuth';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import {
         Accordion,
@@ -24,11 +30,12 @@
     } from '@appwrite.io/pink-svelte';
     import { IconDocument, IconPencil, IconUpload, IconX } from '@appwrite.io/pink-icons-svelte';
     import { getApiEndpoint } from '$lib/stores/sdk';
+    import OidcPromptPicker from './oidcPromptPicker.svelte';
 
     const projectId = page.params.project;
     const region = page.params.region;
 
-    export let provider: Models.AuthProvider;
+    export let provider: AuthProvider;
     export let show = false;
     export let parameters: ConsoleModels.ConsoleOAuth2ProviderParameter[] = [];
 
@@ -39,18 +46,25 @@
     let showSecretInput = false;
     let p8PasteMode: Record<string, boolean> = {};
     let error: string;
-    let initializedProvider: Models.AuthProvider | null = null;
+    let initializedProvider: AuthProvider | null = null;
     let initialEnabled = false;
     let initialAppId: string | null = null;
     let initialDetailValues: Record<string, string> = {};
+    let oidcPrompt: ProjectOAuth2OidcPrompt[] = [];
+    let initialOidcPrompt: ProjectOAuth2OidcPrompt[] = [];
+    let oidcMaxAge: number | null = null;
+    let initialOidcMaxAge: number | null = null;
 
+    $: isOidc = provider?.key === OAuthProvider.Oidc;
     $: appIdParam = parameters.length >= 1 ? parameters[0] : null;
     $: additionalParams = parameters.slice(1);
     $: detailParams = additionalParams.filter((param) => !isSecretParam(param.$id));
     $: secretParams = additionalParams.filter((param) => isSecretParam(param.$id));
     $: basicDetailParams =
         provider?.key === OAuthProvider.Oidc
-            ? detailParams.filter((param) => !isOidcAdvancedParam(param.$id))
+            ? detailParams.filter(
+                  (param) => !isOidcAdvancedParam(param.$id) && !isOidcCustomParam(param.$id)
+              )
             : detailParams;
     $: advancedDetailParams =
         provider?.key === OAuthProvider.Oidc
@@ -65,11 +79,16 @@
             normalizeFieldValue(fieldValues[param.$id]) !== (initialDetailValues[param.$id] ?? '')
         );
     });
+    $: hasOidcChanges =
+        isOidc &&
+        ([...oidcPrompt].sort().join(',') !== [...initialOidcPrompt].sort().join(',') ||
+            (oidcMaxAge ?? 0) !== (initialOidcMaxAge ?? 0));
     $: nothingChanged =
         enabled === initialEnabled &&
         normalizeFieldValue(appId) === normalizeFieldValue(initialAppId) &&
         !hasSecretInput &&
-        !hasDetailChanges;
+        !hasDetailChanges &&
+        !hasOidcChanges;
     $: oAuthProvider = oAuthProviders[provider.key];
     $: secretCardTitle =
         secretParams.length === 1 ? primaryName(secretParams[0]?.name ?? '') : 'Credentials';
@@ -89,6 +108,19 @@
         );
         p8PasteMode = {};
         showSecretInput = !appId || (provider.key === OAuthProvider.Apple && !providerKeyId);
+        if (provider.key === OAuthProvider.Oidc) {
+            const raw = provider as Record<string, unknown>;
+            initialOidcPrompt = Array.isArray(raw['prompt'])
+                ? ([...(raw['prompt'] as ProjectOAuth2OidcPrompt[])] as ProjectOAuth2OidcPrompt[])
+                : [];
+            initialOidcMaxAge =
+                typeof raw['maxAge'] === 'number' && raw['maxAge'] > 0 ? raw['maxAge'] : null;
+        } else {
+            initialOidcPrompt = [];
+            initialOidcMaxAge = null;
+        }
+        oidcPrompt = [...initialOidcPrompt];
+        oidcMaxAge = initialOidcMaxAge;
         error = undefined;
     }
 
@@ -147,7 +179,12 @@
     }
 
     function isOidcAdvancedParam(id: string): boolean {
-        return id === 'authorizationURL' || id === 'tokenUrl' || id === 'userInfoUrl';
+        return id !== 'wellKnownURL' && id.toLowerCase().includes('url');
+    }
+
+    // prompt and maxAge get dedicated controls in the Advanced section
+    function isOidcCustomParam(id: string): boolean {
+        return id === 'prompt' || id === 'maxAge';
     }
 
     async function handleP8FileUpload(id: string, event: Event) {
@@ -197,6 +234,8 @@
             appId,
             secret: buildSecret(),
             details: buildDetails(),
+            promptValues: isOidc ? oidcPrompt : undefined,
+            maxAge: isOidc ? (oidcMaxAge ?? 0) : undefined,
             enabled
         });
 
@@ -243,21 +282,6 @@
             required={enabled && !!param.example}
             bind:value={fieldValues[param.$id]} />
     {/each}
-
-    {#if advancedDetailParams.length > 0}
-        <Accordion title="Advanced" badge="Optional" hideDivider>
-            <Layout.Stack gap="l">
-                {#each advancedDetailParams as param}
-                    <InputText
-                        id={param.$id}
-                        label={primaryName(param.name)}
-                        placeholder={param.example || ''}
-                        helper={helperText(param.hint)}
-                        bind:value={fieldValues[param.$id]} />
-                {/each}
-            </Layout.Stack>
-        </Accordion>
-    {/if}
 
     {#if secretParams.length > 0}
         {#if !showSecretInput}
@@ -369,6 +393,32 @@
                 </Layout.Stack>
             </Card.Base>
         {/if}
+    {/if}
+
+    {#if advancedDetailParams.length > 0 || isOidc}
+        <Accordion title="Advanced" badge="Optional" hideDivider>
+            <Layout.Stack gap="l">
+                {#each advancedDetailParams as param}
+                    <InputText
+                        id={param.$id}
+                        label={primaryName(param.name)}
+                        placeholder={param.example || ''}
+                        helper={helperText(param.hint)}
+                        bind:value={fieldValues[param.$id]} />
+                {/each}
+                {#if isOidc}
+                    <OidcPromptPicker bind:value={oidcPrompt} />
+                    <InputNumber
+                        id="maxAge"
+                        label="Max age"
+                        placeholder="3600"
+                        min={0}
+                        nullable
+                        helper="Maximum authentication age in seconds. If exceeded, the user must re-authenticate. Leave empty to disable."
+                        bind:value={oidcMaxAge} />
+                {/if}
+            </Layout.Stack>
+        </Accordion>
     {/if}
 
     <Alert.Inline status="info">

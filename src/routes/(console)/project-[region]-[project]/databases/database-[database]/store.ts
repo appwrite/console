@@ -1,9 +1,10 @@
 import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
-import { IconChartBar, IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
+import { IconCloudUpload, IconCog } from '@appwrite.io/pink-icons-svelte';
 import { resolveRoute, withPath } from '$lib/stores/navigation';
 import type { Page } from '@sveltejs/kit';
-import { type Models, Query } from '@appwrite.io/console';
+import { AppwriteException, type Models, Query } from '@appwrite.io/console';
+import { chunks } from '$lib/helpers/array';
 import type { Entity, Field } from '$database/(entity)';
 import { isRelationship } from '$database/table-[table]/rows/store';
 import type { TagValue } from '$lib/components/filters/store';
@@ -104,7 +105,6 @@ export const customRetainingOptions = [
 
 export const databaseSubNavigationItems = [
     { title: 'Backups', href: 'backups', icon: IconCloudUpload },
-    { title: 'Usage', href: 'usage', icon: IconChartBar },
     { title: 'Settings', href: 'settings', icon: IconCog }
 ];
 
@@ -179,7 +179,8 @@ export function buildGridQueries(
     limit: number,
     offset: number,
     parsedQueries: Map<TagValue, string>,
-    table: Entity
+    table: Entity,
+    includeRelationships: boolean = true
 ) {
     const hasOrderQuery = Array.from(parsedQueries.values()).some(
         (q) => q.includes('orderAsc') || q.includes('orderDesc')
@@ -192,7 +193,75 @@ export function buildGridQueries(
         queryArray.push(Query.orderDesc(''));
     }
 
-    queryArray.push(...parsedQueries.values(), ...buildWildcardEntitiesQuery(table));
+    queryArray.push(
+        ...parsedQueries.values(),
+        ...(includeRelationships ? buildWildcardEntitiesQuery(table) : [Query.select(['*'])])
+    );
 
     return queryArray;
+}
+
+const RELATIONSHIP_CHUNK_SIZE = 10;
+
+function isTooManyQueryValues(error: unknown): boolean {
+    return (
+        error instanceof AppwriteException && /greater than \d+ values/i.test(error.message ?? '')
+    );
+}
+
+type EntityRows<T> = { total: number; rows: T[] };
+
+/**
+ * Loads a page of the grid, falling back to smaller relationship batches when
+ * the API trips its own 500 value limit resolving them for the whole page.
+ */
+export async function loadGridRows<T extends { $id: string }>(
+    entity: Entity,
+    buildQueries: (includeRelationships: boolean) => string[],
+    fetchRows: (queries: string[]) => Promise<EntityRows<T>>
+): Promise<EntityRows<T>> {
+    try {
+        return await fetchRows(buildQueries(true));
+    } catch (error) {
+        if (!isTooManyQueryValues(error)) throw error;
+
+        const page = await fetchRows(buildQueries(false));
+
+        return {
+            total: page.total,
+            rows: await populateRelationships(entity, page.rows, fetchRows)
+        };
+    }
+}
+
+async function populateRelationships<T extends { $id: string }>(
+    entity: Entity,
+    rows: T[],
+    fetchRows: (queries: string[]) => Promise<EntityRows<T>>
+): Promise<T[]> {
+    const relationshipQueries = buildWildcardEntitiesQuery(entity);
+
+    if (relationshipQueries.length <= 1 || rows.length === 0) return rows;
+
+    const populated = new Map<string, T>();
+
+    await Promise.all(
+        chunks(rows, RELATIONSHIP_CHUNK_SIZE).map(async (chunk) => {
+            const rowIds = chunk.map((row) => row.$id);
+
+            try {
+                const response = await fetchRows([
+                    Query.equal('$id', rowIds),
+                    Query.limit(rowIds.length),
+                    ...relationshipQueries
+                ]);
+
+                response.rows.forEach((row) => populated.set(row.$id, row));
+            } catch {
+                // keep the unpopulated rows for this chunk!
+            }
+        })
+    );
+
+    return rows.map((row) => populated.get(row.$id) ?? row);
 }

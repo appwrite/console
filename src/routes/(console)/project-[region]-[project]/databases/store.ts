@@ -2,7 +2,6 @@ import { isCloud } from '$lib/system';
 import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
-import type { DatabaseType } from '$database/(entity)';
 
 export const columns = writable<Column[]>(
     isCloud
@@ -24,7 +23,7 @@ export const columns = writable<Column[]>(
 );
 
 export function getDatabaseTypeTitle(database: Models.Database) {
-    switch (database.type as DatabaseType) {
+    switch (database.type) {
         default:
         case 'legacy':
         case 'tablesdb':

@@ -78,12 +78,12 @@ export const load: PageLoad = async ({ params, parent }) => {
         currentInvoice,
         organizationMembers,
         organizationUsage: usage,
-        projects: getUsageProjects(usage)
+        projects: getUsageProjects(usage, org.$id)
     };
 };
 
 // all this to get the project's name and region!
-function getUsageProjects(usage: Models.UsageOrganization) {
+function getUsageProjects(usage: Models.UsageOrganization, organizationId: string) {
     return (async () => {
         const limit = 100;
         const requests: Array<Promise<Models.ProjectList>> = [];
@@ -91,7 +91,7 @@ function getUsageProjects(usage: Models.UsageOrganization) {
         for (let index = 0; index < usage.projects.length; index += limit) {
             const chunkIds = usage.projects.slice(index, index + limit).map((p) => p.projectId);
             requests.push(
-                sdk.forConsole.projects.list({
+                sdk.forConsole.organization(organizationId).listProjects({
                     queries: [
                         Query.limit(limit),
                         Query.equal('$id', chunkIds),

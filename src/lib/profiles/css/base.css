@@ -4,3 +4,15 @@
     scrollbar-width: thin;
     position: relative;
 }
+
+/*
+ * Melt UI applies `position: absolute` to the combobox menu via floating-ui,
+ * but only after `tick()` — a one-frame delay. During that initial frame the
+ * menu is in the normal document flow, momentarily expanding any ancestor with
+ * `overflow: visible` (e.g. the <dialog> element) and causing a visible layout
+ * shift. Pre-setting `position: absolute` here removes the element from flow
+ * immediately at mount, so there is no reflow before floating-ui takes over.
+ */
+[data-melt-combobox-menu] {
+    position: absolute;
+}

@@ -64,7 +64,7 @@
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? getDefaultSpatialData('point');
+            data.default = (savedDefault ?? getDefaultSpatialData('point')) as number[];
         }
     }
 
@@ -93,7 +93,7 @@
 
     onMount(() => {
         if (!editing) {
-            savedDefault = getDefaultSpatialData('point');
+            savedDefault = getDefaultSpatialData('point') as number[];
             defaultChecked = false;
             $required = false;
         }

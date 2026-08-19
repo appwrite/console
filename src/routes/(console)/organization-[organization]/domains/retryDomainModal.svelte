@@ -29,7 +29,7 @@
     async function retryDomain() {
         try {
             error = null;
-            const domain = await sdk.forConsole.domains.updateNameservers({
+            const domain = await sdk.forConsole.domains.verifyNameservers({
                 domainId: selectedDomain.$id
             });
 

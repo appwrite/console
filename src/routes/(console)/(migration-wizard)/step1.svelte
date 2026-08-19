@@ -22,8 +22,9 @@
             projects = [];
         } else {
             loadingProjects = true;
-            projects = await sdk.forConsole.projects
-                .list({
+            projects = await sdk.forConsole
+                .organization(orgId)
+                .listProjects({
                     queries: [Query.equal('teamId', orgId), Query.orderDesc('$createdAt')]
                 })
                 .then((res) => res.projects);
@@ -38,10 +39,9 @@
 
     const beforeSubmit = async () => {
         if (projectType === 'existing') return;
-        const project = await sdk.forConsole.projects.create({
+        const project = await sdk.forConsole.organization(selectedOrg).createProject({
             projectId: ID.unique(),
-            name: newProjName,
-            teamId: selectedOrg
+            name: newProjName
         });
         selectedProject.set(project.$id);
     };

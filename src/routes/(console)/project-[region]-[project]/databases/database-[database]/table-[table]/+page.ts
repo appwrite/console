@@ -3,7 +3,7 @@ import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/h
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { buildGridQueries, extractSortFromQueries } from '$database/store';
+import { buildGridQueries, extractSortFromQueries, loadGridRows } from '$database/store';
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { table } = await parent();
@@ -28,10 +28,16 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
         query,
         currentSort,
         parsedQueries,
-        rows: await sdk.forProject(params.region, params.project).tablesDB.listRows({
-            databaseId: params.database,
-            tableId: params.table,
-            queries: buildGridQueries(limit, offset, parsedQueries, table)
-        })
+        rows: await loadGridRows(
+            table,
+            (includeRelationships) =>
+                buildGridQueries(limit, offset, parsedQueries, table, includeRelationships),
+            (queries) =>
+                sdk.forProject(params.region, params.project).tablesDB.listRows({
+                    databaseId: params.database,
+                    tableId: params.table,
+                    queries
+                })
+        )
     };
 };

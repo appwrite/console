@@ -56,7 +56,8 @@
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .migrations.createJSONExport({
-                    resourceId: `${page.params.database}:${page.params.collection}`,
+                    databaseId: page.params.database,
+                    collectionId: page.params.collection,
                     filename: filename,
                     columns: [],
                     queries: exportWithFilters ? Array.from(localQueries.values()) : [],

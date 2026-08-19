@@ -12,7 +12,7 @@
     import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart, Legend } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/layout/usage.svelte';
+    import { total } from '$lib/layout/usageHelpers';
     import { base } from '$app/paths';
     import { formatCurrency, formatNumberWithCommas, clampMin } from '$lib/helpers/numbers';
     import { getCountryName } from '$lib/helpers/diallingCodes.js';
@@ -49,11 +49,11 @@
     $: legendData = [
         {
             name: 'Reads',
-            value: clampMin(data.usage.databasesReads.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin((dbReads ?? []).reduce((sum, item) => sum + item.value, 0))
         },
         {
             name: 'Writes',
-            value: clampMin(data.usage.databasesWrites.reduce((sum, item) => sum + item.value, 0))
+            value: clampMin((dbWrites ?? []).reduce((sum, item) => sum + item.value, 0))
         }
     ];
 
@@ -196,11 +196,11 @@
                         series={[
                             {
                                 name: 'Reads',
-                                data: [...dbReads.map((e) => [e.date, e.value])]
+                                data: [...(dbReads ?? []).map((e) => [e.date, e.value])]
                             },
                             {
                                 name: 'Writes',
-                                data: [...dbWrites.map((e) => [e.date, e.value])]
+                                data: [...(dbWrites ?? []).map((e) => [e.date, e.value])]
                             }
                         ]} />
                 </div>
@@ -321,13 +321,13 @@
                             data: [...executions.map((e) => [e.date, e.value])]
                         }
                     ]} />
-                {#if data.usage.executionsBreakdown.length > 0}
+                {#if data.executionsBreakdown?.length > 0}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>
                             <Table.Header.Cell {root}>Function</Table.Header.Cell>
                             <Table.Header.Cell {root}>Usage</Table.Header.Cell>
                         </svelte:fragment>
-                        {#each data.usage.executionsBreakdown as func}
+                        {#each data.executionsBreakdown as func}
                             <Table.Row.Link
                                 href={`${baseRoute}/functions/function-${func.resourceId}`}
                                 {root}>
@@ -579,7 +579,7 @@
                         </span>
                     </p>
                 </div>
-                {#if data.usage.authPhoneCountryBreakdown.length > 0}
+                {#if data.usage.authPhoneCountryBreakdown?.length > 0}
                     <Accordion title="Region breakdown">
                         <Table.Root columns={3} let:root>
                             <svelte:fragment slot="header" let:root>

@@ -2,16 +2,19 @@ import { isMultiRegionSupported, VARS } from '$lib/system';
 import { registerImpersonationClients, restoreImpersonation } from '$lib/appwrite/impersonation';
 import {
     Account,
+    Apps,
     Assistant,
     Avatars,
     Backups,
     Client,
     Console,
+    Embeddings,
     Functions,
-    Health,
     Locale,
     Messaging,
     Migrations,
+    Oauth2,
+    Organization,
     Project,
     Project as ProjectApi,
     Projects,
@@ -28,6 +31,7 @@ import {
     Webhooks,
     Realtime,
     Organizations,
+    Usage,
     VectorsDB
 } from '@appwrite.io/console';
 import { buildRegionalV1Endpoint } from '$lib/helpers/apiEndpoint';
@@ -47,9 +51,10 @@ function createConsoleSdk(client: Client) {
     return {
         client,
         account: new Account(client),
+        apps: new Apps(client),
+        oauth2: new Oauth2(client),
         avatars: new Avatars(client),
         functions: new Functions(client),
-        health: new Health(client),
         locale: new Locale(client),
         projects: new Projects(client),
         teams: new Teams(client),
@@ -62,7 +67,19 @@ function createConsoleSdk(client: Client) {
         domains: new Domains(client),
         storage: new Storage(client),
         realtime: new Realtime(client),
-        organizations: new Organizations(client)
+        organizations: new Organizations(client),
+        organization(organizationId: string) {
+            const organizationClient = new Client();
+            organizationClient.setEndpoint(client.config.endpoint);
+            if (client.config.project) {
+                organizationClient.setProject(client.config.project);
+            }
+            Object.assign(organizationClient.headers, client.getHeaders(), {
+                'X-Appwrite-Organization': organizationId
+            });
+
+            return new Organization(organizationClient);
+        }
     };
 }
 
@@ -98,7 +115,6 @@ const sdkForProject = {
     avatars: new Avatars(clientProject),
     backups: new Backups(clientProject),
     functions: new Functions(clientProject),
-    health: new Health(clientProject),
     locale: new Locale(clientProject),
     messaging: new Messaging(clientProject),
     project: new Project(clientProject),
@@ -114,6 +130,8 @@ const sdkForProject = {
     tablesDB: new TablesDB(clientProject),
     documentsDB: new DocumentsDB(clientProject),
     vectorsDB: new VectorsDB(clientProject),
+    embeddings: new Embeddings(clientProject),
+    usage: new Usage(clientProject),
     webhooks: new Webhooks(clientProject),
     console: new Console(clientProject) // for suggestions API
 };

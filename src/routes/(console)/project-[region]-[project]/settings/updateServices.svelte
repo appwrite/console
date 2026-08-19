@@ -10,7 +10,7 @@
     import { project } from '../store';
     import Button from '$lib/elements/forms/button.svelte';
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
-    import type { ServiceId } from '@appwrite.io/console';
+    import type { ProjectServiceId } from '@appwrite.io/console';
     import { get } from 'svelte/store';
 
     import { SvelteSet } from 'svelte/reactivity';
@@ -20,7 +20,7 @@
     let showUpdateServiceDialog = $state(false);
     let updateServicesEnabledMode = $state<boolean | null>(null);
 
-    let apiServiceUpdates = new SvelteSet<ServiceId>();
+    let apiServiceUpdates = new SvelteSet<ProjectServiceId>();
 
     const isAnyServiceUpdating = $derived(apiServiceUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllServices || isAnyServiceUpdating);

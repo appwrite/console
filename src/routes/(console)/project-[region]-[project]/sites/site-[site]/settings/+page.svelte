@@ -10,6 +10,7 @@
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
     import UpdateRepository from './updateRepository.svelte';
+    import UpdateBuildTriggers from './updateBuildTriggers.svelte';
     import { onMount } from 'svelte';
     import { showConnectRepo } from './store';
     import { isCloud } from '$lib/system';
@@ -71,11 +72,13 @@
     <UpdateName site={data.site} />
     {#key data.site.providerRepositoryId}
         <UpdateRepository site={data.site} installations={data.installations} />
+        <UpdateBuildTriggers site={data.site} />
     {/key}
     <UpdateBuildSettings
         site={data.site}
         frameworks={data.frameworks.frameworks}
-        specs={data.specificationsList} />
+        buildSpecs={data.buildSpecificationsList}
+        runtimeSpecs={data.runtimeSpecificationsList} />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
@@ -93,7 +96,10 @@
         product="site"
         analyticsSource="site_settings" />
     {#if isCloud}
-        <UpdateResourceLimits site={data.site} specs={data.specificationsList} />
+        <UpdateResourceLimits
+            site={data.site}
+            buildSpecs={data.buildSpecificationsList}
+            runtimeSpecs={data.runtimeSpecificationsList} />
     {/if}
     <UpdateDeploymentRetention site={data.site} />
     <UpdateTimeout site={data.site} />

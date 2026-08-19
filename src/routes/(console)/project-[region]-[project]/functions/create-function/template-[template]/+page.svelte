@@ -20,7 +20,7 @@
         Runtime,
         TemplateReferenceType,
         type Models,
-        type Scopes
+        type ProjectKeyScopes
     } from '@appwrite.io/console';
     import {
         ConnectBehaviour,
@@ -38,6 +38,7 @@
     import { getIconFromRuntime } from '$lib/stores/runtimes';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import type { PageData } from './$types';
+    import { validateVariables } from '$lib/helpers/variables';
 
     let { data }: { data: PageData } = $props();
 
@@ -71,7 +72,7 @@
     let showConfig = $state(false);
     let silentMode = $state(false);
     let entrypoint = $state('');
-    let selectedScopes = $state<Scopes[]>([]);
+    let selectedScopes = $state<ProjectKeyScopes[]>([]);
     let execute = $state(true);
     let variables = $state<Partial<Models.TemplateVariable>[]>([]);
     let specification = $state(untrack(() => specificationOptions[0]?.value || ''));
@@ -148,6 +149,15 @@
             return;
         } else {
             try {
+                // Reject an unusable key before the resource is created, so a
+                // rejected variable can't leave a half-configured resource behind.
+                const validationError = validateVariables(
+                    variables.map((variable) => ({ key: variable.name, value: variable.value }))
+                );
+                if (validationError) {
+                    throw new Error(validationError);
+                }
+
                 const rt = data.template.runtimes.find((r) => r.name === runtime);
 
                 const func = await sdk

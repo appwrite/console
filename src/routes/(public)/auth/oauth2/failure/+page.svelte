@@ -3,11 +3,27 @@
     import { Typography } from '@appwrite.io/pink-svelte';
 
     const project = page.url.searchParams.get('project');
+    const errorParam = page.url.searchParams.get('error');
     const link = `appwrite-callback-${project}://${page.url.search}`;
+
+    type OAuthError = {
+        message?: string;
+        type?: string;
+        code?: number;
+    };
+
+    let oauthError: OAuthError | null = null;
+    if (errorParam) {
+        try {
+            oauthError = JSON.parse(errorParam) as OAuthError;
+        } catch {
+            oauthError = { message: errorParam };
+        }
+    }
 
     const redirect = new Promise((_resolve, reject) => {
         if (!project) {
-            reject('no-project');
+            reject(oauthError ? 'oauth-error' : 'no-project');
         }
         window.location.href = link;
     });
@@ -27,15 +43,25 @@
 {:catch}
     <article class="card u-padding-16">
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Typography.Title>Missing redirect URL</Typography.Title>
-            <p class="text">
-                Your OAuth login flow is missing a proper redirect URL. Please check the
-                <a
-                    class="link"
-                    href="https://appwrite.io/docs/references/cloud/client-web/account#createOAuth2Session"
-                    >OAuth docs</a>
-                and send request for new session with a valid callback URL.
-            </p>
+            {#if oauthError}
+                <Typography.Title>Login failed</Typography.Title>
+                <p class="text">
+                    {oauthError.message ?? 'An error occurred during the OAuth login flow.'}
+                </p>
+                {#if oauthError.type}
+                    <p class="text u-color-text-offline">Error type: {oauthError.type}</p>
+                {/if}
+            {:else}
+                <Typography.Title>Missing redirect URL</Typography.Title>
+                <p class="text">
+                    Your OAuth login flow is missing a proper redirect URL. Please check the
+                    <a
+                        class="link"
+                        href="https://appwrite.io/docs/references/cloud/client-web/account#createOAuth2Session"
+                        >OAuth docs</a>
+                    and send request for new session with a valid callback URL.
+                </p>
+            {/if}
         </div>
     </article>
 {/await}

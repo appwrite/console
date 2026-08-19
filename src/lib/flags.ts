@@ -19,5 +19,6 @@ function isFlagEnabled(name: string) {
 }
 
 export const flags = {
-    multiDb: isFlagEnabled('multi-db')
+    multiDb: isFlagEnabled('multi-db'),
+    oauth2Server: isFlagEnabled('oauth2-server')
 };

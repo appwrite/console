@@ -7,6 +7,7 @@
     import { Icon, Layout, Selector, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
     import { parse } from '$lib/helpers/envfile';
     import { removeFile } from '$lib/helpers/files';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let show = false;
     export let variables: Partial<Models.Variable>[];
@@ -35,19 +36,20 @@
             if (!Object.keys(uploaded).length) {
                 throw new Error('No variables found');
             }
-            const entries = Object.entries(uploaded);
+            // Drop the valueless entries first. They are never written, so an
+            // invalid key on one of them must not reject the whole file.
+            const entries = Object.entries(uploaded).filter(([, value]) => !!value);
 
-            for (const [key, value] of entries) {
-                if (value.length > 8192) {
-                    throw new Error(`Variable ${key} is longer than 8192 allowed characters`);
-                }
+            const validationError = validateVariables(
+                entries.map(([key, value]) => ({ key, value }))
+            );
+            if (validationError) {
+                throw new Error(validationError);
             }
 
-            entries
-                .filter(([, value]) => !!value)
-                .forEach(([key, value]) => {
-                    variables.push({ key, value, secret });
-                });
+            entries.forEach(([key, value]) => {
+                variables.push({ key, value, secret });
+            });
 
             show = false;
         } catch (e) {

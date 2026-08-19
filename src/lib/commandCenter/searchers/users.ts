@@ -35,16 +35,6 @@ export const userSearcher = (async (query: string) => {
                 icon: IconTrash
             },
             {
-                label: 'Go to activity',
-                callback: () => {
-                    goto(
-                        `${base}/project-${page.params.region}-${page.params.project}/auth/user-${users[0].$id}/activity`
-                    );
-                },
-                group: 'users',
-                nested: true
-            },
-            {
                 label: 'Go to sessions',
                 callback: () => {
                     goto(

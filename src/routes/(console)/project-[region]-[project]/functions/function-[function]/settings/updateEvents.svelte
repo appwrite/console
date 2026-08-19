@@ -14,7 +14,7 @@
     import { EventModal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime, type Scopes } from '@appwrite.io/console';
+    import { Runtime, type ProjectKeyScopes } from '@appwrite.io/console';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Link, Table, Typography } from '@appwrite.io/pink-svelte';
 
@@ -37,17 +37,18 @@
                 events: Array.from($eventSet),
                 schedule: $func.schedule || undefined,
                 timeout: $func.timeout || undefined,
-                enabled: $func.enabled || undefined,
-                logging: $func.logging || undefined,
+                enabled: $func.enabled ?? undefined,
+                logging: $func.logging ?? undefined,
                 entrypoint: $func.entrypoint || undefined,
                 commands: $func.commands || undefined,
-                scopes: ($func.scopes as Scopes[]) || undefined,
+                scopes: ($func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: $func.installationId || undefined,
                 providerRepositoryId: $func.providerRepositoryId || undefined,
                 providerBranch: $func.providerBranch || undefined,
-                providerSilentMode: $func.providerSilentMode || undefined,
+                providerSilentMode: $func.providerSilentMode ?? undefined,
                 providerRootDirectory: $func.providerRootDirectory || undefined,
-                buildSpecification: $func.buildSpecification || undefined
+                buildSpecification: $func.buildSpecification || undefined,
+                deploymentRetention: $func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({

@@ -10,20 +10,27 @@
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    let { project }: { project: Models.Project } = $props();
+    let {
+        project,
+        sessionAlertPolicy,
+        sessionInvalidationPolicy
+    }: {
+        project: Models.Project;
+        sessionAlertPolicy: Models.PolicySessionAlert;
+        sessionInvalidationPolicy: Models.PolicySessionInvalidation;
+    } = $props();
 
     let authSessionAlerts = $state(false);
     let sessionInvalidation = $state(false);
 
     onMount(() => {
-        authSessionAlerts = project?.authSessionAlerts ?? false;
-        sessionInvalidation = project?.authInvalidateSessions ?? false;
+        authSessionAlerts = sessionAlertPolicy.enabled;
+        sessionInvalidation = sessionInvalidationPolicy.enabled;
     });
 
     const hasChanges = $derived.by(() => {
-        const alertsChanged = authSessionAlerts !== (project?.authSessionAlerts ?? false);
-        const invalidationChanged =
-            sessionInvalidation !== (project?.authInvalidateSessions ?? false);
+        const alertsChanged = authSessionAlerts !== sessionAlertPolicy.enabled;
+        const invalidationChanged = sessionInvalidation !== sessionInvalidationPolicy.enabled;
         return alertsChanged || invalidationChanged;
     });
 

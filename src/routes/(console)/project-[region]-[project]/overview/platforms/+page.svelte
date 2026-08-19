@@ -93,7 +93,8 @@
     import {
         type DeleteOperationState,
         type DeleteOperation,
-        MultiSelectionTable
+        MultiSelectionTable,
+        PaginationWithLimit
     } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError } from '$lib/actions/analytics';
@@ -200,6 +201,11 @@
             {/each}
         {/snippet}
     </MultiSelectionTable>
+    <PaginationWithLimit
+        name="Platforms"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.platforms.total} />
 {:else}
     <Card.Base padding="none">
         <Empty

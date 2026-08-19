@@ -65,6 +65,29 @@ function castBigIntValue(value: RowValue): RowValue {
     return String(value);
 }
 
+/**
+ * Datetime inputs are shown as timezone-less local ISO strings (see
+ * `toLocalDateTimeISO`). Convert them back to UTC before the API call so
+ * unchanged fields do not drift by the browser's UTC offset on every update.
+ */
+function castDatetimeValue(value: RowValue): RowValue {
+    if (value === null || value === undefined || value === '') {
+        return value;
+    }
+
+    if (typeof value !== 'string') {
+        return value;
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toISOString();
+}
+
 export function buildPayload<T extends Record<string, RowValue>>(
     fields: Field[] | undefined,
     row: T
@@ -72,18 +95,19 @@ export function buildPayload<T extends Record<string, RowValue>>(
     const payload = structuredClone(row) as Record<string, RowValue>;
 
     for (const field of fields ?? []) {
-        if (field.type !== 'bigint') {
+        if (field.type !== 'bigint' && field.type !== 'datetime') {
             continue;
         }
 
         const value = payload[field.key];
+        const cast = field.type === 'bigint' ? castBigIntValue : castDatetimeValue;
 
         if (field.array && Array.isArray(value)) {
-            payload[field.key] = value.map((item) => castBigIntValue(item));
+            payload[field.key] = value.map((item) => cast(item));
             continue;
         }
 
-        payload[field.key] = castBigIntValue(value);
+        payload[field.key] = cast(value);
     }
 
     return payload as T;

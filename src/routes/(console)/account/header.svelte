@@ -23,10 +23,9 @@
             event: 'sessions'
         },
         {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
+            href: `${path}/applications`,
+            title: 'Applications',
+            event: 'applications'
         },
         {
             href: `${path}/organizations`,

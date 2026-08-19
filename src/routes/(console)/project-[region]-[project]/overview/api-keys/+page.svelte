@@ -9,4 +9,4 @@
     setOverviewAction(Action);
 </script>
 
-<Table keys={data.keys} />
+<Table keys={data.keys} limit={data.limit} offset={data.offset} />

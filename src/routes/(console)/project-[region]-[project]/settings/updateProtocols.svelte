@@ -11,18 +11,18 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { Dialog, Divider, Layout, Spinner } from '@appwrite.io/pink-svelte';
     import { SvelteSet } from 'svelte/reactivity';
-    import { ProtocolId } from '@appwrite.io/console';
+    import { ProjectProtocolId } from '@appwrite.io/console';
     import { get } from 'svelte/store';
     import { canWriteProjects } from '$lib/stores/roles';
 
     let isUpdatingAllProtocols = $state(false);
     let showUpdateProtocolDialog = $state(false);
     let updateProtocolsEnabledMode = $state<boolean | null>(null);
-    let apiProtocolUpdates = new SvelteSet<ProtocolId>();
-    const protocolDescriptions: Record<ProtocolId, string> = {
-        [ProtocolId.Rest]: 'Standard HTTP API requests from client SDKs.',
-        [ProtocolId.Graphql]: 'GraphQL API access for queries and mutations.',
-        [ProtocolId.Websocket]: 'Realtime subscriptions over WebSocket connections.'
+    let apiProtocolUpdates = new SvelteSet<ProjectProtocolId>();
+    const protocolDescriptions: Record<ProjectProtocolId, string> = {
+        [ProjectProtocolId.Rest]: 'Standard HTTP API requests from client SDKs.',
+        [ProjectProtocolId.Graphql]: 'GraphQL API access for queries and mutations.',
+        [ProjectProtocolId.Websocket]: 'Realtime subscriptions over WebSocket connections.'
     };
     const isAnyProtocolUpdating = $derived(apiProtocolUpdates.size > 0);
     const isAnyUpdateInProgress = $derived(isUpdatingAllProtocols || isAnyProtocolUpdating);

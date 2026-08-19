@@ -29,7 +29,6 @@
         databaseRowSheetOptions,
         showCreateColumnSheet,
         showCreateIndexSheet,
-        rowActivitySheet,
         databaseRelatedRowSheetOptions,
         rowPermissionSheet,
         showRowCreateSheet
@@ -50,7 +49,6 @@
     import {
         CreateIndex,
         EditRecordPermissions,
-        RecordActivity,
         SideSheet,
         type Field,
         useTerminology
@@ -204,24 +202,6 @@
                 goto(withPath(basePath, '/indexes'));
             },
             disabled: page.url.pathname.endsWith('indexes'),
-            group: 'tables'
-        },
-        {
-            label: 'Go to activity',
-            keys: ['g', 'c'],
-            callback() {
-                goto(withPath(basePath, '/activity'));
-            },
-            disabled: page.url.pathname.endsWith('activity'),
-            group: 'tables'
-        },
-        {
-            label: 'Go to usage',
-            keys: ['g', 'u'],
-            callback() {
-                goto(withPath(basePath, '/usage'));
-            },
-            disabled: page.url.pathname.endsWith('usage'),
             group: 'tables'
         },
         {
@@ -591,10 +571,6 @@
         bind:this={editRecordPermissions}
         bind:record={$rowPermissionSheet.row}
         bind:arePermsDisabled={editRowPermissionsDisabled} />
-</SideSheet>
-
-<SideSheet title="Row activity" bind:show={$rowActivitySheet.show} closeOnBlur>
-    <RecordActivity record={$rowActivitySheet.row} />
 </SideSheet>
 
 <Dialog title="Generate sample data" bind:open={$randomDataModalState.show}>

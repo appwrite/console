@@ -295,8 +295,13 @@
         };
 
         // addons (additional members, projects, etc.)
-        const billingAddonNames: Record<string, string> = {
-            addon_baa: 'HIPAA BAA'
+        // Fallback labels for older cloud builds that don't yet send `addon.name`
+        // on the resource entry. Once the cloud rollout is complete this map can
+        // be removed entirely.
+        const billingAddonNamesFallback: Record<string, string> = {
+            addon_baa: 'HIPAA BAA',
+            addon_premiumGeoDB: 'Premium Geo DB',
+            addon_premiumGeoDBOrg: 'Premium Geo DB'
         };
 
         const addons = (currentAggregation?.resources || [])
@@ -315,8 +320,9 @@
                             ? 'Additional members'
                             : addon.resourceId === 'projects'
                               ? 'Additional projects'
-                              : (billingAddonNames[addon.resourceId] ??
-                                `${addon.resourceId} overage (${formatNum(addon.value)})`),
+                              : addon.name ||
+                                billingAddonNamesFallback[addon.resourceId] ||
+                                addon.resourceId,
                     usage: '',
                     price: formatCurrency(addon.amount)
                 },
@@ -462,6 +468,21 @@
                         priceFormatter: ({ amount }) => formatCurrency(amount),
                         includeProgress: false
                     }),
+                    ...resources
+                        .filter((r) => r.resourceId?.startsWith('addon_') && (r.amount ?? 0) > 0)
+                        .map((addon) =>
+                            createRow({
+                                id: `addon-${addon.resourceId}`,
+                                label:
+                                    addon.name ||
+                                    billingAddonNamesFallback[addon.resourceId] ||
+                                    addon.resourceId,
+                                resource: addon,
+                                usageFormatter: ({ value }) => formatNum(value),
+                                priceFormatter: ({ amount }) => formatCurrency(amount),
+                                includeProgress: false
+                            })
+                        ),
                     createRow({
                         id: 'usage-details',
                         label: `<a href="${base}/project-${String(projectData.region || 'default')}-${projectData.$id}/settings/usage" style="text-decoration: underline; color: var(--fgcolor-accent-neutral);">Usage details</a>`,

@@ -1,33 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import TerraformProvider from '$lib/images/promos/terraform-provider.png';
+import StateOfAppwriteSurvey from '$lib/images/promos/state-of-appwrite-survey.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const terraformProviderPromo: BottomModalAlertItem = {
-        id: 'modal:terraform_provider_announcement',
+    const stateOfAppwriteSurveyPromo: BottomModalAlertItem = {
+        id: 'modal:state_of_appwrite_survey_announcement',
         src: {
-            dark: TerraformProvider,
-            light: TerraformProvider
+            dark: StateOfAppwriteSurvey,
+            light: StateOfAppwriteSurvey
         },
-        title: 'Introducing Terraform support for Appwrite projects',
+        title: 'State of Appwrite Cloud',
         message:
-            'Manage your entire Appwrite project as code with the official Terraform provider.',
+            'Share your experience building with Appwrite Cloud and using AI tools, and help shape our product roadmap for 2026 and beyond.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Read announcement',
-            link: () => 'https://appwrite.io/blog/post/introducing-terraform-provider-for-appwrite',
+            text: 'Take the survey',
+            link: () => 'https://forms.gle/5cvWxTwhonoDCWsi7',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(terraformProviderPromo);
+    listOfPromotions.push(stateOfAppwriteSurveyPromo);
 }
 
 export function addBottomModalAlerts() {

@@ -47,7 +47,7 @@
 
     async function fetchProjects() {
         loadingProjects = true;
-        projects = await sdk.forConsole.projects.list({
+        projects = await sdk.forConsole.organization(selectedOrg).listProjects({
             queries: [
                 Query.equal('teamId', selectedOrg),
                 Query.orderDesc(''),
@@ -63,10 +63,9 @@
         if (selectedProject === null) {
             try {
                 loadingProjects = true;
-                const project = await sdk.forConsole.projects.create({
+                const project = await sdk.forConsole.organization(selectedOrg).createProject({
                     projectId: id ?? ID.unique(),
                     name: projectName,
-                    teamId: selectedOrg,
                     region: isCloud ? (region as Region) : undefined
                 });
 

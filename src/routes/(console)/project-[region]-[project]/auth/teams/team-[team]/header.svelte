@@ -18,12 +18,6 @@
             title: 'Members',
             event: 'members',
             hasChildren: true
-        },
-        {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
         }
     ];
 </script>

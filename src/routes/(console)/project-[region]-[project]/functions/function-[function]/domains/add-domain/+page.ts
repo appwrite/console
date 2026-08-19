@@ -25,13 +25,6 @@ export const load = async ({ parent, depends, params }) => {
         func,
         rules,
         domainsList,
-        installations,
-        branches:
-            func?.installationId && func?.providerRepositoryId
-                ? await sdk.forProject(params.region, params.project).vcs.listRepositoryBranches({
-                      installationId: func.installationId,
-                      providerRepositoryId: func.providerRepositoryId
-                  })
-                : undefined
+        installations
     };
 };

@@ -45,6 +45,7 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let data;
 
@@ -117,6 +118,15 @@
             return;
         } else {
             try {
+                // Reject an unusable key before the resource is created, so a
+                // rejected variable can't leave a half-configured resource behind.
+                const validationError = validateVariables(
+                    variables.map((variable) => ({ key: variable.name, value: variable.value }))
+                );
+                if (validationError) {
+                    throw new Error(validationError);
+                }
+
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime

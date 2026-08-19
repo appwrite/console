@@ -24,16 +24,6 @@
             disabled: !$canWriteBuckets
         },
         {
-            label: 'Go to usage',
-            callback() {
-                goto(`${base}/project-${$project.region}-${$project.$id}/storage/usage`);
-            },
-            keys: ['g', 'u'],
-            disabled: page.url.pathname.endsWith('usage') || page.url.pathname.includes('bucket-'),
-            group: 'navigation',
-            rank: 10
-        },
-        {
             label: 'Find buckets',
             callback: () => {
                 addSubPanel(BucketsPanel);

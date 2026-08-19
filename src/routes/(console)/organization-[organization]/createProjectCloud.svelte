@@ -39,10 +39,9 @@
         showSubmissionLoader = true;
 
         try {
-            project = await sdk.forConsole.projects.create({
+            project = await sdk.forConsole.organization(teamId).createProject({
                 projectId: projectId ?? ID.unique(),
                 name: projectName,
-                teamId,
                 region: projectRegion
             });
 

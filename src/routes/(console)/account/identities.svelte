@@ -12,6 +12,12 @@
     import { IconTrash } from '@appwrite.io/pink-icons-svelte';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
+    // Apps authorized through the OAuth2 server use an `oauth2:<appId>` provider
+    // and are managed on the Applications tab; this list is sign-in identities only.
+    $: signInIdentities = $identities.filter(
+        (identity) => !identity.provider?.startsWith('oauth2:')
+    );
+
     async function deleteIdentity(id: string) {
         try {
             await sdk.forConsole.account.deleteIdentity({ identityId: id });
@@ -36,7 +42,7 @@
     Identities are your connected GitHub accounts. You can sign in using these accounts.
 
     <svelte:fragment slot="aside">
-        {#if $identities.length === 0}
+        {#if signInIdentities.length === 0}
             <Card.Base padding="none">
                 <Empty
                     type="secondary"
@@ -61,7 +67,7 @@
                     <Table.Header.Cell column="expiryDate" {root}>Expiry Date</Table.Header.Cell>
                     <Table.Header.Cell column="actions" {root} />
                 </svelte:fragment>
-                {#each $identities as identity (identity.$id)}
+                {#each signInIdentities as identity (identity.$id)}
                     {@const provider = oAuthProviders[identity.provider]}
                     <Table.Row.Base {root}>
                         <Table.Cell column="provider" {root}>

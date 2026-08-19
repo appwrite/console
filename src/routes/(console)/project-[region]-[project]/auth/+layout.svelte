@@ -59,16 +59,6 @@
                 disabled: page.url.pathname.endsWith('teams')
             },
             {
-                label: 'Go to usage',
-                keys: ['g', 'u'],
-                callback: async () => {
-                    await goto(withPath(authProjectRoute, '/usage'));
-                },
-                group: 'navigation',
-                rank: 1,
-                disabled: page.url.pathname.endsWith('usage')
-            },
-            {
                 label: 'Go to security',
                 keys: ['g', 'e'],
                 callback: async () => {

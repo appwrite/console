@@ -236,7 +236,7 @@
                 <Button
                     external
                     text
-                    ariaLabel="create message"
+                    ariaLabel="read message documentation"
                     event="empty_documentation"
                     href="https://appwrite.io/docs/products/messaging/messages">
                     Documentation

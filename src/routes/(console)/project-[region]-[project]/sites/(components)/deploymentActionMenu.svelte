@@ -17,6 +17,7 @@
     import { ActionMenu, Icon, Tooltip } from '@appwrite.io/pink-svelte';
     import { getEffectiveBuildStatus } from '$lib/helpers/buildTimeout';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { impersonatedResourceUrl } from '$lib/appwrite/impersonation';
 
     export let selectedDeployment: Models.Deployment;
     export let deployment: Models.Deployment;
@@ -28,21 +29,23 @@
     export let inCard = false;
 
     function getOutputDownload(deploymentId: string) {
-        return (
+        return $impersonatedResourceUrl(
             sdk.forProject(page.params.region, page.params.project).sites.getDeploymentDownload({
                 siteId: page.params.site,
                 deploymentId: deploymentId,
                 type: DeploymentDownloadType.Output
-            }) + '&mode=admin'
+            }),
+            { mode: 'admin' }
         );
     }
     function getSourceDownload(deploymentId: string) {
-        return (
+        return $impersonatedResourceUrl(
             sdk.forProject(page.params.region, page.params.project).sites.getDeploymentDownload({
                 siteId: page.params.site,
                 deploymentId: deploymentId,
                 type: DeploymentDownloadType.Source
-            }) + '&mode=admin'
+            }),
+            { mode: 'admin' }
         );
     }
 </script>

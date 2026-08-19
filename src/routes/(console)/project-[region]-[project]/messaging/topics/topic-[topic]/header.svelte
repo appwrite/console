@@ -17,11 +17,6 @@
             event: 'subscribers'
         },
         {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity'
-        },
-        {
             href: `${path}/settings`,
             title: 'Settings',
             event: 'settings',

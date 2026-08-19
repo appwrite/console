@@ -11,6 +11,7 @@ node_modules
 !.env.example
 test-results/
 playwright-report/
+.playwright-mcp/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 

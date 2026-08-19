@@ -91,18 +91,6 @@
             disabled: page.url.pathname.endsWith('deployments')
         },
         {
-            label: 'Go to usage',
-            callback() {
-                goto(
-                    `${base}/project-${$project.region}-${$project.$id}/sites/site-${page.params.site}/usage`
-                );
-            },
-            keys: ['g', 'u'],
-            group: 'navigation',
-            rank: 10,
-            disabled: page.url.pathname.endsWith('usage')
-        },
-        {
             label: 'Go to logs',
             callback() {
                 goto(

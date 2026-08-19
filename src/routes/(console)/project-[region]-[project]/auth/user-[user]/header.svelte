@@ -32,12 +32,6 @@
             href: `${path}/sessions`,
             title: 'Sessions',
             event: 'sessions'
-        },
-        {
-            href: `${path}/activity`,
-            title: 'Activity',
-            event: 'activity',
-            hasChildren: true
         }
     ];
 </script>

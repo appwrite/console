@@ -63,7 +63,7 @@ export const load: PageLoad = async ({ parent }) => {
         const org = organizations.teams[0];
         let projects: Models.ProjectList = null;
         try {
-            projects = await sdk.forConsole.projects.list({
+            projects = await sdk.forConsole.organization(org.$id).listProjects({
                 queries: [Query.equal('teamId', org.$id), Query.limit(1), Query.select(['$id'])]
             });
         } catch (e) {

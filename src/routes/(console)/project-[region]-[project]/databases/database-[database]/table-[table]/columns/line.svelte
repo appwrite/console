@@ -61,7 +61,7 @@
             savedDefault = data.default;
             data.default = null;
         } else {
-            data.default = savedDefault ?? getDefaultSpatialData('linestring');
+            data.default = (savedDefault ?? getDefaultSpatialData('linestring')) as number[][];
         }
     }
 
@@ -100,7 +100,7 @@
 
     onMount(() => {
         if (!editing) {
-            savedDefault = getDefaultSpatialData('linestring');
+            savedDefault = getDefaultSpatialData('linestring') as number[][];
             defaultChecked = false;
             $required = false;
         }

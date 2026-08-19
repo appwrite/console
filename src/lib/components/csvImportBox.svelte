@@ -73,8 +73,8 @@
         if (importData.source.toLowerCase() !== 'csv') return;
 
         const status = importData.status;
-        const resourceId = importData.resourceId ?? '';
-        const [databaseId, tableId] = resourceId.split(':') ?? [];
+        const databaseId = importData.parentResourceId ?? '';
+        const tableId = importData.resourceId ?? '';
 
         const current = importItems.get(importData.$id);
         let tableName = current?.table ?? null;

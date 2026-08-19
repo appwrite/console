@@ -6,7 +6,7 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models, type Scopes } from '@appwrite.io/console';
+    import { Query, Runtime, type Models, type ProjectKeyScopes } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
     import { installation, repository as repositoryStore, sortBranches } from '$lib/stores/vcs';
@@ -17,12 +17,16 @@
         Layout,
         Skeleton,
         Card as PinkCard,
-        Input,
         Selector
     } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { ConnectGit, ConnectRepoModal, RepositoryCard } from '$lib/components/git';
+    import {
+        ConnectGit,
+        ConnectRepoModal,
+        RepositoryCard,
+        BranchSelector
+    } from '$lib/components/git';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { page } from '$app/state';
     import SelectRootModal from '$lib/components/git/selectRootModal.svelte';
@@ -30,7 +34,6 @@
     export let func: Models.Function;
     export let installations: Models.InstallationList;
 
-    let branchesList: Models.BranchList;
     let selectedBranch = func?.providerBranch;
     let silentMode = func?.providerSilentMode ?? false;
     let selectedDir = func?.providerRootDirectory;
@@ -82,17 +85,18 @@
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
                 timeout: func.timeout || undefined,
-                enabled: func.enabled || undefined,
-                logging: func.logging || undefined,
+                enabled: func.enabled ?? undefined,
+                logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint || undefined,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as Scopes[]) || undefined,
+                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: func.installationId || undefined,
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: selectedBranch,
                 providerSilentMode: silentMode,
                 providerRootDirectory: selectedDir,
-                buildSpecification: func.buildSpecification || undefined
+                buildSpecification: func.buildSpecification || undefined,
+                deploymentRetention: func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -108,20 +112,8 @@
             trackError(error, Submit.FunctionUpdateConfiguration);
         }
     }
-    async function getBranches(installation: string, repo: string) {
-        branchesList = await sdk
-            .forProject(page.params.region, page.params.project)
-            .vcs.listRepositoryBranches({
-                installationId: installation,
-                providerRepositoryId: repo
-            });
-        branchesList.branches = sortBranches(branchesList.branches);
-
-        selectedBranch = func?.providerBranch ?? branchesList.branches[0].name;
-    }
-
     $: if (func?.installationId && func?.providerRepositoryId) {
-        getBranches(func.installationId, func.providerRepositoryId);
+        selectedBranch = func?.providerBranch ?? 'main';
     }
 
     $: isUpdateButtonEnabled =
@@ -132,13 +124,22 @@
     async function connect(selectedInstallationId: string, selectedRepository: string) {
         let nextBranch = func?.providerBranch ?? 'main';
         try {
-            const branchList = await sdk
-                .forProject(page.params.region, page.params.project)
-                .vcs.listRepositoryBranches({
-                    installationId: selectedInstallationId,
-                    providerRepositoryId: selectedRepository
-                });
-            const sorted = sortBranches(branchList.branches);
+            const allBranches = [];
+            let offset = 0;
+            const limit = 100;
+            while (true) {
+                const { branches, total } = await sdk
+                    .forProject(page.params.region, page.params.project)
+                    .vcs.listRepositoryBranches({
+                        installationId: selectedInstallationId,
+                        providerRepositoryId: selectedRepository,
+                        queries: [Query.limit(limit), Query.offset(offset)]
+                    });
+                allBranches.push(...branches);
+                if (allBranches.length >= total || branches.length < limit) break;
+                offset += limit;
+            }
+            const sorted = sortBranches(allBranches);
             nextBranch =
                 sorted.find((branch) => branch.name === func?.providerBranch)?.name ??
                 sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
@@ -156,17 +157,18 @@
                 events: func.events || undefined,
                 schedule: func.schedule || undefined,
                 timeout: func.timeout || undefined,
-                enabled: func.enabled || undefined,
-                logging: func.logging || undefined,
+                enabled: func.enabled ?? undefined,
+                logging: func.logging ?? undefined,
                 entrypoint: func.entrypoint,
                 commands: func.commands || undefined,
-                scopes: (func.scopes as Scopes[]) || undefined,
+                scopes: (func.scopes as ProjectKeyScopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
                 providerBranch: nextBranch,
                 providerSilentMode: func.providerSilentMode ?? undefined,
                 providerRootDirectory: func.providerRootDirectory ?? undefined,
-                buildSpecification: func.buildSpecification || undefined
+                buildSpecification: func.buildSpecification || undefined,
+                deploymentRetention: func.deploymentRetention ?? undefined
             });
             await invalidate(Dependencies.FUNCTION);
         } catch {
@@ -221,24 +223,11 @@
                     <RepositoryCard {repository} on:disconnect={() => (showDisconnect = true)} />
                     <Fieldset legend="Branch">
                         <Layout.Stack gap="xl">
-                            <Input.ComboBox
-                                required={true}
-                                id="branch"
-                                label="Production branch"
-                                placeholder="main"
-                                interactiveOutput
+                            <BranchSelector
                                 bind:value={selectedBranch}
-                                bind:search={selectedBranch}
-                                on:select={(event) => {
-                                    selectedBranch = event.detail.value;
-                                }}
-                                name="branch"
-                                options={branchesList?.branches?.map((branch) => {
-                                    return {
-                                        value: branch.name,
-                                        label: branch.name
-                                    };
-                                }) ?? []} />
+                                installationId={$installation?.$id}
+                                repositoryId={repository?.id?.toString()}
+                                on:select={(e) => (selectedBranch = e.detail)} />
                             <Layout.Stack direction="row" gap="s" alignItems="flex-end">
                                 <InputText
                                     id="root"

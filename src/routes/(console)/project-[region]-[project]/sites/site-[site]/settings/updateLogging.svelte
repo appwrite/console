@@ -19,9 +19,10 @@
                 siteId: site.$id,
                 name: site.name,
                 framework: site.framework as Framework,
-                enabled: site?.enabled || undefined,
+                enabled: site?.enabled ?? undefined,
                 logging,
                 timeout: site?.timeout || undefined,
+                deploymentRetention: site?.deploymentRetention ?? undefined,
                 installCommand: site?.installCommand || undefined,
                 buildCommand: site?.buildCommand || undefined,
                 startCommand: site?.startCommand || undefined,
@@ -32,7 +33,7 @@
                 installationId: site?.installationId || undefined,
                 providerRepositoryId: site?.providerRepositoryId || undefined,
                 providerBranch: site?.providerBranch || undefined,
-                providerSilentMode: site?.providerSilentMode || undefined,
+                providerSilentMode: site?.providerSilentMode ?? undefined,
                 providerRootDirectory: site?.providerRootDirectory || undefined,
                 buildSpecification: site?.buildSpecification || undefined
             });

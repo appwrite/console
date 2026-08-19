@@ -12,17 +12,19 @@
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { adapterDataList } from './store';
-    import { getFrameworkIcon, type FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
+    import { getFrameworkIcon } from '$lib/stores/sites';
     import { page } from '$app/state';
 
     let {
         site,
         frameworks,
-        specs
+        buildSpecs,
+        runtimeSpecs
     }: {
         site: Models.Site;
         frameworks: Models.Framework[];
-        specs: Models.SpecificationList;
+        buildSpecs: Models.SpecificationList;
+        runtimeSpecs: Models.SpecificationList;
     } = $props();
 
     let frameworkKey = $state(site.framework);
@@ -30,7 +32,7 @@
     let buildCommand = $state(site?.buildCommand);
     let startCommand = $state(site?.startCommand);
     let outputDirectory = $state(site?.outputDirectory);
-    let fallback = $state(site?.fallbackFile);
+    let fallback = $state(site?.fallbackFile ?? '');
     let adapter: Adapter = $state(site.adapter as Adapter);
 
     let selectedFramework = $state(
@@ -48,9 +50,8 @@
             (fallback ?? '') === (site?.fallbackFile ?? '') &&
             (adapter ?? '') === (site?.adapter ?? '')
     );
-    let frameworkAdapterData: FrameworkAdapterWithStartCommand = $derived(
-        (selectedFramework.adapters.find((a) => a.key === adapter) ??
-            selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand
+    let frameworkAdapterData = $derived(
+        selectedFramework.adapters.find((a) => a.key === adapter) ?? selectedFramework.adapters[0]
     );
 
     $effect(() => {
@@ -75,17 +76,19 @@
             }
 
             //Update values
-            const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
-                selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
+            const data =
+                selectedFramework.adapters.find((a) => a.key === adapter) ??
+                selectedFramework.adapters[0];
             installCommand = data.installCommand;
             buildCommand = data.buildCommand;
-            startCommand = data.startCommand;
+            startCommand = '';
             outputDirectory = data.outputDirectory;
             adapter = data.key as Adapter;
             fallback = data.fallbackFile;
         } else if (hasFrameworkSelectionChanged) {
-            const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
-                selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
+            const data =
+                selectedFramework.adapters.find((a) => a.key === adapter) ??
+                selectedFramework.adapters[0];
             const isOriginalAdapter = adapter === site.adapter;
 
             installCommand = isOriginalAdapter
@@ -94,9 +97,7 @@
             buildCommand = isOriginalAdapter
                 ? (site?.buildCommand ?? frameworkAdapterData.buildCommand)
                 : data.buildCommand;
-            startCommand = isOriginalAdapter
-                ? (site?.startCommand ?? frameworkAdapterData.startCommand)
-                : data.startCommand;
+            startCommand = isOriginalAdapter ? (site?.startCommand ?? '') : '';
             outputDirectory = isOriginalAdapter
                 ? (site?.outputDirectory ?? frameworkAdapterData.outputDirectory)
                 : data.outputDirectory;
@@ -109,29 +110,25 @@
     });
 
     $effect(() => {
-        if (adapter === Adapter.Static) {
-            if (!fallback) {
-                fallback ||= selectedFramework.adapters.find(
-                    (a) => a.key === Adapter.Static
-                ).fallbackFile;
-            }
-        }
-    });
-
-    $effect(() => {
         if (selectedFramework) {
             if (!selectedFramework.adapters.some((a) => a.key === adapter)) {
                 adapter = selectedFramework.adapters[0].key as Adapter;
                 site.adapter = adapter;
             }
-            if (specs && specs.specifications?.length) {
-                const enabledSpecs = specs.specifications.filter((s) => s.enabled);
-                const fallbackSlug = enabledSpecs[0]?.slug ?? specs.specifications[0]?.slug;
-                if (!enabledSpecs.some((s) => s.slug === site.buildSpecification)) {
-                    site.buildSpecification = fallbackSlug;
+            if (buildSpecs.specifications.length || runtimeSpecs.specifications.length) {
+                const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+                const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
+                if (
+                    buildEnabledSpecs.length &&
+                    !buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
+                ) {
+                    site.buildSpecification = buildEnabledSpecs[0]?.slug;
                 }
-                if (!enabledSpecs.some((s) => s.slug === site.runtimeSpecification)) {
-                    site.runtimeSpecification = fallbackSlug;
+                if (
+                    runtimeEnabledSpecs.length &&
+                    !runtimeEnabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+                ) {
+                    site.runtimeSpecification = runtimeEnabledSpecs[0]?.slug;
                 }
             }
         }
@@ -144,25 +141,27 @@
             adptr = selectedFramework.adapters[0];
             site.adapter = adapter;
         }
-        // only allow enabled specsification for it
-        const enabledSpecs = specs?.specifications?.filter((s) => s.enabled) ?? [];
-        const specToSend = enabledSpecs.some((s) => s.slug === site.buildSpecification)
+        const buildEnabledSpecs = buildSpecs.specifications.filter((s) => s.enabled);
+        const runtimeEnabledSpecs = runtimeSpecs.specifications.filter((s) => s.enabled);
+        const specToSend = buildEnabledSpecs.some((s) => s.slug === site.buildSpecification)
             ? site.buildSpecification
-            : enabledSpecs[0]?.slug;
-        const runtimeSpecToSend = enabledSpecs.some((s) => s.slug === site.runtimeSpecification)
+            : (buildEnabledSpecs[0]?.slug ?? site.buildSpecification);
+        const runtimeSpecToSend = runtimeEnabledSpecs.some(
+            (s) => s.slug === site.runtimeSpecification
+        )
             ? site.runtimeSpecification
-            : enabledSpecs[0]?.slug;
+            : (runtimeEnabledSpecs[0]?.slug ?? site.runtimeSpecification);
         try {
             await sdk.forProject(page.params.region, page.params.project).sites.update({
                 siteId: site.$id,
                 name: site.name,
                 framework: selectedFramework.key as Framework,
-                enabled: site.enabled || undefined,
-                logging: site.logging || undefined,
+                enabled: site.enabled ?? undefined,
+                logging: site.logging ?? undefined,
                 timeout: site.timeout || undefined,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
-                startCommand: startCommand || undefined,
+                startCommand: adptr?.key === 'ssr' ? startCommand || undefined : undefined,
                 outputDirectory: outputDirectory || undefined,
                 buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
                 adapter: (adptr?.key as Adapter) || undefined,
@@ -170,10 +169,11 @@
                 installationId: site.installationId || undefined,
                 providerRepositoryId: site.providerRepositoryId || undefined,
                 providerBranch: site.providerBranch || undefined,
-                providerSilentMode: site.providerSilentMode || undefined,
+                providerSilentMode: site.providerSilentMode ?? undefined,
                 providerRootDirectory: site.providerRootDirectory || undefined,
                 buildSpecification: specToSend || undefined,
-                runtimeSpecification: runtimeSpecToSend || undefined
+                runtimeSpecification: runtimeSpecToSend || undefined,
+                deploymentRetention: site.deploymentRetention ?? undefined
             });
             site.buildSpecification = specToSend;
             site.runtimeSpecification = runtimeSpecToSend;
@@ -192,17 +192,13 @@
         }
     }
 
-    function reset(type: 'installCommand' | 'buildCommand' | 'startCommand' | 'outputDirectory') {
-        const data = selectedFramework.adapters.find(
-            (a) => a.key === adapter
-        ) as FrameworkAdapterWithStartCommand;
+    function reset(type: 'installCommand' | 'buildCommand' | 'outputDirectory') {
+        const data = selectedFramework.adapters.find((a) => a.key === adapter);
 
         if (type === 'installCommand') {
             installCommand = data.installCommand;
         } else if (type === 'buildCommand') {
             buildCommand = data.buildCommand;
-        } else if (type === 'startCommand') {
-            startCommand = data.startCommand;
         } else if (type === 'outputDirectory') {
             outputDirectory = data.outputDirectory;
         }
@@ -337,16 +333,7 @@
                                     id="startCommand"
                                     label="Start command"
                                     bind:value={startCommand}
-                                    placeholder={frameworkAdapterData?.startCommand ||
-                                        'Enter start command'} />
-                                <Button
-                                    secondary
-                                    size="s"
-                                    disabled={(startCommand ?? '') ===
-                                        (frameworkAdapterData?.startCommand ?? '')}
-                                    on:click={() => reset('startCommand')}>
-                                    Reset
-                                </Button>
+                                    placeholder="Enter start command" />
                             </Layout.Stack>
                         {/if}
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">

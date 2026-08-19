@@ -117,7 +117,7 @@
         }
 
         try {
-            allProjects = await sdk.forConsole.projects.list({
+            allProjects = await sdk.forConsole.organization(data.organization.$id).listProjects({
                 queries: [
                     Query.equal('teamId', data.organization.$id),
                     Query.limit(1000),

@@ -7,5 +7,6 @@ export { default as DeploymentSource } from './deploymentSource.svelte';
 export { default as DeploymentDomains } from './deploymentDomains.svelte';
 export { default as ConnectBehaviour } from './connectBehaviour.svelte';
 export { default as ProductionBranchFieldset } from './productionBranchFieldset.svelte';
+export { default as BranchSelector } from './branchSelector.svelte';
 export { default as RepositoryCard } from './repositoryCard.svelte';
 export { default as ConnectRepoModal } from './connectRepoModal.svelte';

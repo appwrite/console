@@ -1,5 +1,6 @@
 import type { Component } from 'svelte';
 import Main from '$routes/(console)/project-[region]-[project]/auth/(providers)/mainOAuth.svelte';
+import Google from '$routes/(console)/project-[region]-[project]/auth/(providers)/googleOAuth.svelte';
 
 export type Provider = {
     name: string;
@@ -20,6 +21,12 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'Apple',
         icon: 'apple',
         docs: 'https://developer.apple.com/sign-in-with-apple/',
+        component: Main
+    },
+    appwrite: {
+        name: 'Appwrite',
+        icon: 'appwrite',
+        docs: 'https://appwrite.io/docs/products/auth/oauth2',
         component: Main
     },
     auth0: {
@@ -129,13 +136,13 @@ export const oAuthProviders: Record<string, Provider> = {
         name: 'Google',
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
-        component: Main
+        component: Google
     },
     googleImagine: {
         name: 'Google',
         icon: 'google',
         docs: 'https://support.google.com/googleapi/answer/6158849',
-        component: Main,
+        component: Google,
         internal: true
     },
     keycloak: {

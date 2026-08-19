@@ -9,12 +9,14 @@
     import { Alert, Layout, Selector, Button as PinkButton, Icon } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
     import { IconPlus, IconX } from '@appwrite.io/pink-icons-svelte';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let isGlobal: boolean;
     export let product: 'function' | 'site' = 'function';
     export let showCreate = false;
     let newVariables: Partial<Models.Variable>[] = [{ key: '', value: '' }];
     let secret = false;
+    let error = '';
 
     const dispatch = createEventDispatcher();
 
@@ -26,12 +28,16 @@
         if (secret) {
             newVariables = newVariables.map((variable) => ({ ...variable, secret: true }));
         }
-        newVariables.forEach((variable) => {
-            if (('' + variable.value).length > 8192) {
-                throw new Error(`Variable ${variable.key} is longer than 8192 allowed characters`);
-            }
-        });
-        dispatch('created', newVariables);
+
+        const filled = newVariables.filter((variable) => variable.key || variable.value);
+
+        const validationError = validateVariables(filled);
+        if (validationError) {
+            error = validationError;
+            return;
+        }
+
+        dispatch('created', filled);
         close();
     }
 
@@ -48,6 +54,7 @@
 
 <Modal
     bind:show={showCreate}
+    bind:error
     onSubmit={handleVariable}
     title={`Create ${isGlobal ? 'global' : 'environment'} variables`}>
     <svelte:fragment slot="description">
@@ -81,6 +88,7 @@
                         label={`${i === 0 ? 'Value' : ''}`}
                         placeholder="Enter value"
                         bind:value={pair.value}
+                        autocomplete="new-password"
                         minlength={0} />
                     <PinkButton.Button
                         icon

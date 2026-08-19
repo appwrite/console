@@ -54,7 +54,7 @@
     }
 
     async function fetchProjects() {
-        projects = await sdk.forConsole.projects.list({
+        projects = await sdk.forConsole.organization(selectedOrg).listProjects({
             queries: [
                 Query.equal('teamId', selectedOrg),
                 Query.orderDesc(''),
@@ -75,10 +75,9 @@
     async function handleSubmit() {
         if (selectedProject === null) {
             try {
-                const p = await sdk.forConsole.projects.create({
+                const p = await sdk.forConsole.organization(selectedOrg).createProject({
                     projectId: id ?? ID.unique(),
                     name: projectName,
-                    teamId: selectedOrg,
                     region: isCloud ? (region as Region) : undefined
                 });
                 trackEvent(Submit.ProjectCreate, {

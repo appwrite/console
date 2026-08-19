@@ -64,8 +64,9 @@
             projects = [];
         } else {
             loadingProjects = true;
-            projects = await sdk.forConsole.projects
-                .list({
+            projects = await sdk.forConsole
+                .organization(orgId)
+                .listProjects({
                     queries: [Query.equal('teamId', orgId), Query.orderDesc('$createdAt')]
                 })
                 .then((res) => res.projects);
@@ -88,10 +89,9 @@
         creatingProject = true;
 
         try {
-            return await sdk.forConsole.projects.create({
+            return await sdk.forConsole.organization(selectedOrg).createProject({
                 projectId: ID.unique(),
                 name: newProjName,
-                teamId: selectedOrg,
                 region: $selectedRegion
             });
         } catch (error) {

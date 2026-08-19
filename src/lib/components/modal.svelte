@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { Form } from '$lib/elements/forms';
-    import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
+    import { disableCommands } from '$lib/commandCenter';
+    import { Form } from '$lib/elements/forms';
     import { Alert, Layout, Modal } from '@appwrite.io/pink-svelte';
+    import DOMPurify from 'dompurify';
 
     export let show = false;
     export let autoClose = true;
@@ -27,6 +28,16 @@
     $: if (error) {
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }
+
+    // Melt UI's ComboBox (and other listbox-based components) call removeScroll()
+    // when they open, which adds overflow:hidden + compensatory padding-right
+    $: if (typeof document !== 'undefined') {
+        if (show) {
+            document.body.setAttribute('data-melt-scroll-lock', '');
+        } else {
+            document.body.removeAttribute('data-melt-scroll-lock');
+        }
+    }
 </script>
 
 <Form isModal {onSubmit}>
@@ -34,14 +45,17 @@
         <Modal {size} {title} bind:open={show} {hideFooter} {dismissible}>
             <slot slot="description" name="description" />
             {#if error}
-                <div bind:this={alert}>
+                <div bind:this={alert} class="alert-error">
                     <Alert.Inline
                         dismissible
                         status="warning"
                         on:dismiss={() => {
                             error = null;
                         }}>
-                        {error}
+                        {@html DOMPurify.sanitize(error, {
+                            ALLOWED_TAGS: ['a'],
+                            ALLOWED_ATTR: ['href', 'target']
+                        }).replace(/<a /g, '<a rel="noopener noreferrer" ')}
                     </Alert.Inline>
                 </div>
             {/if}
@@ -65,5 +79,10 @@
         background: transparent;
         opacity: 0;
         animation: none;
+    }
+
+    .alert-error :global(a) {
+        color: inherit;
+        text-decoration: underline;
     }
 </style>

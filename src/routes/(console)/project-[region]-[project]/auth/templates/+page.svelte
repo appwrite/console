@@ -1,5 +1,9 @@
 <script module lang="ts">
-    import { EmailTemplateLocale, EmailTemplateType, type Models } from '@appwrite.io/console';
+    import {
+        ProjectEmailTemplateLocale,
+        ProjectEmailTemplateId,
+        type Models
+    } from '@appwrite.io/console';
 
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -8,8 +12,8 @@
     export async function loadEmailTemplate(
         region: string,
         projectId: string,
-        type: EmailTemplateType,
-        locale: EmailTemplateLocale = EmailTemplateLocale.En
+        type: ProjectEmailTemplateId,
+        locale: ProjectEmailTemplateLocale = ProjectEmailTemplateLocale.En
     ): Promise<EmailTemplateForm> {
         try {
             const template = await sdk.forProject(region, projectId).project.getEmailTemplate({
@@ -27,8 +31,8 @@
 
     function normalizeEmailTemplate(
         template: Models.EmailTemplate,
-        type: EmailTemplateType,
-        locale: EmailTemplateLocale = EmailTemplateLocale.En
+        type: ProjectEmailTemplateId,
+        locale: ProjectEmailTemplateLocale = ProjectEmailTemplateLocale.En
     ): EmailTemplateForm {
         return {
             ...template,
@@ -58,9 +62,9 @@
     let isTemplateLoading = $state(false);
     let openStates = $state(Object.fromEntries(templates.map(({ key }) => [key, false])));
 
-    loadTemplateFor(EmailTemplateType.Verification);
+    loadTemplateFor(ProjectEmailTemplateId.Verification);
 
-    async function loadTemplateFor(type: EmailTemplateType) {
+    async function loadTemplateFor(type: ProjectEmailTemplateId) {
         // return, already loaded!
         if (templateType === type) return;
 
@@ -71,14 +75,14 @@
             page.params.region,
             page.params.project,
             type,
-            EmailTemplateLocale.En
+            ProjectEmailTemplateLocale.En
         );
         $baseEmailTemplate = { ...$emailTemplate };
 
         isTemplateLoading = false;
     }
 
-    function toggleAccordion(type: EmailTemplateType) {
+    function toggleAccordion(type: ProjectEmailTemplateId) {
         for (const key in openStates) {
             openStates[key] = false;
         }

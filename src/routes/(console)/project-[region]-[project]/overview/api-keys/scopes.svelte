@@ -1,31 +1,3 @@
-<script lang="ts" module>
-    const compatPairs = [
-        { newer: 'tables.', legacy: 'collections.' },
-        { newer: 'columns.', legacy: 'attributes.' },
-        { newer: 'rows.', legacy: 'documents.' },
-        { newer: 'executions.', legacy: 'execution.' }
-    ] as const;
-
-    export function getEffectiveScopes(scopes: string[]): string[] {
-        const effectiveScopes = new Set<string>();
-
-        for (const scope of scopes) {
-            let effectiveScope = scope;
-
-            for (const pair of compatPairs) {
-                if (scope.startsWith(pair.legacy)) {
-                    effectiveScope = scope.replace(pair.legacy, pair.newer);
-                    break;
-                }
-            }
-
-            effectiveScopes.add(effectiveScope);
-        }
-
-        return Array.from(effectiveScopes);
-    }
-</script>
-
 <script lang="ts">
     import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
@@ -46,14 +18,13 @@
         Selector,
         Typography
     } from '@appwrite.io/pink-svelte';
-    import type { Scopes } from '@appwrite.io/console';
+    import type { ProjectKeyScopes } from '@appwrite.io/console';
 
-    let { scopes = $bindable([]) }: { scopes: Scopes[] } = $props();
+    let { scopes = $bindable([]) }: { scopes: ProjectKeyScopes[] } = $props();
 
     let allScopesList: ScopeDefinition[] = $state([]);
     let mounted = $state(false);
     let loadError: string | null = $state(null);
-    const effectiveScopes = $derived(getEffectiveScopes(scopes));
 
     const categoryAliasMap: Record<string, string> = {
         Database: 'Databases'
@@ -142,8 +113,9 @@
 
             allScopesList = Array.from(scopesById.values());
 
+            const selectedScopes = new Set<string>(scopes);
             for (const s of filteredScopes) {
-                activeScopes[s.scope] = effectiveScopes.includes(s.scope);
+                activeScopes[s.scope] = selectedScopes.has(s.scope);
             }
             mounted = true;
         } catch (e) {
@@ -168,7 +140,7 @@
 
     function categoryState(category: string, s: string[]): boolean | 'indeterminate' {
         const scopesByCategory = filteredScopes.filter((n) => n.category === category);
-        const scopeSet = new Set(getEffectiveScopes(s));
+        const scopeSet = new Set(s);
         const activeInCategory = scopesByCategory.filter((scopeItem) =>
             scopeSet.has(scopeItem.scope)
         );
@@ -192,10 +164,10 @@
         });
     }
 
-    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): Scopes[] {
+    function generateSyncedScopes(activeScopesObj: Record<string, boolean>): ProjectKeyScopes[] {
         return Object.entries(activeScopesObj)
             .filter(([scope, isActive]) => isActive && scopeCatalog.has(scope))
-            .map(([scope]) => scope as Scopes);
+            .map(([scope]) => scope as ProjectKeyScopes);
     }
 </script>
 

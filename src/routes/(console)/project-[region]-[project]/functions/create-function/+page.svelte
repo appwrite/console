@@ -85,7 +85,7 @@
                                     <Button
                                         compact
                                         external
-                                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                                        href="https://appwrite.io/docs/advanced/self-hosting/configuration/version-control"
                                         >Learn more</Button>
                                 </div>
                             </Layout.Stack>

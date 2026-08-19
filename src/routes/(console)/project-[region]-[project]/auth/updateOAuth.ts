@@ -4,16 +4,30 @@ import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider, type Models } from '@appwrite.io/console';
+import {
+    OAuthProvider,
+    ProjectOAuth2GooglePrompt,
+    ProjectOAuth2OidcPrompt,
+    type Models as ConsoleModels
+} from '@appwrite.io/console';
+
+type ProjectOAuthProvider = ConsoleModels.OAuth2ProviderList['providers'][number];
+
+export type AuthProvider = ProjectOAuthProvider & {
+    key: ProjectOAuthProvider['$id'];
+    name: string;
+};
 
 type Args = {
     region: string;
     projectId: string;
-    provider: Models.AuthProvider;
+    provider: AuthProvider;
     appId: string | null;
-    secret: string;
+    secret: string | null;
     details: Record<string, string>;
     enabled: boolean;
+    promptValues?: ProjectOAuth2GooglePrompt[] | ProjectOAuth2OidcPrompt[];
+    maxAge?: number;
 };
 
 type Return = {
@@ -21,7 +35,7 @@ type Return = {
     message?: string;
 };
 
-function parseSecret(secret: string) {
+function parseSecret(secret: string | null) {
     if (!secret) return {};
 
     try {
@@ -38,7 +52,9 @@ async function updateProjectOAuth({
     appId,
     secret,
     details,
-    enabled
+    enabled,
+    promptValues,
+    maxAge
 }: Args) {
     const projectSdk = sdk.forProject(region, projectId).project;
     const parsedSecret = parseSecret(secret);
@@ -71,6 +87,12 @@ async function updateProjectOAuth({
                 keyId: getDetail('keyId'),
                 teamId: getDetail('teamId'),
                 p8File: getSecret('p8File'),
+                enabled
+            });
+        case OAuthProvider.Appwrite:
+            return projectSdk.updateOAuth2Appwrite({
+                clientId: getAppId(),
+                clientSecret: getSecret(),
                 enabled
             });
         case OAuthProvider.Auth0:
@@ -177,6 +199,7 @@ async function updateProjectOAuth({
             return projectSdk.updateOAuth2Google({
                 clientId: getAppId(),
                 clientSecret: getSecret(),
+                prompt: (promptValues as ProjectOAuth2GooglePrompt[]) ?? [],
                 enabled
             });
         case OAuthProvider.Keycloak:
@@ -220,6 +243,8 @@ async function updateProjectOAuth({
                 authorizationURL: getDetail('authorizationURL'),
                 tokenURL: getDetail('tokenUrl'),
                 userInfoURL: getDetail('userInfoUrl'),
+                prompt: (promptValues as ProjectOAuth2OidcPrompt[]) ?? [],
+                maxAge: maxAge ?? 0,
                 enabled
             });
         case OAuthProvider.Okta:
@@ -338,14 +363,26 @@ export async function updateOAuth({
     appId,
     secret,
     details,
-    enabled
+    enabled,
+    promptValues,
+    maxAge
 }: Args): Promise<Return> {
     try {
         if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
             throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
         }
 
-        await updateProjectOAuth({ region, projectId, provider, appId, secret, details, enabled });
+        await updateProjectOAuth({
+            region,
+            projectId,
+            provider,
+            appId,
+            secret,
+            details,
+            enabled,
+            promptValues,
+            maxAge
+        });
         await invalidate(Dependencies.PROJECT);
 
         addNotification({

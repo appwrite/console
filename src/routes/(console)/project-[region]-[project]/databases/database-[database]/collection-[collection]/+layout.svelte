@@ -42,7 +42,6 @@
     import { sleep } from '$lib/helpers/promises';
     import { hash } from '$lib/helpers/string';
     import {
-        documentActivitySheet,
         documentPermissionSheet,
         noSqlDocument,
         showCreateIndexSheet
@@ -50,7 +49,7 @@
     import {
         SideSheet,
         EditRecordPermissions,
-        RecordActivity,
+        toDatabaseType,
         useDatabaseSdk,
         DEFAULT_VECTOR_DIMENSION,
         type Field,
@@ -79,6 +78,7 @@
     let editRecordPermissions: EditRecordPermissions;
 
     $: collection = data.collection;
+    $: databaseType = toDatabaseType(data.database.type);
     $: basePath = resolveRoute(
         '/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]',
         page.params
@@ -140,24 +140,6 @@
             group: 'collections'
         },
         {
-            label: 'Go to activity',
-            keys: ['g', 'c'],
-            callback() {
-                goto(withPath(basePath, '/activity'));
-            },
-            disabled: page.url.pathname.endsWith('activity'),
-            group: 'collections'
-        },
-        {
-            label: 'Go to usage',
-            keys: ['g', 'u'],
-            callback() {
-                goto(withPath(basePath, '/usage'));
-            },
-            disabled: page.url.pathname.endsWith('usage'),
-            group: 'collections'
-        },
-        {
             label: 'Go to settings',
             keys: ['g', 's'],
             callback() {
@@ -209,11 +191,7 @@
     });
 
     async function handleCreateIndex(index: Index) {
-        const databaseSdk = useDatabaseSdk(
-            page.params.region,
-            page.params.project,
-            data.database.type
-        );
+        const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, databaseType);
 
         await databaseSdk.createIndex({
             databaseId: page.params.database,
@@ -279,8 +257,7 @@
             const { rows, ids } = generateFakeRecords($randomDataModalState.value, fields);
             documentIds = ids;
 
-            const dbType = data.database?.type;
-            const isVectorsDb = dbType === 'vectorsdb';
+            const isVectorsDb = databaseType === 'vectorsdb';
             const dimension = collection?.dimension ?? DEFAULT_VECTOR_DIMENSION;
 
             // For vectorsdb, wrap fields in metadata and add empty embeddings
@@ -352,10 +329,6 @@
         bind:record={$documentPermissionSheet.document} />
 </SideSheet>
 
-<SideSheet title="Document activity" bind:show={$documentActivitySheet.show} closeOnBlur>
-    <RecordActivity record={$documentActivitySheet.document} />
-</SideSheet>
-
 <SideSheet
     closeOnBlur
     title="Create index"
@@ -368,7 +341,7 @@
     }}>
     <CreateIndex
         entity={collection}
-        databaseType={data.database.type}
+        {databaseType}
         bind:this={createIndex}
         bind:showCreateIndex={$showCreateIndexSheet.show}
         externalFieldKey={$showCreateIndexSheet.column}

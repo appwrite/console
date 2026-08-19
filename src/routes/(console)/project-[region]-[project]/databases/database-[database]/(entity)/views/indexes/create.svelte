@@ -57,7 +57,12 @@
             .map((field) => ({
                 value: field.key,
                 label: field.key,
-                leadingIcon: baseColumnOptions.find((option) => option.type === field.type)?.icon
+                leadingIcon: baseColumnOptions.find(
+                    (option) =>
+                        option.type === field.type &&
+                        option.format ===
+                            ('format' in field && field.format ? field.format : undefined)
+                )?.icon
             }))
     );
 

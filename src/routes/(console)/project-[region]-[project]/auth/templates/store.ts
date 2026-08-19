@@ -1,5 +1,9 @@
 import { writable } from 'svelte/store';
-import { EmailTemplateType, type EmailTemplateLocale, type Models } from '@appwrite.io/console';
+import {
+    ProjectEmailTemplateId,
+    type ProjectEmailTemplateLocale,
+    type Models
+} from '@appwrite.io/console';
 
 // component imports
 import Email2FaTemplate from './email2FATemplate.svelte';
@@ -11,9 +15,9 @@ import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
 import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
 
 export type EmailTemplateForm = Models.EmailTemplate & {
-    type: EmailTemplateType | null;
-    templateId: EmailTemplateType | string | null;
-    locale: EmailTemplateLocale | string | null;
+    type: ProjectEmailTemplateId | null;
+    templateId: ProjectEmailTemplateId | string | null;
+    locale: ProjectEmailTemplateLocale | string | null;
 };
 
 export const emailTemplate = writable<EmailTemplateForm>({
@@ -42,44 +46,44 @@ export const baseEmailTemplate = writable<EmailTemplateForm>({
 
 export const templates = [
     {
-        key: EmailTemplateType.Verification,
+        key: ProjectEmailTemplateId.Verification,
         title: 'Verification',
         description:
             'Send a verification email to users that sign in with their email and password.',
         component: EmailVerificationTemplate
     },
     {
-        key: EmailTemplateType.MagicSession,
+        key: ProjectEmailTemplateId.MagicSession,
         title: 'Magic URL',
         description: 'Send an email to users that sign in with a magic URL.',
         component: EmailMagicUrlTemplate
     },
     {
-        key: EmailTemplateType.OtpSession,
+        key: ProjectEmailTemplateId.OtpSession,
         title: 'OTP session',
         description: 'Send an email to users that sign in with a email OTP.',
         component: EmailOtpSessionTemplate
     },
     {
-        key: EmailTemplateType.Recovery,
+        key: ProjectEmailTemplateId.Recovery,
         title: 'Reset password',
         description: 'Send a recovery email to users that forget their password.',
         component: EmailRecoveryTemplate
     },
     {
-        key: EmailTemplateType.Invitation,
+        key: ProjectEmailTemplateId.Invitation,
         title: 'Invite user',
         description: 'Send an invitation email to become a member of your project.',
         component: EmailInviteTemplate
     },
     {
-        key: EmailTemplateType.MfaChallenge,
+        key: ProjectEmailTemplateId.MfaChallenge,
         title: '2FA verification',
         description: 'Send a two-factor authentication email to a user.',
         component: Email2FaTemplate
     },
     {
-        key: EmailTemplateType.SessionAlert,
+        key: ProjectEmailTemplateId.SessionAlert,
         title: 'Session alert',
         description: 'Send an email to users when a new session is created.',
         component: EmailSessionAlertTemplate,

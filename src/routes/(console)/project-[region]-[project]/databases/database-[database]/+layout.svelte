@@ -148,18 +148,6 @@
                 group: 'databases'
             },
             {
-                label: 'Go to usage',
-                callback() {
-                    goto(
-                        `${base}/project-${page.params.region}-${project}/databases/database-${databaseId}/usage`
-                    );
-                },
-                disabled:
-                    page.url.pathname.includes('/usage') || page.url.pathname.includes('table-'),
-                keys: ['g', 'u'],
-                group: 'databases'
-            },
-            {
                 label: 'Go to backups',
                 callback() {
                     goto(
