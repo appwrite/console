@@ -1,4 +1,5 @@
 import { page } from '$app/state';
+import type { Models } from '@appwrite.io/console';
 import type { ComponentType } from 'svelte';
 import { IconGithub } from '@appwrite.io/pink-icons-svelte';
 import IconGitea from '$lib/components/git/IconGitea.svelte';
@@ -42,7 +43,7 @@ export const VCS_PROVIDERS: Record<VcsProviderId, VcsProviderMeta> = {
         label: 'Origin',
         icon: IconOrigin as unknown as ComponentType,
         // Origin repositories are browsed in the Codebase section of cursor.com
-        organizationUrl: (organization) => `https://cursor.com/codebase/${organization}`,
+        organizationUrl: () => 'https://cursor.com/codebase',
         installationSettingsUrl: () => 'https://cursor.com/codebase/settings/apps'
     },
     gitea: {
@@ -72,6 +73,29 @@ export function enabledVcsProviders(vcsProviders: string[] | undefined): VcsProv
             ((vcsProviders?.includes(provider.id) ?? false) &&
                 (!provider.selfHostedOnly || isSelfHosted))
     );
+}
+
+/**
+ * Whether the console can create repositories on the provider. Servers that
+ * predate _APP_VCS_PROVIDERS_WITH_REPOSITORY_CREATION omit the list; keep the
+ * console's historical behavior (creation offered) for them.
+ */
+export function supportsRepositoryCreation(
+    provider: string,
+    variables: Models.ConsoleVariables
+): boolean {
+    return variables?._APP_VCS_PROVIDERS_WITH_REPOSITORY_CREATION?.includes(provider) ?? true;
+}
+
+/**
+ * Whether the provider can host public repositories. When it cannot, every
+ * repository is private and the public/private choice is meaningless.
+ */
+export function supportsPublicRepositories(
+    provider: string,
+    variables: Models.ConsoleVariables
+): boolean {
+    return variables?._APP_VCS_PROVIDERS_WITH_PUBLIC_REPOSITORIES?.includes(provider) ?? true;
 }
 
 export function connectVcsProvider(provider: string, callbackState: Record<string, string> = null) {

@@ -12,10 +12,10 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
-    import { Alert } from '@appwrite.io/pink-svelte';
     import { page } from '$app/state';
 
-    import { connectVcsProvider, getVcsProvider } from '$lib/stores/git';
+    import { connectVcsProvider, supportsRepositoryCreation } from '$lib/stores/git';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         show = $bindable(false),
@@ -39,17 +39,11 @@
     let selectedInstallationId = $state('');
     let selectedRepository = $state('');
     let installations = $state({ installations: [], total: 0 });
-    const selectedProvider = $derived(
-        getVcsProvider(
-            installations?.installations?.find((entry) => entry.$id === selectedInstallationId)
-                ?.provider ??
-                $installation?.provider ??
-                'github'
+    const canCreateRepository = $derived(
+        installations.installations.some((entry) =>
+            supportsRepositoryCreation(entry.provider, $regionalConsoleVariables)
         )
     );
-    // Origin's partner API has no repository creation for apps; repositories
-    // made on cursor.com appear in the picker automatically.
-    const creationUnsupported = $derived(selectedProvider.id === 'origin');
     let error = $state('');
 
     onMount(async () => {
@@ -109,7 +103,7 @@
     </span>
     {#if !!installations?.total}
         <Layout.Stack gap="xl">
-            {#if !onlyExisting}
+            {#if !onlyExisting && canCreateRepository}
                 <RepositoryBehaviour bind:repositoryBehaviour />
             {/if}
             {#if repositoryBehaviour === 'new'}
@@ -118,14 +112,6 @@
                     bind:repositoryPrivate
                     bind:selectedInstallationId
                     {installations} />
-                {#if creationUnsupported}
-                    <Alert.Inline status="info" title="Create the repository on Cursor">
-                        Origin does not allow apps to create repositories. Create it in the
-                        <Link external href="https://cursor.com/codebase"
-                            >Codebase section on cursor.com</Link>
-                        and it will appear in the repository list here.
-                    </Alert.Inline>
-                {/if}
             {:else}
                 <Repositories
                     bind:selectedRepository
@@ -187,10 +173,7 @@
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-            <Button
-                size="s"
-                submit
-                disabled={!repositoryName || !$installation?.$id || creationUnsupported}>
+            <Button size="s" submit disabled={!repositoryName || !$installation?.$id}>
                 Create
             </Button>
         {/if}
