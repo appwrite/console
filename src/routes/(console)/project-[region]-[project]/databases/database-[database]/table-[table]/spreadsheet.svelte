@@ -696,7 +696,7 @@
                 });
 
             // Keep client-side relationship expansions; refresh system fields from the API
-            // so columns like $updatedAt reflect the write (inline edit does not invalidate).
+            // so columns like $updatedAt reflect the write (inline edit does not invalidate Dependencies).
             row.$updatedAt = updated.$updatedAt;
             row.$permissions = updated.$permissions;
 
