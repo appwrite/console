@@ -49,6 +49,10 @@
     // order; only the newest request is allowed to write to the list or clear the spinner.
     let latestRequest = 0;
 
+    // Held separately from the lists: an empty list and a failed lookup both leave nothing to
+    // show, and reporting a failure as "none found" would be a lie the operator cannot act on.
+    let loadError = '';
+
     function clearUser() {
         user = null;
         memberships = undefined;
@@ -72,6 +76,7 @@
         if (!show || user) return;
         const requestId = ++latestRequest;
         isLoading = true;
+        loadError = '';
         try {
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -83,6 +88,7 @@
             users = response;
         } catch (error) {
             if (requestId !== latestRequest) return;
+            loadError = error.message;
             addNotification({ type: 'error', message: error.message });
         } finally {
             if (requestId === latestRequest) isLoading = false;
@@ -94,6 +100,7 @@
         const requestedUserId = user.$id;
         const requestId = ++latestRequest;
         isLoading = true;
+        loadError = '';
         try {
             const response = await sdk
                 .forProject(page.params.region, page.params.project)
@@ -107,6 +114,7 @@
             memberships = response;
         } catch (error) {
             if (requestId !== latestRequest) return;
+            loadError = error.message;
             addNotification({ type: 'error', message: error.message });
         } finally {
             if (requestId === latestRequest) isLoading = false;
@@ -210,6 +218,15 @@
             <div style:margin-inline="auto" style:min-height="275px" style:align-content="center">
                 <Spinner size="m" />
             </div>
+        {:else if loadError}
+            <Card.Base padding="none">
+                <Empty title="Could not load memberships." type="secondary">
+                    <Typography.Text slot="description">{loadError}</Typography.Text>
+                    <svelte:fragment slot="actions">
+                        <Button secondary on:click={requestMemberships}>Retry</Button>
+                    </svelte:fragment>
+                </Empty>
+            </Card.Base>
         {:else}
             <Card.Base padding="none">
                 <Empty title="This user is not a member of any team." type="secondary">
@@ -271,6 +288,20 @@
                 hidePages
                 on:change={requestUsers} />
         </Layout.Stack>
+    {:else if loadError}
+        <InputSearch
+            autofocus
+            placeholder="Search by name, email, phone or ID"
+            bind:value={search} />
+
+        <Card.Base padding="none">
+            <Empty title="Could not load users." type="secondary">
+                <Typography.Text slot="description">{loadError}</Typography.Text>
+                <svelte:fragment slot="actions">
+                    <Button secondary on:click={requestUsers}>Retry</Button>
+                </svelte:fragment>
+            </Empty>
+        </Card.Base>
     {:else if search}
         <InputSearch
             autofocus
