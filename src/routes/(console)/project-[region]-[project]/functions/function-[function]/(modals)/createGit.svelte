@@ -30,6 +30,14 @@
     let activate = true;
     let error = '';
 
+    // '' when the provider's host is unknown client-side (e.g. Gitea), in which
+    // case the repository is shown as plain text rather than a broken link.
+    $: repositoryUrl = getProviderRepositoryUrl(
+        $installation?.provider ?? 'github',
+        $repository?.organization,
+        $repository?.name
+    );
+
     async function loadInstallations() {
         if (!$func?.installationId && installations?.total > 0) {
             installation.set(installations.installations[0]);
@@ -160,17 +168,17 @@
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s" inline>
                         <Icon icon={getVcsProvider($installation?.provider).icon} />
-                        <Link
-                            external
-                            href={getProviderRepositoryUrl(
-                                $installation?.provider ?? 'github',
-                                $repository?.organization,
-                                $repository?.name
-                            )}>
-                            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                        {#if repositoryUrl}
+                            <Link external href={repositoryUrl}>
+                                <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                                    {$repository?.organization}/{$repository?.name}
+                                </Layout.Stack>
+                            </Link>
+                        {:else}
+                            <Typography.Text>
                                 {$repository?.organization}/{$repository?.name}
-                            </Layout.Stack>
-                        </Link>
+                            </Typography.Text>
+                        {/if}
                     </Layout.Stack>
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Last updated {timeFromNow($repository?.pushedAt)}

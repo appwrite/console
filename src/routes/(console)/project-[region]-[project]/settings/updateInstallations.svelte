@@ -16,7 +16,8 @@
         Layout,
         Popover,
         Table,
-        Button
+        Button,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { Link as PinkLink } from '@appwrite.io/pink-svelte';
     import {
@@ -140,9 +141,18 @@
                                             icon={getProviderIcon(installation.provider)}
                                             size="s" />
                                     </Avatar>
-                                    <Link href={getInstallationLink(installation)} external icon>
-                                        {installation.organization}
-                                    </Link>
+                                    {#if getInstallationLink(installation)}
+                                        <Link
+                                            href={getInstallationLink(installation)}
+                                            external
+                                            icon>
+                                            {installation.organization}
+                                        </Link>
+                                    {:else}
+                                        <Typography.Text>
+                                            {installation.organization}
+                                        </Typography.Text>
+                                    {/if}
                                 </Layout.Stack>
                             </Table.Cell>
                             <Table.Cell column="updated" {root}>

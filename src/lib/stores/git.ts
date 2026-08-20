@@ -134,10 +134,13 @@ export function getProviderOrganizationUrl(provider: string, organization: strin
 }
 
 /**
- * Browser URL of a repository on the provider.
+ * Browser URL of a repository on the provider, or '' when the provider's host
+ * is not knowable client-side. Callers must not render a link for ''; an empty
+ * or relative href would resolve against the console's own origin.
  */
 export function getProviderRepositoryUrl(provider: string, organization: string, name: string) {
-    return `${getProviderOrganizationUrl(provider, organization)}/${name}`;
+    const organizationUrl = getProviderOrganizationUrl(provider, organization);
+    return organizationUrl ? `${organizationUrl}/${name}` : '';
 }
 
 export function deploymentStatusConverter(status: string) {

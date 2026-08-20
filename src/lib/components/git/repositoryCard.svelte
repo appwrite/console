@@ -16,6 +16,8 @@
 
     // ProviderRepository carries no provider, so read it off the owning installation.
     $: provider = $installation?.provider ?? 'github';
+    // '' when the provider's host is unknown client-side (e.g. Gitea).
+    $: organizationUrl = getProviderOrganizationUrl(provider, repository.organization);
 </script>
 
 <Card.Base padding="xs" radius="s" variant="secondary">
@@ -46,13 +48,15 @@
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         •
                     </Typography.Caption>
-                    <Link
-                        size="s"
-                        variant="muted"
-                        external
-                        href={getProviderOrganizationUrl(provider, repository.organization)}>
-                        <span class="repository-copy">{repository.organization}</span>
-                    </Link>
+                    {#if organizationUrl}
+                        <Link size="s" variant="muted" external href={organizationUrl}>
+                            <span class="repository-copy">{repository.organization}</span>
+                        </Link>
+                    {:else}
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            <span class="repository-copy">{repository.organization}</span>
+                        </Typography.Caption>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>

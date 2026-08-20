@@ -111,7 +111,7 @@
                                 }}
                                 {connect} />
                         </Layout.Stack>
-                        {#if $installation}
+                        {#if $installation && getVcsProvider($installation.provider).installationSettingsUrl($installation.providerInstallationId)}
                             <Layout.Stack gap="l">
                                 <Divider />
                                 <Link
