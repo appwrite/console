@@ -46,8 +46,14 @@
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
     import { validateVariables } from '$lib/helpers/variables';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     export let data;
+
+    $: sitesLimited =
+        isCloud && isServiceLimited('sites', $organization, data.siteList?.total ?? 0);
 
     let showExitModal = false;
     let isCreatingRepository = false;
@@ -81,6 +87,15 @@
     });
 
     async function createRepository() {
+        if (sitesLimited) {
+            addNotification({
+                type: 'error',
+                message:
+                    'The maximum number of sites allowed for the selected plan has been reached. Upgrade to increase the limit.'
+            });
+            return;
+        }
+
         try {
             isCreatingRepository = true;
             const repo = await sdk
@@ -294,7 +309,8 @@
                                             on:click={createRepository}
                                             forceShowLoader
                                             submissionLoader={isCreatingRepository}
-                                            disabled={!repositoryName ||
+                                            disabled={sitesLimited ||
+                                                !repositoryName ||
                                                 !$installation?.$id ||
                                                 isCreatingRepository}>
                                             Create

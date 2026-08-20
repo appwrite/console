@@ -1,13 +1,15 @@
 import { sdk } from '$lib/stores/sdk';
-import { ID } from '@appwrite.io/console';
+import { ID, Query } from '@appwrite.io/console';
 import { buildVerboseDomain } from '../../store.js';
 
 export const load = async ({ parent, params }) => {
     const { installations, frameworks, project, organization, regionalConsoleVariables } =
         await parent();
-    const template = await sdk
-        .forProject(params.region, params.project)
-        .sites.getTemplate({ templateId: params.template });
+    const projectSdk = sdk.forProject(params.region, params.project);
+    const [template, siteList] = await Promise.all([
+        projectSdk.sites.getTemplate({ templateId: params.template }),
+        projectSdk.sites.list({ queries: [Query.limit(1)] })
+    ]);
     const domain = await buildVerboseDomain(
         regionalConsoleVariables._APP_DOMAIN_SITES,
         template.name,
@@ -20,6 +22,7 @@ export const load = async ({ parent, params }) => {
         installations,
         frameworks,
         template,
-        domain
+        domain,
+        siteList
     };
 };
