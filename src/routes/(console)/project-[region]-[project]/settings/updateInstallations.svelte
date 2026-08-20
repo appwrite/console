@@ -16,15 +16,17 @@
         Layout,
         Popover,
         Table,
-        Button
+        Button,
+        Typography
     } from '@appwrite.io/pink-svelte';
     import { Link as PinkLink } from '@appwrite.io/pink-svelte';
     import {
         IconExternalLink,
-        IconGithub,
+        IconGit,
         IconPlus,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import { enabledVcsProviders, VCS_PROVIDERS } from '$lib/stores/git';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
     import { Click, trackEvent } from '$lib/actions/analytics';
     import type { ComponentType } from 'svelte';
@@ -42,26 +44,22 @@
     let selectedInstallation: Models.Installation;
     const isVcsEnabled = $regionalConsoleVariables?._APP_VCS_ENABLED === true;
 
+    const providers = enabledVcsProviders($regionalConsoleVariables?._APP_VCS_PROVIDERS);
+
     function getInstallationLink(installation: Models.Installation) {
-        switch (installation.provider) {
-            case 'github':
-                return `https://github.com/${installation.organization}`;
-            default:
-                return '';
-        }
+        return (
+            VCS_PROVIDERS[installation.provider]?.organizationUrl(installation.organization) ?? ''
+        );
     }
 
     function getProviderIcon(provider: string): ComponentType {
-        switch (provider) {
-            case 'github':
-                return IconGithub;
-        }
+        return VCS_PROVIDERS[provider]?.icon ?? IconGit;
     }
 
-    function configureGitHub() {
+    function configureProvider(provider: string = 'github') {
         const redirect = new URL(page.url);
         redirect.searchParams.append('alert', 'installation-updated');
-        const target = new URL(`${getApiEndpoint(page.params.region)}/vcs/github/authorize`);
+        const target = new URL(`${getApiEndpoint(page.params.region)}/vcs/${provider}/authorize`);
         target.searchParams.set('project', page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
@@ -86,16 +84,40 @@
         {#if total > 0}
             <Layout.Stack gap="l">
                 <div class="installations-action-row">
-                    <FormButton
-                        secondary
-                        disabled={!$canWriteProjects}
-                        href={configureGitHub()}
-                        on:click={() => {
-                            trackEvent(Click.SettingsInstallProviderClick);
-                        }}>
-                        <Icon icon={IconPlus} slot="start" size="s" />
-                        Add installation
-                    </FormButton>
+                    {#if providers.length <= 1}
+                        <FormButton
+                            secondary
+                            disabled={!$canWriteProjects}
+                            href={configureProvider(providers[0]?.id)}
+                            on:click={() => {
+                                trackEvent(Click.SettingsInstallProviderClick);
+                            }}>
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Add installation
+                        </FormButton>
+                    {:else}
+                        <Popover let:toggle padding="none" placement="bottom-start">
+                            <FormButton
+                                secondary
+                                disabled={!$canWriteProjects}
+                                on:click={(event) => {
+                                    trackEvent(Click.SettingsInstallProviderClick);
+                                    toggle(event);
+                                }}>
+                                <Icon icon={IconPlus} slot="start" size="s" />
+                                Add installation
+                            </FormButton>
+                            <ActionMenu.Root slot="tooltip">
+                                {#each providers as provider (provider.id)}
+                                    <ActionMenu.Item.Anchor
+                                        href={configureProvider(provider.id)}
+                                        leadingIcon={provider.icon}>
+                                        Connect to {provider.label}
+                                    </ActionMenu.Item.Anchor>
+                                {/each}
+                            </ActionMenu.Root>
+                        </Popover>
+                    {/if}
                 </div>
 
                 <Table.Root
@@ -119,9 +141,18 @@
                                             icon={getProviderIcon(installation.provider)}
                                             size="s" />
                                     </Avatar>
-                                    <Link href={getInstallationLink(installation)} external icon>
-                                        {installation.organization}
-                                    </Link>
+                                    {#if getInstallationLink(installation)}
+                                        <Link
+                                            href={getInstallationLink(installation)}
+                                            external
+                                            icon>
+                                            {installation.organization}
+                                        </Link>
+                                    {:else}
+                                        <Typography.Text>
+                                            {installation.organization}
+                                        </Typography.Text>
+                                    {/if}
                                 </Layout.Stack>
                             </Table.Cell>
                             <Table.Cell column="updated" {root}>
@@ -140,7 +171,7 @@
                                     </button>
                                     <ActionMenu.Root slot="tooltip">
                                         <ActionMenu.Item.Anchor
-                                            href={configureGitHub()}
+                                            href={configureProvider(installation.provider)}
                                             trailingIcon={IconExternalLink}
                                             on:click={() => (showInstallationDropdown[i] = false)}>
                                             Configure
@@ -189,14 +220,18 @@
                     title="No installation was added to the project yet"
                     description="Add an installation to connect repositories">
                     <svelte:fragment slot="actions">
-                        <FormButton
-                            secondary
-                            disabled={!$canWriteProjects}
-                            href={configureGitHub()}
-                            external>
-                            <Icon icon={IconGithub} size="s" slot="start" />
-                            Connect to GitHub
-                        </FormButton>
+                        <Layout.Stack direction="row" justifyContent="center">
+                            {#each providers as provider (provider.id)}
+                                <FormButton
+                                    secondary
+                                    disabled={!$canWriteProjects}
+                                    href={configureProvider(provider.id)}
+                                    external>
+                                    <Icon icon={provider.icon} size="s" slot="start" />
+                                    Connect to {provider.label}
+                                </FormButton>
+                            {/each}
+                        </Layout.Stack>
                     </svelte:fragment>
                 </Empty>
             </Card.Base>
