@@ -7,6 +7,7 @@
     import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
     import { page } from '$app/state';
+    import { validateVariables } from '$lib/helpers/variables';
 
     export let show = false;
     export let selectedVar: Partial<Models.Variable>;
@@ -20,7 +21,15 @@
         secret: selectedVar?.secret
     };
 
+    let error = '';
+
     function handleVariable() {
+        const validationError = validateVariables([pair]);
+        if (validationError) {
+            error = validationError;
+            return;
+        }
+
         if (selectedVar) {
             variables = variables.map((variable) => {
                 const match = selectedVar.$id
@@ -39,7 +48,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={handleVariable} title="Update variable">
+<Modal bind:show onSubmit={handleVariable} title="Update variable" bind:error>
     <span slot="description">
         Update the environment variable for your {productLabel}. Global variables can be set in
         <Link

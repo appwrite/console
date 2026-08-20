@@ -1,15 +1,27 @@
 import type { Page } from '@sveltejs/kit';
 
 import { capitalize, plural } from '$lib/helpers/string';
-import { AppwriteException, type TablesDBIndexType, type Models } from '@appwrite.io/console';
+import {
+    AppwriteException,
+    type DatabaseType as SdkDatabaseType,
+    type TablesDBIndexType,
+    type Models
+} from '@appwrite.io/console';
 import type { Attributes, Collection, Columns, Table } from '$database/store';
 import type { Term, TerminologyResult, TerminologyShape } from '$database/(entity)/helpers/types';
 
 type BaseTerminology = typeof baseTerminology;
 type ImplementedDBTypes = Omit<BaseTerminology, 'legacy'>;
 
-/* manual type for the time being because vectorsdb is pending */
-export type DatabaseType = 'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb';
+/**
+ * The SDK also reports the raw dedicated backings (`mysql`, `postgresql`, `mongodb`), which the
+ * console has no UI for. Extracting from the SDK keeps the supported set from drifting silently:
+ * a renamed or dropped SDK value removes the member here and breaks every `case` that uses it.
+ */
+export type DatabaseType = Extract<
+    `${SdkDatabaseType}`,
+    'legacy' | 'tablesdb' | 'documentsdb' | 'vectorsdb'
+>;
 export type CollectionDatabaseType = Extract<DatabaseType, 'documentsdb' | 'vectorsdb'>;
 
 export const DEFAULT_VECTOR_DIMENSION = 768;
@@ -72,6 +84,22 @@ export const baseTerminology = {
         record: 'document'
     }
 } as const;
+
+function isSupportedDatabaseType(type: string): type is DatabaseType {
+    return Object.hasOwn(baseTerminology, type);
+}
+
+/**
+ * Narrows an API reported database type down to the ones this console implements.
+ * Throws on the rest, matching how every dispatcher in `sdk.ts` rejects an unknown type.
+ */
+export function toDatabaseType(type: Models.Database['type'] | DatabaseType): DatabaseType {
+    if (!isSupportedDatabaseType(type)) {
+        throw new AppwriteException(`Unsupported database type: ${type}`, 500);
+    }
+
+    return type;
+}
 
 const createTerm = (singular: string, pluralForm: string): Term => {
     return { singular, plural: pluralForm };
@@ -152,15 +180,13 @@ export function toSupportiveRecord(raw: Record | Models.Document | Models.Row): 
  * Use `getTerminologies()` instead when in `database-[database]` routes where context is available.
  */
 export function useTerminology(pageOrType: Page | DatabaseType): TerminologyResult {
-    const type =
-        typeof pageOrType === 'object'
-            ? (pageOrType.data?.database?.type as DatabaseType)
-            : pageOrType;
-    if (!type) {
+    const rawType = typeof pageOrType === 'object' ? pageOrType.data?.database?.type : pageOrType;
+    if (!rawType) {
         // strict check because this should always be available!
         throw new AppwriteException('Database type is required', 500);
     }
 
+    const type = toDatabaseType(rawType);
     const dbTerminologies = terminologyData[type] || {};
     const strictSchema = type === 'legacy' || type === 'tablesdb';
 

@@ -217,7 +217,7 @@
             <Empty type="secondary" title="MCP installation">
                 <svelte:fragment slot="description">
                     Deploy the Appwrite MCP server with a single click, or view the <PinkLink.Anchor
-                        href="https://appwrite.io/docs"
+                        href="https://appwrite.io/docs/tooling/ai/mcp-servers"
                         target="_blank"
                         rel="noreferrer">docs</PinkLink.Anchor> for instructions.
                 </svelte:fragment>

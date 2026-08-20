@@ -321,13 +321,13 @@
                             data: [...executions.map((e) => [e.date, e.value])]
                         }
                     ]} />
-                {#if data.usage.executionsBreakdown?.length > 0}
+                {#if data.executionsBreakdown?.length > 0}
                     <Table.Root columns={2} let:root>
                         <svelte:fragment slot="header" let:root>
                             <Table.Header.Cell {root}>Function</Table.Header.Cell>
                             <Table.Header.Cell {root}>Usage</Table.Header.Cell>
                         </svelte:fragment>
-                        {#each data.usage.executionsBreakdown as func}
+                        {#each data.executionsBreakdown as func}
                             <Table.Row.Link
                                 href={`${baseRoute}/functions/function-${func.resourceId}`}
                                 {root}>

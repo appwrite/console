@@ -45,8 +45,15 @@
     import { getFrameworkIcon } from '$lib/stores/sites';
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
     import { getTemplateSourceUrl } from '$lib/helpers/templateSource';
+    import { validateVariables } from '$lib/helpers/variables';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     export let data;
+
+    $: sitesLimited =
+        isCloud && isServiceLimited('sites', $organization, data.siteList?.total ?? 0);
 
     let showExitModal = false;
     let isCreatingRepository = false;
@@ -80,6 +87,15 @@
     });
 
     async function createRepository() {
+        if (sitesLimited) {
+            addNotification({
+                type: 'error',
+                message:
+                    'The maximum number of sites allowed for the selected plan has been reached. Upgrade to increase the limit.'
+            });
+            return;
+        }
+
         try {
             isCreatingRepository = true;
             const repo = await sdk
@@ -117,6 +133,15 @@
             return;
         } else {
             try {
+                // Reject an unusable key before the resource is created, so a
+                // rejected variable can't leave a half-configured resource behind.
+                const validationError = validateVariables(
+                    variables.map((variable) => ({ key: variable.name, value: variable.value }))
+                );
+                if (validationError) {
+                    throw new Error(validationError);
+                }
+
                 const fr = Object.values(Framework).find((f) => f === framework.key);
                 const buildRuntime = Object.values(BuildRuntime).find(
                     (f) => f === framework.buildRuntime
@@ -284,7 +309,8 @@
                                             on:click={createRepository}
                                             forceShowLoader
                                             submissionLoader={isCreatingRepository}
-                                            disabled={!repositoryName ||
+                                            disabled={sitesLimited ||
+                                                !repositoryName ||
                                                 !$installation?.$id ||
                                                 isCreatingRepository}>
                                             Create

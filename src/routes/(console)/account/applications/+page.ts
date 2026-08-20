@@ -1,5 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import { sdk } from '$lib/stores/sdk';
+import { getOAuth2App } from '$lib/helpers/oauth2-cimd';
 import type { Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ depends, parent }) => {
     const connectedApps = await Promise.all(
         grants.map(async (identity) => {
             const appId = identity.provider.slice(OAUTH2_PREFIX.length);
-            const app = await sdk.forConsole.apps.get({ appId }).catch(() => null);
+            const app = await getOAuth2App(appId).catch(() => null);
             return { identity, appId, app };
         })
     );

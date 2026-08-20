@@ -25,6 +25,7 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
+    import { repairSmartQuotedJson } from '$lib/helpers/string';
     import {
         Accordion,
         Alert,
@@ -100,7 +101,9 @@
                 .forProject(page.params.region, page.params.project)
                 .functions.createExecution({
                     functionId: func.$id,
-                    body,
+                    // Safari may substitute curly/smart quotes while typing JSON.
+                    // Only rewrite when that made the body invalid JSON.
+                    body: repairSmartQuotedJson(body),
                     async: true,
                     xpath: path,
                     method,
@@ -179,6 +182,7 @@
                             <InputTextarea
                                 placeholder="Enter request body here..."
                                 id="body"
+                                spellcheck={false}
                                 bind:value={body} />
                         </Layout.Stack>
                     </Accordion>
@@ -294,6 +298,7 @@
                                     <InputTextarea
                                         placeholder="Enter request body here..."
                                         id="body"
+                                        spellcheck={false}
                                         bind:value={body} />
                                 </Layout.Stack>
                             </Accordion>

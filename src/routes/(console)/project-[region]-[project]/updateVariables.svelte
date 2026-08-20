@@ -5,6 +5,7 @@
     import { CardGrid, Empty, Output, PaginationInline } from '$lib/components';
     import UploadVariables from './uploadVariablesModal.svelte';
     import { variablesOperation, type VariablesOperationItem } from './variablesOperation';
+    import { isValidVariableKey, validateVariables } from '$lib/helpers/variables';
     import { goto, invalidate } from '$app/navigation';
     import { Click, Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -21,6 +22,7 @@
         Layout,
         Popover,
         Table,
+        Tooltip,
         Alert
     } from '@appwrite.io/pink-svelte';
     import {
@@ -55,7 +57,7 @@
     ) => Promise<unknown>;
     export let sdkUpdateVariable: (
         variableId: string,
-        key: string,
+        key: string | undefined,
         value: string,
         secret?: boolean
     ) => Promise<unknown>;
@@ -127,10 +129,24 @@
     async function handleVariableCreated(event: CustomEvent<Models.Variable[]>) {
         const variables = event.detail;
         try {
-            const promises = variables.map((variable) =>
-                sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
+            const results = await Promise.allSettled(
+                variables.map((variable) =>
+                    sdkCreateVariable(variable.key, variable.value, variable?.secret || false)
+                )
             );
-            await Promise.all(promises);
+
+            // Each variable is created on its own, so name the keys that failed
+            // instead of reporting a single rejection for the whole batch.
+            const failed = results
+                .map((result, index) =>
+                    result.status === 'rejected' ? variables[index].key : null
+                )
+                .filter(Boolean);
+
+            if (failed.length) {
+                throw new Error(`Failed to create variables: ${failed.join(', ')}`);
+            }
+
             fullVariableList = undefined;
             showVariablesModal = false;
             addNotification({
@@ -174,7 +190,10 @@
     async function handleVariableSecret(event: CustomEvent<Models.Variable>) {
         const variable = event.detail;
         try {
-            await sdkUpdateVariable(variable.$id, variable.key, variable.value, variable.secret);
+            // Marking a variable secret never changes its key, so leave the key
+            // out and keep the stored one — including keys that predate the
+            // identifier rule.
+            await sdkUpdateVariable(variable.$id, undefined, variable.value, variable.secret);
             fullVariableList = undefined;
             selectedVar = null;
             showVariablesModal = false;
@@ -237,6 +256,14 @@
 
     async function handleVariablePromoted(variable: Models.Variable) {
         try {
+            // Promoting a conflicting key deletes the existing global variable
+            // before recreating it, so refuse a key the API would reject rather
+            // than deleting one and failing to create its replacement.
+            const validationError = validateVariables([variable]);
+            if (validationError) {
+                throw new Error(validationError);
+            }
+
             const globalVariable = globalVariableList
                 ? globalVariableList.variables.find(
                       (globalVariable) => globalVariable.key === variable.key
@@ -506,6 +533,19 @@
                                         <span
                                             class="icon-exclamation u-color-text-warning"
                                             aria-hidden="true"></span>
+                                    {/if}
+                                    {#if !isValidVariableKey(variable.key)}
+                                        <Tooltip>
+                                            <span
+                                                class="icon-exclamation u-color-text-danger"
+                                                aria-hidden="true"></span>
+                                            <svelte:fragment slot="tooltip">
+                                                This key can't be used as an environment variable
+                                                name, so it is ignored at build and runtime. Rename
+                                                it using only letters, digits and underscores,
+                                                without starting with a digit.
+                                            </svelte:fragment>
+                                        </Tooltip>
                                     {/if}
                                     <Copy value={variable.key} />
                                     <Output value={variable.key} hideCopyIcon>

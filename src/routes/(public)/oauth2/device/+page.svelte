@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { getOAuth2App } from '$lib/helpers/oauth2-cimd';
     import OAuth2ConsentCard, { type OAuth2Flow, type OAuth2Outcome } from '../consent-card.svelte';
     import OAuth2OutcomeCard from '../outcome-card.svelte';
 
@@ -95,9 +96,7 @@
             const loadedGrant = await sdk.forConsole.oauth2.createGrant({
                 userCode: normalized
             });
-            const loadedApp = await sdk.forConsole.apps.get({
-                appId: loadedGrant.appId
-            });
+            const loadedApp = await getOAuth2App(loadedGrant.appId);
             // A fresh `user_code` may have arrived while we awaited. Ignore this
             // now-stale result so we never show consent for a superseded request.
             if (normalizeUserCode(code) !== normalized) return;

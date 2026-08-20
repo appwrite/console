@@ -139,7 +139,8 @@
                 .migrations.createCSVImport({
                     bucketId: pendingFile.bucketId,
                     fileId: pendingFile.$id,
-                    resourceId: `${page.params.database}:${page.params.table}`,
+                    databaseId: page.params.database,
+                    collectionId: page.params.table,
                     internalFile: pendingLocalFile,
                     onDuplicate: importOnDuplicate
                 });

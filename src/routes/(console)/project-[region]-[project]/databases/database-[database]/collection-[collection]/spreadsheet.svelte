@@ -29,7 +29,7 @@
         IconFingerPrint
     } from '@appwrite.io/pink-icons-svelte';
     import { isSmallViewport, isTabletViewport } from '$lib/stores/viewport';
-    import { SpreadsheetContainer, useDatabaseSdk } from '$database/(entity)';
+    import { SpreadsheetContainer, toDatabaseType, useDatabaseSdk } from '$database/(entity)';
     import { copy } from '$lib/helpers/copy';
     import { writable } from 'svelte/store';
     import { pageToOffset } from '$lib/helpers/load';
@@ -89,9 +89,10 @@
 
     const databaseId = page.params.database;
     const collectionId = page.params.collection;
-    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, data.database.type);
+    const databaseType = toDatabaseType(data.database.type);
+    const databaseSdk = useDatabaseSdk(page.params.region, page.params.project, databaseType);
 
-    const isVectorsDb = data.database.type === 'vectorsdb';
+    const isVectorsDb = databaseType === 'vectorsdb';
     let showEmbeddingModal = false;
     let editorRef: { replaceData: (data: JsonValue) => void } | undefined;
 

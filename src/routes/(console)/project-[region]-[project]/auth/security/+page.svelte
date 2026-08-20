@@ -8,6 +8,7 @@
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import PasswordPolicies from './passwordPolicies.svelte';
     import PasswordStrengthPolicy from './passwordStrengthPolicy.svelte';
+    import UpdateMfaFactors from './updateMfaFactors.svelte';
     import SessionSecurity from './sessionSecurity.svelte';
     import UpdateSignupEmailSecurity from './updateSignupEmailSecurity.svelte';
     import { isCloud } from '$lib/system';
@@ -25,6 +26,9 @@
         dictionaryPolicy={data.passwordDictionaryPolicy}
         historyPolicy={data.passwordHistoryPolicy}
         personalDataPolicy={data.passwordPersonalDataPolicy} />
+    {#if data.mfaFactorsPolicy}
+        <UpdateMfaFactors project={data.project} policy={data.mfaFactorsPolicy} />
+    {/if}
     {#if isCloud}
         <UpdateSignupEmailSecurity
             project={data.project}

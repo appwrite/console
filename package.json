@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@ai-sdk/svelte": "^1.1.24",
-        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@6be9e62",
+        "@appwrite.io/console": "https://pkg.vc/-/@appwrite/@appwrite.io/console@ed09983",
         "@appwrite.io/pink-icons": "0.25.0",
         "@appwrite.io/pink-icons-svelte": "https://pkg.vc/-/@appwrite/@appwrite.io/pink-icons-svelte@bfe7ce3",
         "@appwrite.io/pink-legacy": "^1.0.3",
@@ -51,11 +51,10 @@
         "flatted": "^3.4.2",
         "ignore": "^6.0.2",
         "json5": "^2.2.3",
-        "nanoid": "^5.1.11",
+        "nanoid": "^3.3.18",
         "nanotar": "^0.3.0",
         "pretty-bytes": "^6.1.1",
         "remarkable": "^2.0.1",
-        "svelte-confetti": "^1.4.0",
         "three": "^0.181.2",
         "tippy.js": "^6.3.7"
     },
@@ -105,7 +104,7 @@
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
         "brace-expansion": ">=5.0.9",
-        "js-yaml": "^4.3.0",
+        "js-yaml": "^4.3.1",
         "immutable": "^5.1.8",
         "flatted": "^3.4.2",
         "devalue": "^5.8.1",
@@ -113,6 +112,7 @@
         "picomatch": "^4.0.4",
         "cookie": "^0.7.0",
         "ws": "^8.21.0",
-        "postcss": "^8.5.18"
+        "postcss": "^8.5.18",
+        "nanoid": "^3.3.18"
     }
 }

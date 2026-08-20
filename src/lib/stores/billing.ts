@@ -277,7 +277,8 @@ export function getServiceLimit(
 
     if (serviceId === 'members') {
         if (!plan?.addons?.seats) return Infinity;
-        return plan.addons.seats?.limit ?? 1;
+        // plans that don't cap seats omit `limit`, which the API serializes as `0`
+        return plan.addons.seats?.limit || Infinity;
     }
 
     if (serviceId === 'projects') {
@@ -474,7 +475,8 @@ export async function checkForUsageLimit(organization: Models.Organization) {
 
     const members = organization.total;
     const memberLimit = getServiceLimit('members');
-    const membersOverflow = memberLimit === Infinity ? 0 : Math.max(0, members - memberLimit);
+    const membersOverflow =
+        Number.isFinite(memberLimit) && memberLimit > 0 ? Math.max(0, members - memberLimit) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);

@@ -681,24 +681,31 @@
         }
     }
 
-    async function updateRowContents(row: Models.Row) {
+    async function updateRowContents(row: Models.Row): Promise<Models.Row | false> {
         try {
             const payload = buildPayload(table.fields, row);
 
-            await sdk.forProject(page.params.region, page.params.project).tablesDB.updateRow({
-                databaseId,
-                tableId: table.$id,
-                rowId: row.$id,
-                data: payload,
-                permissions: row.$permissions
-            });
+            const updated = await sdk
+                .forProject(page.params.region, page.params.project)
+                .tablesDB.updateRow({
+                    databaseId,
+                    tableId: table.$id,
+                    rowId: row.$id,
+                    data: payload,
+                    permissions: row.$permissions
+                });
+
+            // Keep client-side relationship expansions; refresh system fields from the API
+            // so columns like $updatedAt reflect the write (inline edit does not invalidate Dependencies).
+            row.$updatedAt = updated.$updatedAt;
+            row.$permissions = updated.$permissions;
 
             trackEvent(Submit.RowUpdate);
             addNotification({
                 message: 'Row has been updated',
                 type: 'success'
             });
-            return true;
+            return row;
         } catch (error) {
             addNotification({
                 message: error.message,
@@ -1179,12 +1186,13 @@
                                             {row}
                                             column={rowColumn}
                                             onRowStructureUpdate={async (row) => {
-                                                const success = await updateRowContents(row);
-                                                if (success) {
+                                                const updated = await updateRowContents(row);
+                                                if (updated) {
                                                     // database update succeeded!
-                                                    paginatedRows.update(index, row);
+                                                    paginatedRows.update(index, updated);
+                                                    return true;
                                                 }
-                                                return success;
+                                                return false;
                                             }}
                                             noInlineEdit={isRelatedToMany && hasItems}
                                             onChange={(row) => paginatedRows.update(index, row)}

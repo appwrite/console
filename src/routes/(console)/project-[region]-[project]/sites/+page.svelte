@@ -11,7 +11,7 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Layout, Tooltip } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
     import CreateSiteModal from './createSiteModal.svelte';
@@ -27,10 +27,16 @@
     import { Dependencies } from '$lib/constants';
     import { realtime } from '$lib/stores/sdk';
     import { page } from '$app/state';
+    import {
+        BODY_TOOLTIP_MAX_WIDTH,
+        BODY_TOOLTIP_WRAPPER_STYLE_PRELINE
+    } from '$lib/helpers/tooltipContent';
 
     export let data;
 
     let show = false;
+
+    $: isLimited = isServiceLimited('sites', $organization, data.siteList?.total);
 
     $: $registerCommands([
         {
@@ -39,8 +45,7 @@
                 show = true;
             },
             keys: ['c'],
-            disabled:
-                isServiceLimited('sites', $organization, data.siteList?.total) || !$canWriteSites,
+            disabled: isLimited || !$canWriteSites,
             icon: IconPlus,
             group: 'sites'
         }
@@ -70,10 +75,25 @@
                 hideColumns
                 hideView={!data.siteList.total} />
             {#if $canWriteSites}
-                <Button on:mousedown={() => (show = true)} event="create_site" size="s">
-                    <Icon icon={IconPlus} slot="start" size="s" />
-                    Create site
-                </Button>
+                <Tooltip disabled={!isLimited} maxWidth={BODY_TOOLTIP_MAX_WIDTH}>
+                    <div>
+                        <Button
+                            disabled={isLimited}
+                            on:mousedown={() => {
+                                if (!isLimited) show = true;
+                            }}
+                            event="create_site"
+                            size="s">
+                            <Icon icon={IconPlus} slot="start" size="s" />
+                            Create site
+                        </Button>
+                    </div>
+                    <svelte:fragment slot="tooltip">
+                        <div style={BODY_TOOLTIP_WRAPPER_STYLE_PRELINE}>
+                            You have reached the maximum number of sites for your plan.
+                        </div>
+                    </svelte:fragment>
+                </Tooltip>
             {/if}
         </Layout.Stack>
     </Layout.Stack>
@@ -93,12 +113,14 @@
     {:else}
         <Empty
             single
-            allowCreate={$canWriteSites}
+            allowCreate={$canWriteSites && !isLimited}
             href="https://appwrite.io/docs/products/sites"
             description="Deploy and manage your web applications with Sites. "
             target="site"
             src={$app.themeInUse === 'dark' ? EmptyDark : EmptyLight}
-            on:click={() => (show = true)}>
+            on:click={() => {
+                if (!isLimited) show = true;
+            }}>
         </Empty>
     {/if}
 </Container>

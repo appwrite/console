@@ -6,7 +6,7 @@ import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad, RouteParams } from './$types';
 import { isSelfHosted } from '$lib/system';
 import { isCloud } from '$lib/system';
-import { useDatabaseSdk } from '$database/(entity)';
+import { toDatabaseType, useDatabaseSdk } from '$database/(entity)';
 
 export const load: PageLoad = async ({ url, route, depends, params, parent }) => {
     depends(Dependencies.DATABASES);
@@ -62,7 +62,7 @@ async function fetchDatabasesAndBackups(
         databases.databases.map(async ({ $id, type }) => {
             const res = await databaseSdk.listEntities({
                 databaseId: $id,
-                databaseType: type,
+                databaseType: toDatabaseType(type),
                 queries: [Query.limit(1), Query.orderDesc('')]
             });
 

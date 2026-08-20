@@ -8,6 +8,7 @@
     import { base } from '$app/paths';
     import { Alert, Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Link } from '$lib/elements';
+    import { getVariableValueError, validateVariables } from '$lib/helpers/variables';
 
     export let isGlobal: boolean;
     export let product: 'function' | 'site' = 'function';
@@ -21,6 +22,10 @@
         secret: selectedVar?.secret
     };
 
+    const originalKey = selectedVar?.key;
+
+    let error = '';
+
     const dispatch = createEventDispatcher();
 
     function close() {
@@ -29,7 +34,21 @@
     }
 
     function handleVariable() {
-        dispatch('updated', pair);
+        const keyChanged = pair.key !== originalKey;
+
+        // A key stored before the identifier rule existed is left untouched so
+        // its value stays editable; only a key the user actually changed has to
+        // satisfy the rule.
+        const validationError = keyChanged
+            ? validateVariables([pair])
+            : getVariableValueError(pair.key, pair.value);
+
+        if (validationError) {
+            error = validationError;
+            return;
+        }
+
+        dispatch('updated', { ...pair, key: keyChanged ? pair.key : undefined });
 
         close();
     }
@@ -41,6 +60,7 @@
 
 <Modal
     bind:show
+    bind:error
     onSubmit={handleVariable}
     title={`Update ${isGlobal ? 'global' : 'environment'} variable`}>
     <svelte:fragment slot="description">
