@@ -2,6 +2,7 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Query, Role, type Models } from '@appwrite.io/console';
     import type { Writable } from 'svelte/store';
@@ -44,6 +45,10 @@
     let memberships: Models.MembershipList;
     let membershipOffset = 0;
 
+    // Searching and stepping between users both re-request, so responses can land out of
+    // order; only the newest request is allowed to write to the list or clear the spinner.
+    let latestRequest = 0;
+
     function clearUser() {
         user = null;
         memberships = undefined;
@@ -65,24 +70,47 @@
 
     async function requestUsers() {
         if (!show || user) return;
+        const requestId = ++latestRequest;
         isLoading = true;
-        users = await sdk.forProject(page.params.region, page.params.project).users.list({
-            queries: [Query.limit(5), Query.offset(offset)],
-            search: search || undefined
-        });
-        isLoading = false;
+        try {
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.list({
+                    queries: [Query.limit(5), Query.offset(offset)],
+                    search: search || undefined
+                });
+            if (requestId !== latestRequest) return;
+            users = response;
+        } catch (error) {
+            if (requestId !== latestRequest) return;
+            addNotification({ type: 'error', message: error.message });
+        } finally {
+            if (requestId === latestRequest) isLoading = false;
+        }
     }
 
     async function requestMemberships() {
         if (!show || !user) return;
+        const requestedUserId = user.$id;
+        const requestId = ++latestRequest;
         isLoading = true;
-        memberships = await sdk
-            .forProject(page.params.region, page.params.project)
-            .users.listMemberships({
-                userId: user.$id,
-                queries: [Query.limit(5), Query.offset(membershipOffset)]
-            });
-        isLoading = false;
+        try {
+            const response = await sdk
+                .forProject(page.params.region, page.params.project)
+                .users.listMemberships({
+                    userId: requestedUserId,
+                    queries: [Query.limit(5), Query.offset(membershipOffset)]
+                });
+            // Going back and picking someone else while this was in flight must not file
+            // one user's memberships under another's name.
+            if (requestId !== latestRequest || user?.$id !== requestedUserId) return;
+            memberships = response;
+        } catch (error) {
+            if (requestId !== latestRequest) return;
+            addNotification({ type: 'error', message: error.message });
+        } finally {
+            if (requestId === latestRequest) isLoading = false;
+        }
     }
 
     function onSelection(role: string) {
