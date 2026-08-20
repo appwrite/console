@@ -27,6 +27,7 @@
 
     let showUser = false;
     let showTeam = false;
+    let showMember = false;
     let showLabel = false;
     let showCustom = false;
 
@@ -182,6 +183,7 @@
             bind:showLabel
             bind:showCustom
             bind:showTeam
+            bind:showMember
             bind:showUser
             {groups}
             on:create={create}
@@ -199,6 +201,7 @@
                 bind:showLabel
                 bind:showCustom
                 bind:showTeam
+                bind:showMember
                 bind:showUser
                 {groups}
                 on:create={create}

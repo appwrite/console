@@ -2,6 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import Label from './label.svelte';
     import Custom from './custom.svelte';
+    import Member from './member.svelte';
     import Team from './team.svelte';
     import User from './user.svelte';
     import type { Permission } from './permissions.svelte';
@@ -10,6 +11,7 @@
 
     export let showUser: boolean;
     export let showTeam: boolean;
+    export let showMember: boolean;
     export let showLabel: boolean;
     export let showCustom: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -57,6 +59,11 @@
                 }}>Select teams</ActionMenu.Item.Button>
             <ActionMenu.Item.Button
                 on:click={(e) => {
+                    showMember = true;
+                    hide(e);
+                }}>Select memberships</ActionMenu.Item.Button>
+            <ActionMenu.Item.Button
+                on:click={(e) => {
                     showLabel = true;
                     hide(e);
                 }}>Label</ActionMenu.Item.Button>
@@ -81,6 +88,9 @@
             showCustom = true;
         }}
         {groups} />
+{/if}
+{#if showMember}
+    <Member bind:show={showMember} on:create {groups} />
 {/if}
 {#if showLabel}
     <Label bind:show={showLabel} on:create {groups} />
