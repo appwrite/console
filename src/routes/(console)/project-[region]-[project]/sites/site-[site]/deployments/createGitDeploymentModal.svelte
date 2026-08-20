@@ -10,8 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
-    import { getProviderRepositoryUrl } from '$lib/stores/git';
-    import IconOrigin from '$lib/components/git/IconOrigin.svelte';
+    import { getProviderRepositoryUrl, getVcsProvider } from '$lib/stores/git';
     import {
         Adapter,
         BuildRuntime,
@@ -19,7 +18,6 @@
         VCSReferenceType,
         type Models
     } from '@appwrite.io/console';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
 
     export let show = false;
@@ -145,7 +143,7 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s">
-                        <Icon size="s" icon={IconGithub} />
+                        <Icon size="s" icon={getVcsProvider($installation?.provider).icon} />
                         <Skeleton variant="line" width={100} height={19.6} />
                     </Layout.Stack>
                 </Layout.Stack>
@@ -162,8 +160,7 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                        <Icon
-                            icon={$installation?.provider === 'origin' ? IconOrigin : IconGithub} />
+                        <Icon icon={getVcsProvider($installation?.provider).icon} />
                         <Link
                             external
                             href={getProviderRepositoryUrl(
