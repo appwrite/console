@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Card, Layout, Button } from '@appwrite.io/pink-svelte';
     import { Form } from '$lib/elements/forms';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isMultiRegion } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
@@ -46,7 +46,7 @@
             const project = await sdk.forConsole.organization(teamId).createProject({
                 projectId: projectId ?? ID.unique(),
                 name: projectName,
-                region: isCloud ? projectRegion : undefined
+                region: isCloud || isMultiRegion ? projectRegion : undefined
             });
 
             markOnboardingComplete();

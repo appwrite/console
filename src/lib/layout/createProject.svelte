@@ -3,7 +3,7 @@
     import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
     import { getFlagUrl } from '$lib/helpers/flag';
-    import { isCloud } from '$lib/system.js';
+    import { isCloud, isMultiRegion } from '$lib/system.js';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
@@ -80,7 +80,7 @@
                 <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
             </Layout.Stack>
 
-            {#if isCloud && regions.length > 0}
+            {#if (isCloud || isMultiRegion) && regions.length > 0}
                 <Layout.Stack gap="xs">
                     <Input.Select
                         disabled={projectsLimited}

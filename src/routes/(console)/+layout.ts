@@ -11,8 +11,12 @@ import { syncServerTime } from '$lib/helpers/fingerprint';
 import { redirect } from '@sveltejs/kit';
 import { resolve } from '$app/paths';
 import { isVerifyEmailRedirectError } from '$lib/helpers/emailVerification';
+import { ensureSelfHostedRegions } from '$routes/(console)/regions';
 
 export const load: LayoutLoad = async ({ depends, parent, url }) => {
+    // Self-hosted multi-region: load /console/regions before any child forProject call.
+    await ensureSelfHostedRegions();
+
     const parentData = await parent();
     const { organizations, plansInfo } = parentData;
     const account = parentData.account as Account | undefined;
