@@ -57,6 +57,12 @@
         user = null;
         memberships = undefined;
         membershipOffset = 0;
+
+        // Stepping back abandons the membership request. Leaving it live lets its rejection
+        // land on the user step and report the user list as the thing that failed.
+        latestRequest++;
+        loadError = '';
+        isLoading = false;
     }
 
     function reset() {
@@ -113,7 +119,7 @@
             if (requestId !== latestRequest || user?.$id !== requestedUserId) return;
             memberships = response;
         } catch (error) {
-            if (requestId !== latestRequest) return;
+            if (requestId !== latestRequest || user?.$id !== requestedUserId) return;
             loadError = error.message;
             addNotification({ type: 'error', message: error.message });
         } finally {
