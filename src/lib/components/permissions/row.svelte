@@ -16,7 +16,7 @@
         Typography
     } from '@appwrite.io/pink-svelte';
     import Avatar from '../avatar.svelte';
-    import { IconAnonymous, IconMinusSm } from '@appwrite.io/pink-icons-svelte';
+    import { IconAnonymous, IconMinusSm, IconUsers } from '@appwrite.io/pink-icons-svelte';
     import { page } from '$app/state';
     import { menuOpen } from '$lib/components/menu/store';
     import { base } from '$app/paths';
@@ -39,8 +39,10 @@
 
     let { role, placement = 'bottom-start', children, onNotFound }: Props = $props();
 
+    const parsedRole = $derived(parsePermission(role));
+
     type ParsedPermission = {
-        type: 'user' | 'team' | 'other';
+        type: 'user' | 'team' | 'member' | 'other';
         id: string;
         roleName?: string;
         isValid: boolean;
@@ -58,9 +60,9 @@
                 return { type: 'other', id: permission, isValid: false };
             }
 
-            if (type === 'user' || type === 'team') {
+            if (type === 'user' || type === 'team' || type === 'member') {
                 return {
-                    type: type as 'user' | 'team',
+                    type: type as 'user' | 'team' | 'member',
                     id,
                     roleName,
                     isValid: true
@@ -76,6 +78,12 @@
     async function fetchPermissionData(parsed: ParsedPermission): Promise<PermissionData> {
         if (!parsed.isValid || parsed.type === 'other') {
             return { notFound: true, roleName: parsed.roleName, customName: parsed.id };
+        }
+
+        // A membership can only be read through its team or its user, neither of which the role
+        // carries, so the ID is shown as-is rather than reported as a role that no longer exists.
+        if (parsed.type === 'member') {
+            return { roleName: parsed.roleName, customName: parsed.id };
         }
 
         if (parsed.type === 'user') {
@@ -177,7 +185,7 @@
                             {role}
                         {:then data}
                             {formatName(
-                                data.name ?? data?.email ?? data?.phone ?? '-',
+                                data.name ?? data?.email ?? data?.phone ?? data?.customName ?? '-',
                                 $isSmallViewport ? 16 : 20
                             )}
                         {/await}
@@ -185,7 +193,11 @@
                     <Badge
                         size="xs"
                         variant="secondary"
-                        content={role.startsWith('user') ? 'User' : 'Team'} />
+                        content={parsedRole.type === 'member'
+                            ? 'Member'
+                            : parsedRole.type === 'user'
+                              ? 'User'
+                              : 'Team'} />
                 </Layout.Stack>
             {/if}
         </button>
@@ -205,7 +217,37 @@
                             <Spinner />
                         </Layout.Stack>
                     {:then data}
-                        {#if data.notFound}
+                        {#if parsedRole.type === 'member'}
+                            <Layout.Stack gap="s" alignItems="flex-start">
+                                <Layout.Stack
+                                    direction="row"
+                                    gap="s"
+                                    alignItems="center"
+                                    justifyContent="flex-start">
+                                    <Avatar alt="avatar" size="m">
+                                        <Icon icon={IconUsers} size="s" />
+                                    </Avatar>
+
+                                    <Layout.Stack alignItems="flex-start" gap="xxs">
+                                        <Layout.Stack style="padding-left: 0.25rem;">
+                                            <Typography.Text
+                                                size="m"
+                                                color="--fgcolor-neutral-primary">
+                                                Team membership
+                                            </Typography.Text>
+                                        </Layout.Stack>
+                                        <InteractiveText
+                                            isVisible
+                                            variant="copy"
+                                            text={formatName(
+                                                parsedRole.id,
+                                                $isSmallViewport ? 20 : 28
+                                            )}
+                                            value={parsedRole.id} />
+                                    </Layout.Stack>
+                                </Layout.Stack>
+                            </Layout.Stack>
+                        {:else if data.notFound}
                             <Layout.Stack gap="s" alignItems="flex-start">
                                 <Layout.Stack
                                     direction="row"

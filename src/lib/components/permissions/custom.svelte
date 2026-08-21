@@ -34,8 +34,8 @@
         required
         id="custom-permission"
         label="Role"
-        placeholder="user:[USER_ID] or team:[TEAM_ID]/[ROLE]"
-        helper="A permission should be formatted as: user:[USER_ID] or team:[TEAM_ID]/[ROLE]¸"
+        placeholder="user:[USER_ID], team:[TEAM_ID]/[ROLE] or member:[MEMBERSHIP_ID]"
+        helper="A permission should be formatted as: user:[USER_ID], team:[TEAM_ID]/[ROLE] or member:[MEMBERSHIP_ID]"
         bind:value />
 
     <svelte:fragment slot="footer">
