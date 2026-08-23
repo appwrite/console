@@ -411,6 +411,7 @@
             <svelte:fragment slot="aside">
                 <Layout.Stack gap="s">
                     {#key extensions.length}
+                        <!-- ci-nudge: extensions copy -->
                         <InputTags
                             id="allowed-extensions"
                             label="File extensions"
