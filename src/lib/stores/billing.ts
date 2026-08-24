@@ -134,6 +134,20 @@ export function isStarterPlan(
     return planHasGroup(billingPlan, BillingPlanGroup.Starter);
 }
 
+export function planSupportsSoc2(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): boolean {
+    const billingPlan = makeBillingPlan(billingPlanOrId);
+    if (!billingPlan) {
+        return false;
+    }
+
+    // no SOC-2 entitlement exists on the plan model, so key off a real API field
+    // instead of guessing: SOC-2 is only offered on negotiated/custom contracts,
+    // never on a self-service plan (including self-service Scale).
+    return billingPlan.selfService === false;
+}
+
 export function canUpgrade(
     billingPlanOrId: string | Models.BillingPlan | null | undefined
 ): boolean {

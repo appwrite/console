@@ -7,16 +7,22 @@
     import { organization } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
-    import { onMount } from 'svelte';
+    import { untrack } from 'svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let show = false;
-    export let locale: Models.Locale;
-    export let countryList: Models.CountryList;
+    let {
+        show = $bindable(false),
+        locale,
+        countryList
+    }: {
+        show?: boolean;
+        locale: Models.Locale;
+        countryList: Models.CountryList;
+    } = $props();
 
-    let email = '';
-    let employees: string = null;
-    let employeesOptions = [
+    let email = $state($user?.email ?? '');
+    let employees = $state<string>(null);
+    const employeesOptions = [
         {
             value: '1-5',
             label: '1-5'
@@ -35,50 +41,49 @@
         }
     ];
 
-    let country = '';
-    let countryOptions = [];
-
-    let role = '';
-    let website = '';
-
-    let error: string;
-
-    onMount(async () => {
-        if (locale.countryCode) {
-            country = locale.countryCode;
-        }
-        countryOptions = countryList.countries.map((country) => {
+    let country = $state(untrack(() => locale?.countryCode ?? ''));
+    const countryOptions = $derived(
+        (countryList?.countries ?? []).map((country) => {
             return {
                 value: country.code,
                 label: country.name
             };
-        });
-        email = $user.email;
-    });
+        })
+    );
+
+    let role = $state('');
+    let website = $state('');
+
+    let error = $state<string>(null);
 
     async function handleSubmit() {
+        const formData = new FormData();
+        formData.append('subject', 'SOC-2 Request');
+        formData.append('email', email);
+        formData.append('firstName', ($user?.name ?? '').slice(0, 40));
+        formData.append(
+            'message',
+            `SOC-2 request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`
+        );
+        formData.append('tags[]', 'cloud');
+        formData.append(
+            'metaFields',
+            JSON.stringify({
+                category: 'SOC-2',
+                userName: $user?.name ?? '',
+                orgId: $organization?.$id ?? '',
+                userId: $user?.$id ?? '',
+                billingPlan: $organization?.billingPlanId ?? '',
+                employees: employees,
+                country: country,
+                role: role,
+                website: website
+            })
+        );
+
         const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                subject: 'SOC-2 Request',
-                email: email,
-                firstName: ($user?.name ?? '').slice(0, 40),
-                message: `SOC-2 request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`,
-                tags: ['cloud'],
-                metaFields: {
-                    category: 'SOC-2',
-                    userName: $user?.name ?? '',
-                    orgId: $organization?.$id ?? '',
-                    userId: $user?.$id ?? '',
-                    employees: employees,
-                    country: country,
-                    role: role,
-                    website: website
-                }
-            })
+            body: formData
         });
         trackEvent(Submit.RequestSoc2);
         if (response.status !== 200) {
