@@ -2,11 +2,22 @@
     import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import Soc2Modal from './Soc2Modal.svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { getBasePlanFromGroup, getChangePlanUrl, planSupportsSoc2 } from '$lib/stores/billing';
+    import { currentPlan, organization } from '$lib/stores/organization';
+    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
 
-    let show = false;
-    export let locale: Models.Locale;
-    export let countryList: Models.CountryList;
+    let {
+        locale,
+        countryList
+    }: {
+        locale: Models.Locale;
+        countryList: Models.CountryList;
+    } = $props();
+
+    let show = $state(false);
+
+    const supportsSoc2 = $derived(planSupportsSoc2($currentPlan));
+    const upgradePlanName = $derived(getBasePlanFromGroup(BillingPlanGroup.Scale)?.name);
 </script>
 
 <CardGrid>
@@ -22,16 +33,34 @@
                 compliance with trust service criteria such as security, availability, processing
                 integrity, confidentiality, and privacy.
             </p>
-            <Button
-                secondary
-                external
-                class="u-margin-block-start-16"
-                on:click={() => (show = true)}
-                event="request_soc-2">
-                <span class="text">Request SOC-2</span>
-            </Button>
+            {#if supportsSoc2}
+                <Button
+                    secondary
+                    external
+                    class="u-margin-block-start-16"
+                    on:click={() => (show = true)}
+                    event="request_soc-2">
+                    <span class="text">Request SOC-2</span>
+                </Button>
+            {:else}
+                <p class="text u-margin-block-start-8">
+                    SOC-2 is not available on your current plan.{upgradePlanName
+                        ? ` Upgrade to ${upgradePlanName} to request a SOC-2 report for your organization.`
+                        : ''}
+                </p>
+                {#if upgradePlanName}
+                    <Button
+                        secondary
+                        class="u-margin-block-start-16"
+                        href={getChangePlanUrl($organization?.$id)}>
+                        <span class="text">Upgrade plan</span>
+                    </Button>
+                {/if}
+            {/if}
         </Box>
     </svelte:fragment>
 </CardGrid>
 
-<Soc2Modal {locale} {countryList} bind:show />
+{#if supportsSoc2}
+    <Soc2Modal {locale} {countryList} bind:show />
+{/if}

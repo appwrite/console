@@ -134,6 +134,19 @@ export function isStarterPlan(
     return planHasGroup(billingPlan, BillingPlanGroup.Starter);
 }
 
+export function planSupportsSoc2(
+    billingPlanOrId: string | Models.BillingPlan | null | undefined
+): boolean {
+    const billingPlan = makeBillingPlan(billingPlanOrId);
+    if (!billingPlan) {
+        return false;
+    }
+
+    // no SOC-2 entitlement exists on the plan model, so infer it: Scale is the
+    // lowest group that advertises SOC-2, and contract plans sit above it.
+    return planHasGroup(billingPlan, BillingPlanGroup.Scale) || billingPlan.selfService === false;
+}
+
 export function canUpgrade(
     billingPlanOrId: string | Models.BillingPlan | null | undefined
 ): boolean {
