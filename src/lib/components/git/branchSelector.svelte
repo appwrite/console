@@ -9,7 +9,7 @@
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { createEventDispatcher, hasContext, tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     export let value = '';
     export let installationId: string;
@@ -18,7 +18,6 @@
     export let placeholder = 'Select branch';
 
     const dispatch = createEventDispatcher();
-    const inDialogGroup = hasContext('dialog-group');
 
     let open = false;
     let searchQuery = '';
@@ -32,9 +31,19 @@
     let containerEl: HTMLDivElement;
     let dropdownRect = { top: 0, left: 0, width: 0 };
 
+    // Portal into the owning <dialog> when the trigger lives inside one so the
+    // menu shares showModal()'s top layer. Do not use dialog-group context —
+    // BranchSelector is projected through slots, so hasContext never sees the
+    // pink Modal provider. closest('dialog') reflects the real DOM parent.
+    // position:fixed inside that dialog is relative to the dialog box — use
+    // dialog-local coordinates or viewport coords shift the modal (#2790).
+    function getPortalTarget(): Element {
+        const dialog = containerEl?.closest('dialog');
+        return dialog ?? document.body;
+    }
+
     function portal(node: HTMLElement) {
-        const target = inDialogGroup ? document.querySelector('dialog[open]') : document.body;
-        target?.appendChild(node);
+        getPortalTarget().appendChild(node);
         return {
             destroy() {
                 node.parentNode?.removeChild(node);
@@ -45,7 +54,17 @@
     function updateRect() {
         if (!containerEl) return;
         const rect = containerEl.getBoundingClientRect();
-        dropdownRect = { top: rect.bottom + 4, left: rect.left, width: rect.width };
+        const target = getPortalTarget();
+        if (target instanceof HTMLElement && target.tagName === 'DIALOG') {
+            const dialogRect = target.getBoundingClientRect();
+            dropdownRect = {
+                top: rect.bottom - dialogRect.top + 4,
+                left: rect.left - dialogRect.left,
+                width: rect.width
+            };
+        } else {
+            dropdownRect = { top: rect.bottom + 4, left: rect.left, width: rect.width };
+        }
     }
 
     $: (installationId,
@@ -155,10 +174,13 @@
     </button>
 
     {#if open}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             class="dropdown branch-selector-portal"
             use:portal
-            style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;">
+            style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;"
+            on:mousedown|stopPropagation
+            on:click|stopPropagation>
             <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
