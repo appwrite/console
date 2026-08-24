@@ -176,7 +176,7 @@
         {/snippet}
 
         {#snippet children(root)}
-            {#each data.platforms.platforms as platform}
+            {#each data.platforms.platforms as platform (platform.$id)}
                 <Table.Row.Link href={getPlatformPath(platform)} {root} id={platform.$id}>
                     <Table.Cell {root}>
                         {platform.name}

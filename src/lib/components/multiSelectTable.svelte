@@ -12,6 +12,7 @@
 
 <script lang="ts">
     import type { Snippet } from 'svelte';
+    import { page } from '$app/state';
     import {
         Table,
         Badge,
@@ -63,6 +64,19 @@
     let disableModal: boolean = $state(false);
     let onDeleteError: string | null = $state(null);
     let showConfirmDeletion: boolean = $state(false);
+
+    // paginating, searching or switching resource swaps the rows out from under the
+    // selection, and deleting what is no longer on screen is silent data loss
+    const selectionKey = $derived(`${page.url.href}|${computeKey}`);
+
+    let renderedUrl: string | undefined;
+
+    $effect.pre(() => {
+        if (renderedUrl === page.url.href) return;
+
+        renderedUrl = page.url.href;
+        selectedRows = [];
+    });
 
     function notifySuccess(count: number) {
         if (!showSuccessNotification) return;
@@ -155,7 +169,7 @@
     }
 </script>
 
-{#key computeKey}
+{#key selectionKey}
     <Table.Root let:root {columns} {allowSelection} bind:selectedRows>
         <svelte:fragment slot="header" let:root>
             {@render header?.(root)}

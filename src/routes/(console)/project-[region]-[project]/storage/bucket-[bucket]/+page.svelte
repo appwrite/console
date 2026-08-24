@@ -238,7 +238,7 @@
                 {/snippet}
 
                 {#snippet children(root)}
-                    {#each data.files.files as file}
+                    {#each data.files.files as file (file.$id)}
                         {#if file.chunksTotal / file.chunksUploaded !== 1}
                             <Table.Row.Base {root} id={file.$id}>
                                 <Table.Cell column="filename" {root}>

@@ -106,7 +106,7 @@
             {/snippet}
 
             {#snippet children(root)}
-                {#each data.users.users as user}
+                {#each data.users.users as user (user.$id)}
                     <Table.Row.Link
                         href={`${base}/project-${page.params.region}-${page.params.project}/auth/user-${user.$id}`}
                         {root}
