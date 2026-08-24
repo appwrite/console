@@ -2,9 +2,9 @@
     import { Box, CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import Soc2Modal from './Soc2Modal.svelte';
-    import { getBasePlanFromGroup, getChangePlanUrl, planSupportsSoc2 } from '$lib/stores/billing';
-    import { currentPlan, organization } from '$lib/stores/organization';
-    import { BillingPlanGroup, type Models } from '@appwrite.io/console';
+    import { planSupportsSoc2 } from '$lib/stores/billing';
+    import { currentPlan } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
 
     let {
         locale,
@@ -17,7 +17,6 @@
     let show = $state(false);
 
     const supportsSoc2 = $derived(planSupportsSoc2($currentPlan));
-    const upgradePlanName = $derived(getBasePlanFromGroup(BillingPlanGroup.Scale)?.name);
 </script>
 
 <CardGrid>
@@ -44,18 +43,16 @@
                 </Button>
             {:else}
                 <p class="text u-margin-block-start-8">
-                    SOC-2 is not available on your current plan.{upgradePlanName
-                        ? ` Upgrade to ${upgradePlanName} to request a SOC-2 report for your organization.`
-                        : ''}
+                    SOC-2 reports are only available on an Enterprise contract. Contact our sales
+                    team to discuss upgrading your organization.
                 </p>
-                {#if upgradePlanName}
-                    <Button
-                        secondary
-                        class="u-margin-block-start-16"
-                        href={getChangePlanUrl($organization?.$id)}>
-                        <span class="text">Upgrade plan</span>
-                    </Button>
-                {/if}
+                <Button
+                    secondary
+                    external
+                    class="u-margin-block-start-16"
+                    href="https://appwrite.io/contact-us/enterprise">
+                    <span class="text">Contact sales</span>
+                </Button>
             {/if}
         </Box>
     </svelte:fragment>

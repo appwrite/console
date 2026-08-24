@@ -142,9 +142,10 @@ export function planSupportsSoc2(
         return false;
     }
 
-    // no SOC-2 entitlement exists on the plan model, so infer it: Scale is the
-    // lowest group that advertises SOC-2, and contract plans sit above it.
-    return planHasGroup(billingPlan, BillingPlanGroup.Scale) || billingPlan.selfService === false;
+    // no SOC-2 entitlement exists on the plan model, so key off a real API field
+    // instead of guessing: SOC-2 is only offered on negotiated/custom contracts,
+    // never on a self-service plan (including self-service Scale).
+    return billingPlan.selfService === false;
 }
 
 export function canUpgrade(
