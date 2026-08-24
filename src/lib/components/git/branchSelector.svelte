@@ -9,7 +9,7 @@
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { createEventDispatcher, hasContext, tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     export let value = '';
     export let installationId: string;
@@ -18,7 +18,6 @@
     export let placeholder = 'Select branch';
 
     const dispatch = createEventDispatcher();
-    const inDialogGroup = hasContext('dialog-group');
 
     let open = false;
     let searchQuery = '';
@@ -32,9 +31,13 @@
     let containerEl: HTMLDivElement;
     let dropdownRect = { top: 0, left: 0, width: 0 };
 
+    // Always portal to document.body. Portaling into <dialog> makes
+    // position:fixed resolve against the dialog's containing block (transform
+    // / filter), so the menu participates in dialog layout and shifts the
+    // modal contents when it opens (see #2790). stopPropagation on the
+    // dropdown keeps modal outside-click dismiss from firing.
     function portal(node: HTMLElement) {
-        const target = inDialogGroup ? document.querySelector('dialog[open]') : document.body;
-        target?.appendChild(node);
+        document.body.appendChild(node);
         return {
             destroy() {
                 node.parentNode?.removeChild(node);
@@ -155,10 +158,13 @@
     </button>
 
     {#if open}
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             class="dropdown branch-selector-portal"
             use:portal
-            style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;">
+            style="position: fixed; top: {dropdownRect.top}px; left: {dropdownRect.left}px; width: {dropdownRect.width}px; z-index: 9001;"
+            on:mousedown|stopPropagation
+            on:click|stopPropagation>
             <div class="search-header">
                 <Icon icon={IconSearch} size="s" />
                 <input
