@@ -221,7 +221,7 @@
     {/snippet}
 
     {#snippet children(root)}
-        {#each data.backups.archives as backup, index}
+        {#each data.backups.archives as backup, index (backup.$id)}
             {@const policy = getPolicyDetails(backup.policyId)}
             {@const retainedUntil = new Date(
                 new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
