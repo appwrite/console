@@ -9,7 +9,7 @@
     import { Query } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/state';
-    import { createEventDispatcher, hasContext, tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     export let value = '';
     export let installationId: string;
@@ -18,7 +18,6 @@
     export let placeholder = 'Select branch';
 
     const dispatch = createEventDispatcher();
-    const inDialogGroup = hasContext('dialog-group');
 
     let open = false;
     let searchQuery = '';
@@ -32,16 +31,15 @@
     let containerEl: HTMLDivElement;
     let dropdownRect = { top: 0, left: 0, width: 0 };
 
-    // Stay inside the open <dialog> when used in a showModal() flow so the
-    // menu shares the native top layer (body portals paint underneath it).
+    // Portal into the owning <dialog> when the trigger lives inside one so the
+    // menu shares showModal()'s top layer. Do not use dialog-group context —
+    // BranchSelector is projected through slots, so hasContext never sees the
+    // pink Modal provider. closest('dialog') reflects the real DOM parent.
     // position:fixed inside that dialog is relative to the dialog box — use
-    // dialog-relative coordinates or the menu lands far below the trigger,
-    // expands the dialog, and shifts modal contents (#2790).
+    // dialog-local coordinates or viewport coords shift the modal (#2790).
     function getPortalTarget(): Element {
-        if (inDialogGroup) {
-            return document.querySelector('dialog[open]') ?? document.body;
-        }
-        return document.body;
+        const dialog = containerEl?.closest('dialog');
+        return dialog ?? document.body;
     }
 
     function portal(node: HTMLElement) {
