@@ -85,10 +85,10 @@
                 page.url.searchParams.delete('redirect');
                 if (redirect) {
                     await goto(`${redirect}${page.url.search}`);
-                } else if (isCloud) {
+                } else if (isCloud && page.url.searchParams.has('type')) {
                     checkPricingRefAndRedirect(page.url.searchParams);
                 } else {
-                    await goto(`${base}/${page.url.search ?? ''}`);
+                    await goto(`${base}${page.url.search ?? ''}`);
                 }
             } else {
                 await goto(base);
