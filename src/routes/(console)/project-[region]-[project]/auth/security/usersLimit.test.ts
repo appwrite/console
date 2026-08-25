@@ -1,70 +1,58 @@
 import { describe, expect, it } from 'vitest';
-import {
-    USERS_LIMIT_MAX,
-    USERS_LIMIT_MIN,
-    usersLimitChanged,
-    usersLimitError,
-    type UsersLimitMode
-} from './usersLimit';
+import { USERS_LIMIT_MAX, USERS_LIMIT_MIN, usersLimitState } from './usersLimit';
 
-describe('usersLimitError', () => {
-    it('accepts whole numbers within range', () => {
-        expect(usersLimitError(USERS_LIMIT_MIN)).toBeNull();
-        expect(usersLimitError(100)).toBeNull();
-        expect(usersLimitError(USERS_LIMIT_MAX)).toBeNull();
+describe('usersLimitState', () => {
+    describe('limited', () => {
+        it('accepts whole numbers within range', () => {
+            expect(usersLimitState('limited', USERS_LIMIT_MIN, 100).error).toBeNull();
+            expect(usersLimitState('limited', 250, 100).error).toBeNull();
+            expect(usersLimitState('limited', USERS_LIMIT_MAX, 100).error).toBeNull();
+        });
+
+        it('explains a limit of 0 instead of leaving Update dead', () => {
+            const state = usersLimitState('limited', 0, 0);
+
+            expect(state.error).toContain('Unlimited');
+            expect(state.disabled).toBe(true);
+        });
+
+        it('refuses to save 0, which the API would read as no limit', () => {
+            expect(usersLimitState('limited', 0, 100).disabled).toBe(true);
+        });
+
+        it('rejects a cleared field', () => {
+            expect(usersLimitState('limited', undefined, 100).error).not.toBeNull();
+            expect(usersLimitState('limited', NaN, 100).error).not.toBeNull();
+        });
+
+        it('rejects values outside the accepted range', () => {
+            expect(usersLimitState('limited', -1, 100).error).not.toBeNull();
+            expect(usersLimitState('limited', USERS_LIMIT_MAX + 1, 100).error).not.toBeNull();
+            expect(usersLimitState('limited', 1.5, 100).error).not.toBeNull();
+        });
+
+        it('enables Update for a valid new limit', () => {
+            expect(usersLimitState('limited', 100, 0).disabled).toBe(false);
+            expect(usersLimitState('limited', 1, 100).disabled).toBe(false);
+        });
+
+        it('disables Update when the limit is unchanged', () => {
+            expect(usersLimitState('limited', 100, 100).disabled).toBe(true);
+        });
     });
 
-    it('rejects zero, which the API reads as no limit', () => {
-        expect(usersLimitError(0)).not.toBeNull();
-    });
+    describe('unlimited', () => {
+        it('ignores whatever the disabled limit field holds', () => {
+            expect(usersLimitState('unlimited', 0, 100).error).toBeNull();
+            expect(usersLimitState('unlimited', undefined, 100).error).toBeNull();
+        });
 
-    it('rejects a cleared input', () => {
-        expect(usersLimitError(undefined)).not.toBeNull();
-        expect(usersLimitError(NaN)).not.toBeNull();
-    });
+        it('enables Update when a limit is being removed', () => {
+            expect(usersLimitState('unlimited', 100, 100).disabled).toBe(false);
+        });
 
-    it('rejects values outside the accepted range', () => {
-        expect(usersLimitError(-1)).not.toBeNull();
-        expect(usersLimitError(USERS_LIMIT_MAX + 1)).not.toBeNull();
-        expect(usersLimitError(1.5)).not.toBeNull();
-    });
-});
-
-describe('usersLimitChanged', () => {
-    it('detects a new limit on a limited project', () => {
-        expect(usersLimitChanged('limited', 200, 100)).toBe(true);
-        expect(usersLimitChanged('limited', 100, 100)).toBe(false);
-    });
-
-    it('detects switching between limited and unlimited', () => {
-        expect(usersLimitChanged('limited', 100, 0)).toBe(true);
-        expect(usersLimitChanged('unlimited', 100, 100)).toBe(true);
-        expect(usersLimitChanged('unlimited', 100, 0)).toBe(false);
-    });
-});
-
-describe('update button state', () => {
-    const isDisabled = (mode: UsersLimitMode, limit: number, total: number) =>
-        (mode === 'limited' && usersLimitError(limit) !== null) ||
-        !usersLimitChanged(mode, limit, total);
-
-    it('explains a limit of 0 instead of silently blocking the update', () => {
-        expect(isDisabled('limited', 0, 0)).toBe(true);
-        expect(usersLimitError(0)).toContain('Unlimited');
-    });
-
-    it('never submits a limit of 0 as a limit', () => {
-        expect(isDisabled('limited', 0, 100)).toBe(true);
-    });
-
-    it('enables the update for a valid change', () => {
-        expect(isDisabled('limited', 100, 0)).toBe(false);
-        expect(isDisabled('limited', 1, 100)).toBe(false);
-        expect(isDisabled('unlimited', 100, 100)).toBe(false);
-    });
-
-    it('ignores the limit field while unlimited is selected', () => {
-        expect(isDisabled('unlimited', 0, 100)).toBe(false);
-        expect(isDisabled('unlimited', 0, 0)).toBe(true);
+        it('disables Update when there is no limit to remove', () => {
+            expect(usersLimitState('unlimited', 100, 0).disabled).toBe(true);
+        });
     });
 });
