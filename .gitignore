@@ -14,8 +14,6 @@ playwright-report/
 .playwright-mcp/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-pnpm-lock.yaml
-pnpm-workspace.yaml
 
 .DS_STORE
 .cache
