@@ -7,8 +7,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Layout, Selector, Input, Badge } from '@appwrite.io/pink-svelte';
-    import { tick } from 'svelte';
     import type { Models } from '@appwrite.io/console';
+    import {
+        USERS_LIMIT_MAX,
+        USERS_LIMIT_MIN,
+        usersLimitChanged,
+        usersLimitError,
+        type UsersLimitMode
+    } from './usersLimit';
 
     let {
         project,
@@ -18,15 +24,12 @@
         policy: Models.PolicyUserLimit;
     } = $props();
 
-    let maxUsersInputField: HTMLInputElement | null = $state(null);
-
-    let value = $state(policy.total !== 0 ? 'limited' : 'unlimited');
+    let value = $state<UsersLimitMode>(policy.total !== 0 ? 'limited' : 'unlimited');
     let newLimit = $state(policy.total !== 0 ? policy.total : 100);
 
     const isLimited = $derived(value === 'limited');
-    const btnDisabled = $derived.by(() => {
-        return (!isLimited && policy.total === 0) || (isLimited && policy.total === newLimit);
-    });
+    const limitError = $derived(isLimited ? usersLimitError(newLimit) : null);
+    const btnDisabled = $derived(!!limitError || !usersLimitChanged(value, newLimit, policy.total));
 
     async function updateLimit() {
         try {
@@ -47,14 +50,6 @@
             trackError(error, Submit.AuthLimitUpdate);
         }
     }
-
-    $effect(() => {
-        if (isLimited && maxUsersInputField) {
-            tick().then(() => {
-                maxUsersInputField.focus();
-            });
-        }
-    });
 </script>
 
 <CardGrid>
@@ -83,10 +78,16 @@
                     name="limit"
                     id="limit"
                     class="input-text"
-                    max="10000"
+                    min={USERS_LIMIT_MIN}
+                    max={USERS_LIMIT_MAX}
+                    step={1}
+                    state={limitError ? 'error' : 'default'}
                     disabled={!isLimited}
                     bind:value={newLimit} />
             </Layout.Stack>
+            {#if limitError}
+                <Input.Helper state="error">{limitError}</Input.Helper>
+            {/if}
         </Layout.Stack>
     </svelte:fragment>
 
