@@ -202,6 +202,12 @@ async function updateProjectOAuth({
                 prompt: (promptValues as ProjectOAuth2GooglePrompt[]) ?? [],
                 enabled
             });
+        case OAuthProvider.Huggingface:
+            return projectSdk.updateOAuth2HuggingFace({
+                clientId: getAppId(),
+                clientSecret: getSecret(),
+                enabled
+            });
         case OAuthProvider.Keycloak:
             return projectSdk.updateOAuth2Keycloak({
                 endpoint: getDetail('endpoint'),

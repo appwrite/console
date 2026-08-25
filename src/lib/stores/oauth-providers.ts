@@ -145,6 +145,12 @@ export const oAuthProviders: Record<string, Provider> = {
         component: Google,
         internal: true
     },
+    huggingface: {
+        name: 'Hugging Face',
+        icon: 'huggingface',
+        docs: 'https://huggingface.co/docs/hub/oauth',
+        component: Main
+    },
     keycloak: {
         name: 'Keycloak',
         icon: 'keycloak',
