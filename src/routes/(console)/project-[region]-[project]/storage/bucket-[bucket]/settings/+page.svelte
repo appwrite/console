@@ -412,9 +412,11 @@
                 <Layout.Stack gap="s">
                     {#key extensions.length}
                         <InputTags
-                            id="user-labels"
-                            label="Labels"
-                            placeholder="Select or type user labels"
+                            id="allowed-extensions"
+                            label="File extensions"
+                            placeholder={extensions.length
+                                ? ''
+                                : 'Allowed file extensions (mp4, jpg, pdf, etc.)'}
                             bind:tags={extensions} />
                     {/key}
                     <Layout.Stack direction="row" wrap="wrap">
