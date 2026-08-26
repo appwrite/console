@@ -20,6 +20,7 @@
         checkForNewDevUpgradePro,
         checkForUpgradingStatus,
         checkForUsageLimit,
+        readOnly,
         syncProgramMembershipAlerts,
         checkPaymentAuthorizationRequired,
         paymentExpired,
@@ -322,7 +323,11 @@
 
     // Not gated on the organization id: status and remarks change without it, and the banners
     // above have to follow. checkForUsageLimits returns early on a repeat id.
-    $: syncProgramMembershipAlerts($organization);
+    // Only ever raises readOnly: it may already be true for an invoice or a budget, and this
+    // check knows nothing about those.
+    $: if (syncProgramMembershipAlerts($organization)) {
+        readOnly.set(true);
+    }
 
     $: if ($requestedMigration) {
         openMigrationWizard();
