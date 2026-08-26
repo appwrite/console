@@ -1,14 +1,14 @@
 import { parse, readEnvFile } from '$lib/helpers/envfile';
 import { expect, test } from 'vitest';
 
-function encodeUtf16(text: string, littleEndian: boolean, bom: boolean): Uint8Array {
+function encodeUtf16(text: string, littleEndian: boolean, bom: boolean): ArrayBuffer {
     const codeUnits = bom
         ? [0xfeff, ...text.split('').map((c) => c.charCodeAt(0))]
         : text.split('').map((c) => c.charCodeAt(0));
-    const bytes = new Uint8Array(codeUnits.length * 2);
-    const view = new DataView(bytes.buffer);
+    const buffer = new ArrayBuffer(codeUnits.length * 2);
+    const view = new DataView(buffer);
     codeUnits.forEach((unit, i) => view.setUint16(i * 2, unit, littleEndian));
-    return bytes;
+    return buffer;
 }
 
 const ENV = 'ACME_SERVICE_API_KEY=secret-value\nOTHER_KEY=other';
