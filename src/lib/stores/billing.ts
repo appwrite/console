@@ -32,6 +32,7 @@ import { user } from './user';
 
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProgramMembershipAlert from '$routes/(console)/organization-[organization]/programMembershipAlert.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export const roles = [
@@ -60,6 +61,22 @@ export const roles = [
 export const teamStatusReadonly = 'readonly';
 export const teamStatusUpgrading = 'upgrading';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const programMembershipUnverified = 'program_membership_unverified';
+export const programMembershipInvalid = 'program_membership_invalid';
+
+/**
+ * Set once verification of a program membership starts failing because the linked
+ * GitHub identity can no longer be used. The API returns it, but the SDK's
+ * `Models.Organization` doesn't declare it yet.
+ */
+export function getProgramMembershipUnverifiedSince(
+    organization: Models.Organization
+): string | null {
+    return (
+        (organization as unknown as { programMembershipUnverifiedSince?: string })
+            ?.programMembershipUnverifiedSince ?? null
+    );
+}
 
 export const paymentMethods = derived(
     page,
@@ -455,6 +472,35 @@ export async function checkForUsageLimit(organization: Models.Organization) {
         });
         readOnly.set(true);
         return;
+    }
+
+    if (
+        organization?.status === teamStatusReadonly &&
+        (organization?.remarks === programMembershipUnverified ||
+            organization?.remarks === programMembershipInvalid)
+    ) {
+        headerAlert.add({
+            id: 'programMembershipRestricted',
+            component: ProgramMembershipAlert,
+            show: true,
+            importance: 11
+        });
+        readOnly.set(true);
+        return;
+    }
+
+    // Warning window: the GitHub link is dead but access isn't restricted yet,
+    // so this only surfaces the alert and lets the usage checks below run.
+    if (
+        organization?.status !== teamStatusReadonly &&
+        getProgramMembershipUnverifiedSince(organization)
+    ) {
+        headerAlert.add({
+            id: 'programMembershipWarning',
+            component: ProgramMembershipAlert,
+            show: true,
+            importance: 9
+        });
     }
 
     if (!organization?.billingLimits && organization?.status !== teamStatusReadonly) {

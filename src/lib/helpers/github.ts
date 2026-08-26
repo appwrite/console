@@ -1,3 +1,22 @@
+import { sdk } from '$lib/stores/sdk';
+import { OAuthProvider } from '@appwrite.io/console';
+
+/**
+ * Re-runs the GitHub OAuth flow for the account that is already signed in. The
+ * callback rebinds to the current user and overwrites the stored provider tokens,
+ * which is what refreshes an identity whose refresh token expired or was revoked.
+ */
+export function reconnectGithubIdentity(): void {
+    const returnUrl = window.location.origin + window.location.pathname;
+
+    sdk.forConsole.account.createOAuth2Session({
+        provider: OAuthProvider.Github,
+        success: returnUrl,
+        failure: returnUrl,
+        scopes: ['read:user', 'user:email']
+    });
+}
+
 export function getNestedRootDirectory(repository: string): string | null {
     const match = repository.match(/\/tree\/[^/]+\/(.+)$/);
     return match ? match[1] : null;
