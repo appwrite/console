@@ -20,6 +20,7 @@
         checkForNewDevUpgradePro,
         checkForUpgradingStatus,
         checkForUsageLimit,
+        syncProgramMembershipAlerts,
         checkPaymentAuthorizationRequired,
         paymentExpired,
         showUsageRatesModal
@@ -318,6 +319,10 @@
     }
 
     $: checkForUsageLimits($organization);
+
+    // Not gated on the organization id: status and remarks change without it, and the banners
+    // above have to follow. checkForUsageLimits returns early on a repeat id.
+    $: syncProgramMembershipAlerts($organization);
 
     $: if ($requestedMigration) {
         openMigrationWizard();
