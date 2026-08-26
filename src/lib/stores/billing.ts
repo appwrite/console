@@ -474,33 +474,37 @@ export async function checkForUsageLimit(organization: Models.Organization) {
         return;
     }
 
-    if (
+    const programMembershipRestricted =
         organization?.status === teamStatusReadonly &&
         (organization?.remarks === programMembershipUnverified ||
-            organization?.remarks === programMembershipInvalid)
-    ) {
-        headerAlert.add({
-            id: 'programMembershipRestricted',
-            component: ProgramMembershipAlert,
-            show: true,
-            importance: 11
-        });
+            organization?.remarks === programMembershipInvalid);
+
+    // Warning window: the GitHub link is dead but access isn't restricted yet.
+    const programMembershipWarning =
+        organization?.status !== teamStatusReadonly &&
+        !!getProgramMembershipUnverifiedSince(organization);
+
+    // add() no-ops on a known id, so show has to be pushed on every call. A stale show:true
+    // outranks lower-priority alerts and renders nothing in their place.
+    headerAlert.add({
+        id: 'programMembershipRestricted',
+        component: ProgramMembershipAlert,
+        show: programMembershipRestricted,
+        importance: 11
+    });
+    headerAlert.updateShow('programMembershipRestricted', programMembershipRestricted);
+
+    headerAlert.add({
+        id: 'programMembershipWarning',
+        component: ProgramMembershipAlert,
+        show: programMembershipWarning,
+        importance: 9
+    });
+    headerAlert.updateShow('programMembershipWarning', programMembershipWarning);
+
+    if (programMembershipRestricted) {
         readOnly.set(true);
         return;
-    }
-
-    // Warning window: the GitHub link is dead but access isn't restricted yet,
-    // so this only surfaces the alert and lets the usage checks below run.
-    if (
-        organization?.status !== teamStatusReadonly &&
-        getProgramMembershipUnverifiedSince(organization)
-    ) {
-        headerAlert.add({
-            id: 'programMembershipWarning',
-            component: ProgramMembershipAlert,
-            show: true,
-            importance: 9
-        });
     }
 
     if (!organization?.billingLimits && organization?.status !== teamStatusReadonly) {
