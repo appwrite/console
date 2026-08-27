@@ -1,33 +1,33 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import StateOfAppwriteSurvey from '$lib/images/promos/state-of-appwrite-survey.png';
+import InitPromo from '$lib/images/promos/init-2026.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const stateOfAppwriteSurveyPromo: BottomModalAlertItem = {
-        id: 'modal:state_of_appwrite_survey_announcement',
+    const initPromo: BottomModalAlertItem = {
+        id: 'modal:init_2026_announcement',
         src: {
-            dark: StateOfAppwriteSurvey,
-            light: StateOfAppwriteSurvey
+            dark: InitPromo,
+            light: InitPromo
         },
-        title: 'State of Appwrite Cloud',
+        title: 'Init is happening August 31 - September 4',
         message:
-            'Share your experience building with Appwrite Cloud and using AI tools, and help shape our product roadmap for 2026 and beyond.',
+            'Five days of product launches, live sessions, and community events. Claim your ticket to join.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Take the survey',
-            link: () => 'https://forms.gle/5cvWxTwhonoDCWsi7',
+            text: 'Claim your ticket',
+            link: () => 'https://new.appwrite.io/init',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(stateOfAppwriteSurveyPromo);
+    listOfPromotions.push(initPromo);
 }
 
 export function addBottomModalAlerts() {
