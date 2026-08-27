@@ -24,6 +24,7 @@ export const ENV = {
 export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED;
 export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE !== Mode.CLOUD;
+export const isMultiRegion = env.PUBLIC_APPWRITE_MULTI_REGION === 'true';
 export const isDev = ENV.DEV;
 export const isProd = ENV.PROD;
 export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;

@@ -5,7 +5,7 @@
     import { Container } from '$lib/layout';
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud, isMultiRegion } from '$lib/system';
     import { page } from '$app/state';
     import { registerCommands } from '$lib/commandCenter';
     import {
@@ -291,7 +291,7 @@
                     {/if}
 
                     <svelte:fragment slot="icons">
-                        {#if isCloud && $regionsStore?.regions}
+                        {#if (isCloud || isMultiRegion) && $regionsStore?.regions}
                             {@const region = findRegion(project)}
                             <Typography.Text>{region.name}</Typography.Text>
                         {/if}
