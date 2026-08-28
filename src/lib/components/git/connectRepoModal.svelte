@@ -13,7 +13,9 @@
     import { Click, trackEvent } from '$lib/actions/analytics';
     import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
     import { page } from '$app/state';
-    import { connectGitHub } from '$lib/stores/git';
+
+    import { connectVcsProvider, supportsRepositoryCreation } from '$lib/stores/git';
+    import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
 
     let {
         show = $bindable(false),
@@ -37,6 +39,11 @@
     let selectedInstallationId = $state('');
     let selectedRepository = $state('');
     let installations = $state({ installations: [], total: 0 });
+    const canCreateRepository = $derived(
+        installations.installations.some((entry) =>
+            supportsRepositoryCreation(entry.provider, $regionalConsoleVariables)
+        )
+    );
     let error = $state('');
 
     onMount(async () => {
@@ -96,7 +103,7 @@
     </span>
     {#if !!installations?.total}
         <Layout.Stack gap="xl">
-            {#if !onlyExisting}
+            {#if !onlyExisting && canCreateRepository}
                 <RepositoryBehaviour bind:repositoryBehaviour />
             {/if}
             {#if repositoryBehaviour === 'new'}
@@ -143,12 +150,26 @@
     <svelte:fragment slot="footer">
         {#if repositoryBehaviour === 'existing'}
             <Layout.Stack>
-                <Link variant="quiet" href={connectGitHub(callbackState).toString()}>
-                    <Layout.Stack direction="row" gap="xs">
-                        Missing a repository? check your permissions <Icon
-                            icon={IconArrowSmRight} />
-                    </Layout.Stack>
-                </Link>
+                {#if $installation?.provider === 'origin'}
+                    <Link variant="quiet" external href="https://cursor.com/codebase/settings/apps">
+                        <Layout.Stack direction="row" gap="xs">
+                            Missing a repository? check your repository access <Icon
+                                icon={IconArrowSmRight} />
+                        </Layout.Stack>
+                    </Link>
+                {:else}
+                    <Link
+                        variant="quiet"
+                        href={connectVcsProvider(
+                            $installation?.provider ?? 'github',
+                            callbackState
+                        ).toString()}>
+                        <Layout.Stack direction="row" gap="xs">
+                            Missing a repository? check your permissions <Icon
+                                icon={IconArrowSmRight} />
+                        </Layout.Stack>
+                    </Link>
+                {/if}
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>

@@ -10,7 +10,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty, Typography } from '@appwrite.io/pink-svelte';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount, untrack } from 'svelte';
     import { writable } from 'svelte/store';
     import ProductionBranch from '$lib/components/git/productionBranchFieldset.svelte';
@@ -32,7 +31,11 @@
     import Aside from '../(components)/aside.svelte';
     import { iconPath } from '$lib/stores/app';
     import Permissions from './permissions.svelte';
-    import { connectGitHub } from '$lib/stores/git';
+    import {
+        connectVcsProvider,
+        enabledVcsProviders,
+        supportsRepositoryCreation
+    } from '$lib/stores/git';
     import RepoCard from './repoCard.svelte';
     import { Dependencies } from '$lib/constants';
     import { getIconFromRuntime } from '$lib/stores/runtimes';
@@ -41,6 +44,12 @@
     import { validateVariables } from '$lib/helpers/variables';
 
     let { data }: { data: PageData } = $props();
+
+    const canCreateRepository = $derived(
+        data.installations.installations.some((entry) =>
+            supportsRepositoryCreation(entry.provider, $regionalConsoleVariables)
+        )
+    );
 
     const specificationOptions = $derived(
         (data.specificationsList?.specifications ?? []).map((size) => ({
@@ -241,6 +250,12 @@
     }
 
     $effect(() => {
+        if (!canCreateRepository) {
+            repositoryBehaviour = 'existing';
+        }
+    });
+
+    $effect(() => {
         if (repositoryBehaviour === 'new') {
             selectedInstallationId ??= $installation?.$id;
             repositoryName ??= name.split(' ').join('-').toLowerCase();
@@ -313,7 +328,9 @@
                     {#if !!data?.installations?.total}
                         <Fieldset legend="Git repository">
                             <Layout.Stack gap="xl">
-                                <RepositoryBehaviour bind:repositoryBehaviour />
+                                {#if canCreateRepository}
+                                    <RepositoryBehaviour bind:repositoryBehaviour />
+                                {/if}
                                 {#if repositoryBehaviour === 'new'}
                                     <NewRepository
                                         bind:selectedInstallationId
@@ -358,10 +375,17 @@
                                 title="Connect Git repository"
                                 description="Create and deploy a Site with a connected git repository.">
                                 <svelte:fragment slot="actions">
-                                    <Button secondary href={connectGitHub().toString()} size="s">
-                                        <Icon icon={IconGithub} slot="start" />
-                                        Connect to GitHub
-                                    </Button>
+                                    <Layout.Stack direction="row" justifyContent="center">
+                                        {#each enabledVcsProviders($regionalConsoleVariables?._APP_VCS_PROVIDERS) as provider (provider.id)}
+                                            <Button
+                                                secondary
+                                                href={connectVcsProvider(provider.id).toString()}
+                                                size="s">
+                                                <Icon icon={provider.icon} slot="start" />
+                                                Connect to {provider.label}
+                                            </Button>
+                                        {/each}
+                                    </Layout.Stack>
                                 </svelte:fragment>
                             </Empty>
                         </Card>
