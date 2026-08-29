@@ -36,6 +36,9 @@
         },
         backups: {
             root: 'Backup policies'
+        },
+        integrations: {
+            root: 'Platforms'
         }
     };
 
@@ -62,6 +65,9 @@
         },
         backups: {
             root: 'Import all backup policies'
+        },
+        integrations: {
+            root: 'Import all platforms (web, Flutter, iOS, Android, etc.)'
         }
     };
 
