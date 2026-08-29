@@ -7,6 +7,8 @@
     import { AppwriteException, type Models } from '@appwrite.io/console';
     import DiscountsApplied from './discountsApplied.svelte';
 
+    type PlanChangeEstimate = Models.EstimationUpdatePlan & Partial<Models.EstimationPlanChange>;
+
     export let billingPlan: Models.BillingPlan;
     export let collaborators: string[];
     export let couponData: Partial<Models.Coupon>;
@@ -14,9 +16,31 @@
     export let fixedCoupon = false; // If true, the coupon cannot be removed
     export let isDowngrade = false;
     export let organizationId: string | undefined = undefined;
+    export let estimationOverride: PlanChangeEstimate | null = null;
+    export let preferExternalEstimate = false;
 
     let budgetEnabled = false;
-    let estimation: Models.Estimation;
+    let estimation: Models.Estimation | PlanChangeEstimate;
+
+    function getEstimateDetails(value: Models.Estimation | PlanChangeEstimate) {
+        if (!value) return null;
+
+        return 'estimation' in value && value.estimation ? value.estimation : value;
+    }
+
+    function normalizeItems(items: unknown): Models.EstimationItem[] {
+        if (!items) return [];
+
+        if (Array.isArray(items)) {
+            return items as Models.EstimationItem[];
+        }
+
+        if (typeof items === 'object') {
+            return Object.values(items as Record<string, Models.EstimationItem>);
+        }
+
+        return [];
+    }
 
     async function getEstimate(
         billingPlan: string,
@@ -78,17 +102,24 @@
         }
     }
 
-    $: organizationId
-        ? getUpdatePlanEstimate(organizationId, billingPlan.$id, collaborators, couponData?.code)
-        : getEstimate(billingPlan.$id, collaborators, couponData?.code);
+    $: if (estimationOverride) {
+        estimation = estimationOverride;
+    } else if (preferExternalEstimate) {
+        estimation = undefined;
+    } else if (organizationId) {
+        getUpdatePlanEstimate(organizationId, billingPlan.$id, collaborators, couponData?.code);
+    } else {
+        getEstimate(billingPlan.$id, collaborators, couponData?.code);
+    }
 </script>
 
 {#if estimation}
+    {@const estimationDetails = getEstimateDetails(estimation)}
     <Card.Base padding="s">
         <Layout.Stack>
             <slot />
 
-            {#each estimation.items ?? [] as item}
+            {#each normalizeItems(estimationDetails?.items) as item}
                 <Layout.Stack direction="row" justifyContent="space-between">
                     <Typography.Text variant={isDowngrade ? 'm-500' : 'm-400'}
                         >{item.label}</Typography.Text>
@@ -96,7 +127,7 @@
                         >{formatCurrency(item.value)}</Typography.Text>
                 </Layout.Stack>
             {/each}
-            {#each estimation.discounts ?? [] as item}
+            {#each normalizeItems(estimationDetails?.discounts) as item}
                 <DiscountsApplied {couponData} {...item} />
             {/each}
 
@@ -108,15 +139,15 @@
             <Layout.Stack direction="row" justifyContent="space-between">
                 <Typography.Text>Total due</Typography.Text>
                 <Typography.Text>
-                    {formatCurrency(estimation.grossAmount)}
+                    {formatCurrency(estimationDetails?.grossAmount ?? 0)}
                 </Typography.Text>
             </Layout.Stack>
 
             <Typography.Text>
-                You'll pay <b>{formatCurrency(estimation.grossAmount)}</b>
+                You'll pay <b>{formatCurrency(estimationDetails?.grossAmount ?? 0)}</b>
                 now.
                 {#if couponData?.code}Once your credits run out,{:else}Then{/if} you'll be charged
-                <b>{formatCurrency(estimation.amount)}</b> every 30 days.
+                <b>{formatCurrency(estimationDetails?.amount ?? 0)}</b> every 30 days.
             </Typography.Text>
 
             <InputChoice
