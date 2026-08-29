@@ -31,6 +31,7 @@ export enum Dependencies {
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     MEMBERS = 'dependency:members',
+    CONSOLE_USERS = 'dependency:console_users',
     PROJECT = 'dependency:project',
     PROJECT_VARIABLES = 'dependency:project_variables',
     PROJECT_INSTALLATIONS = 'dependency:project_installations',
