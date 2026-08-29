@@ -119,6 +119,48 @@
             return resources.includes(MigrationResources.Backuppolicy);
         }
 
+        if (groupKey === 'authMethods') {
+            return resources.includes(MigrationResources.AuthMethods);
+        }
+
+        if (groupKey === 'protocols') {
+            return resources.includes(MigrationResources.Protocols);
+        }
+
+        if (groupKey === 'labels') {
+            return resources.includes(MigrationResources.Labels);
+        }
+
+        if (groupKey === 'services') {
+            return resources.includes(MigrationResources.Services);
+        }
+
+        if (groupKey === 'policies') {
+            return resources.includes(MigrationResources.Policies);
+        }
+
+        if (groupKey === 'smtp') {
+            return resources.includes(MigrationResources.SMTP);
+        }
+
+        if (groupKey === 'customDomains') {
+            return resources.includes(MigrationResources.Rule);
+        }
+
+        if (groupKey === 'integrations') {
+            return (
+                resources.includes(MigrationResources.Platform) ||
+                resources.includes(MigrationResources.ApiKey)
+            );
+        }
+
+        if (groupKey === 'settings') {
+            return (
+                resources.includes(MigrationResources.ProjectVariable) ||
+                resources.includes(MigrationResources.Webhook)
+            );
+        }
+
         const groupToResource: Record<string, MigrationResource> = {
             users: MigrationResources.User,
             databases: MigrationResources.Database
@@ -140,7 +182,16 @@
             storage: 'bucket',
             sites: 'site',
             messaging: 'provider',
-            backups: 'backup-policy'
+            backups: 'backup-policy',
+            authMethods: 'auth-methods',
+            protocols: 'protocols',
+            labels: 'labels',
+            services: 'services',
+            policies: 'policies',
+            smtp: 'smtp',
+            customDomains: 'rule',
+            integrations: 'platform',
+            settings: 'project-variable'
         };
         return map[groupKey] || groupKey;
     };
