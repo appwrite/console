@@ -23,6 +23,7 @@
         IconFolder,
         IconGlobeAlt,
         IconLightningBolt,
+        IconRss,
         IconSearch,
         IconUserGroup
     } from '@appwrite.io/pink-icons-svelte';
@@ -78,6 +79,7 @@
         { name: 'Databases', icon: IconDatabase, slug: 'databases', category: 'build' },
         { name: 'Functions', icon: IconLightningBolt, slug: 'functions', category: 'build' },
         { name: 'Messaging', icon: IconChatBubble, slug: 'messaging', category: 'build' },
+        { name: 'Realtime', icon: IconRss, slug: 'realtime', category: 'build' },
         { name: 'Storage', icon: IconFolder, slug: 'storage', category: 'build' },
         { name: 'Sites', icon: IconGlobeAlt, slug: 'sites', category: 'deploy' }
     ];

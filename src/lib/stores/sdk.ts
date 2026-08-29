@@ -140,7 +140,8 @@ export const realtime = {
     forProject(
         region: string,
         channels: string | string[],
-        callback: AppwriteRealtimeResponseEvent
+        callback: AppwriteRealtimeResponseEvent,
+        queries?: string[]
     ) {
         const endpoint = getApiEndpoint(region);
         if (endpoint !== clientRealtime.config.endpoint) {
@@ -150,19 +151,20 @@ export const realtime = {
         // because uses a different client!
         const realtime = new Realtime(clientRealtime);
 
-        return createRealtimeSubscription(realtime, channels, callback);
+        return createRealtimeSubscription(realtime, channels, callback, queries);
     },
 
     forConsole(
         region: string,
         channels: string | string[],
-        callback: AppwriteRealtimeResponseEvent
+        callback: AppwriteRealtimeResponseEvent,
+        queries?: string[]
     ): () => void {
         const realtimeInstance = region
             ? sdk.forConsoleIn(region).realtime
             : sdk.forConsole.realtime;
 
-        return createRealtimeSubscription(realtimeInstance, channels, callback);
+        return createRealtimeSubscription(realtimeInstance, channels, callback, queries);
     }
 };
 
@@ -223,10 +225,11 @@ export type AppwriteRealtimeResponseEvent = (response: RealtimeResponse) => void
 function createRealtimeSubscription(
     realtimeInstance: Realtime,
     channels: string | string[],
-    callback: AppwriteRealtimeResponseEvent
+    callback: AppwriteRealtimeResponseEvent,
+    queries?: string[]
 ): () => void {
     const channelsArray = Array.isArray(channels) ? channels : [channels];
-    const subscriptionPromise = realtimeInstance.subscribe(channelsArray, callback);
+    const subscriptionPromise = realtimeInstance.subscribe(channelsArray, callback, queries);
 
     return () => {
         subscriptionPromise.then((sub) => sub.close());
