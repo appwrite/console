@@ -496,5 +496,9 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: var(--gap-l, 16px);
+
+        @media (max-width: 900px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 </style>
