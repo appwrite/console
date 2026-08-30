@@ -24,6 +24,7 @@
                 timeout: site?.timeout || undefined,
                 installCommand: site?.installCommand || undefined,
                 buildCommand: site?.buildCommand || undefined,
+                startCommand: site?.startCommand || undefined,
                 outputDirectory: site?.outputDirectory || undefined,
                 buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
                 adapter: site?.adapter as Adapter,

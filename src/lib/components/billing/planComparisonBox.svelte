@@ -86,6 +86,18 @@
                         {formatNum(currentPlan.executions)} executions
                     </span>
                 </li>
+                {#if currentPlan.domains > 0}
+                    <li class="list-item u-gap-4 u-cross-center">
+                        <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
+                        <span class="text">
+                            Limited to {currentPlan.domains} custom {pluralize(
+                                currentPlan.domains,
+                                'domain'
+                            )}
+                            per project
+                        </span>
+                    </li>
+                {/if}
             </ul>
         {:else}
             <ul class="un-order-list">
@@ -105,12 +117,22 @@
                 <li>
                     Limited to {formatNum(currentPlan.executions)} executions
                 </li>
+                {#if currentPlan.domains > 0}
+                    <li>
+                        Limited to {currentPlan.domains} custom {pluralize(
+                            currentPlan.domains,
+                            'domain'
+                        )} per project
+                    </li>
+                {:else}
+                    <li>Unlimited custom domains</li>
+                {/if}
             </ul>
         {/if}
     {:else if planHasGroup(selectedTab, BillingPlanGroup.Pro)}
         <Typography.Text>Everything in the Free plan, plus:</Typography.Text>
         <ul class="un-order-list">
-            <li>Unlimited databases, buckets, functions</li>
+            <li>Unlimited databases, buckets, functions, and custom domains</li>
             <li>Unlimited seats</li>
             <li>{currentPlan.bandwidth}GB bandwidth</li>
             <li>{currentPlan.storage}GB storage</li>

@@ -91,7 +91,8 @@
                 providerRepositoryId: func.providerRepositoryId || undefined,
                 providerBranch: selectedBranch,
                 providerSilentMode: silentMode,
-                providerRootDirectory: selectedDir
+                providerRootDirectory: selectedDir,
+                buildSpecification: func.buildSpecification || undefined
             });
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -129,7 +130,21 @@
         selectedDir !== func?.providerRootDirectory;
 
     async function connect(selectedInstallationId: string, selectedRepository: string) {
+        let nextBranch = func?.providerBranch ?? 'main';
         try {
+            const branchList = await sdk
+                .forProject(page.params.region, page.params.project)
+                .vcs.listRepositoryBranches({
+                    installationId: selectedInstallationId,
+                    providerRepositoryId: selectedRepository
+                });
+            const sorted = sortBranches(branchList.branches);
+            nextBranch =
+                sorted.find((branch) => branch.name === func?.providerBranch)?.name ??
+                sorted.find((branch) => branch.name === 'main' || branch.name === 'master')?.name ??
+                sorted[0]?.name ??
+                nextBranch;
+
             if (!isValueOfStringEnum(Runtime, func.runtime)) {
                 throw new Error(`Invalid runtime: ${func.runtime}`);
             }
@@ -148,7 +163,10 @@
                 scopes: (func.scopes as Scopes[]) || undefined,
                 installationId: selectedInstallationId,
                 providerRepositoryId: selectedRepository,
-                providerBranch: 'main'
+                providerBranch: nextBranch,
+                providerSilentMode: func.providerSilentMode ?? undefined,
+                providerRootDirectory: func.providerRootDirectory ?? undefined,
+                buildSpecification: func.buildSpecification || undefined
             });
             await invalidate(Dependencies.FUNCTION);
         } catch {
@@ -275,7 +293,7 @@
 {#if showSelectRoot}
     <SelectRootModal
         bind:show={showSelectRoot}
-        product="sites"
+        product="functions"
         bind:rootDir={selectedDir}
         branch={selectedBranch} />
 {/if}

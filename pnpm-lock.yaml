@@ -12,8 +12,8 @@ importers:
         specifier: ^1.1.24
         version: 1.1.24(svelte@5.55.0)(zod@3.25.76)
       '@appwrite.io/console':
-        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@83fd10c
-        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@83fd10c
+        specifier: https://pkg.vc/-/@appwrite/@appwrite.io/console@67539a6
+        version: https://pkg.vc/-/@appwrite/@appwrite.io/console@67539a6
       '@appwrite.io/pink-icons':
         specifier: 0.25.0
         version: 0.25.0
@@ -75,8 +75,8 @@ importers:
         specifier: ^5.1.7
         version: 5.1.7
       nanotar:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.3.0
+        version: 0.3.0
       pretty-bytes:
         specifier: ^6.1.1
         version: 6.1.1
@@ -281,9 +281,10 @@ packages:
   '@analytics/type-utils@0.6.4':
     resolution: {integrity: sha512-Ou1gQxFakOWLcPnbFVsrPb8g1wLLUZYYJXDPjHkG07+5mustGs5yqACx42UAu4A6NszNN6Z5gGxhyH45zPWRxw==}
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@83fd10c':
-    resolution: {integrity: sha512-Mlq0dfJrcqUNFt+QUmrieHrJSScOUniigt1PL5Xum7QEDgT8Z/mMhG/xUcVfZqXtlF5gS4Sq7n72EB6P/3+kmQ==, tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@83fd10c}
-    version: 7.0.0
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@67539a6':
+    resolution: {integrity: sha512-IV+eVqF6tzL/voA1vqNtn5hL9lgJL78MVZkP4ABYwyaDRaXFyLQbPiRlJJesN4m7PYlCztyfAqcOn3QdCCjwIQ==, tarball: https://pkg.vc/-/@appwrite/@appwrite.io/console@67539a6}
+    version: 8.2.0
+    engines: {node: '>=18.0.0'}
 
   '@appwrite.io/pink-icons-svelte@2.0.0-RC.1':
     resolution: {integrity: sha512-iLFlV55hj8mGuAbmxJGenxN5RaZMmVT4GJb9dv/MP1xBAtYibFq7JvBcxm18qV2KU8c31Rntf+Ub4GL7HwqTYg==}
@@ -2675,8 +2676,8 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  nanotar@0.1.1:
-    resolution: {integrity: sha512-AiJsGsSF3O0havL1BydvI4+wR76sKT+okKRwWIaK96cZUnXqH0uNBOsHlbwZq3+m2BR1VKqHDVudl3gO4mYjpQ==}
+  nanotar@0.3.0:
+    resolution: {integrity: sha512-Kv2JYYiCzt16Kt5QwAc9BFG89xfPNBx+oQL4GQXD9nLqPkZBiNaqaCWtwnbk/q7UVsTYevvM1b0UF8zmEI4pCg==}
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -3631,7 +3632,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.4': {}
 
-  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@83fd10c':
+  '@appwrite.io/console@https://pkg.vc/-/@appwrite/@appwrite.io/console@67539a6':
     dependencies:
       json-bigint: 1.0.0
 
@@ -6160,7 +6161,7 @@ snapshots:
 
   nanoid@5.1.7: {}
 
-  nanotar@0.1.1: {}
+  nanotar@0.3.0: {}
 
   natural-compare@1.4.0: {}
 

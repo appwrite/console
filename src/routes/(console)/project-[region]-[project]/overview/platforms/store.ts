@@ -1,5 +1,4 @@
 import type { ComponentType } from 'svelte';
-import { PlatformType } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
 
@@ -12,7 +11,7 @@ export const columns = writable<Column[]>([
 
 export type PlatformProps = {
     key?: string;
-    platform?: PlatformType;
+    platform?: string;
     isConnectPlatform: boolean;
 };
 

@@ -47,6 +47,9 @@ const initialFormData = {
     messaging: {
         root: false,
         messages: false
+    },
+    backups: {
+        root: false
     }
 };
 
@@ -84,7 +87,8 @@ export const ResourcesFriendly = {
     provider: { singular: 'Provider', plural: 'Providers' },
     topic: { singular: 'Topic', plural: 'Topics' },
     subscriber: { singular: 'Subscriber', plural: 'Subscribers' },
-    message: { singular: 'Message', plural: 'Messages' }
+    message: { singular: 'Message', plural: 'Messages' },
+    'backup-policy': { singular: 'Backup Policy', plural: 'Backup Policies' }
 };
 
 export const providerResources: ProviderResourceMap = {
@@ -147,6 +151,9 @@ export const migrationFormToResources = <P extends Provider>(
     }
     if (formData.messaging.messages) {
         addResource(MigrationResources.Message);
+    }
+    if (formData.backups.root) {
+        addResource(MigrationResources.Backuppolicy);
     }
 
     return resources as ProviderResourceMap[P];
@@ -223,6 +230,9 @@ export const resourcesToMigrationForm = (resources: MigrationResource[]): Migrat
     }
     if (resources.includes(MigrationResources.Message)) {
         formData.messaging.messages = true;
+    }
+    if (resources.includes(MigrationResources.Backuppolicy)) {
+        formData.backups.root = true;
     }
 
     return formData;

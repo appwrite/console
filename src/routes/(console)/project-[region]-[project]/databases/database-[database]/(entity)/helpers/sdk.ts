@@ -1,4 +1,8 @@
 import { sdk } from '$lib/stores/sdk';
+import { flags } from '$lib/flags';
+import { user } from '$lib/stores/user';
+import { organization } from '$lib/stores/organization';
+import { get } from 'svelte/store';
 import type { Page } from '@sveltejs/kit';
 import type { TerminologyResult } from './types';
 import {
@@ -237,11 +241,18 @@ function buildDatabaseSdk(region: string, project: string, type: DatabaseType): 
                 databases: []
             };
 
+            const isMultiDb = flags.multiDb({
+                account: get(user),
+                organization: get(organization)
+            });
+
             const [tablesSettled, documentsSettled, vectorsSettled, dedicatedSettled] =
                 await Promise.allSettled([
                     baseSdk.tablesDB.list(params),
-                    baseSdk.documentsDB.list(params),
-                    baseSdk.vectorsDB.list(params),
+                    isMultiDb
+                        ? baseSdk.documentsDB.list(params)
+                        : Promise.resolve(emptyDatabaseList),
+                    isMultiDb ? baseSdk.vectorsDB.list(params) : Promise.resolve(emptyDatabaseList),
                     baseSdk.compute.listDatabases({
                         queries: params.queries,
                         search: params.search

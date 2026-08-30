@@ -99,14 +99,14 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         loadFailedInvoices(project.teamId);
     }
 
-    if (!includedInBasePlans) {
+    if (!includedInBasePlans && organizationPlan) {
         // save the custom plan to `plansInfo` cache.
         plansInfo.set(organization.billingPlanId, organizationPlan);
     }
 
     // Track console access for cloud projects (fire-and-forget, backend has 6-day cooldown).
     // Skip if paused — user must explicitly resume via the paused project modal.
-    if (isCloud && browser && project.status !== 'paused') {
+    if (isCloud && browser && project.status !== 'paused' && scopes.includes('projects.write')) {
         generateFingerprintToken()
             .then((fingerprint) => {
                 sdk.forConsole.client.headers['X-Appwrite-Console-Fingerprint'] = fingerprint;

@@ -584,7 +584,7 @@
                         color: '#68A3FE',
                         tooltip: {
                             title: 'Backups storage',
-                            label: `${Math.round(bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB') * 100) / 100}MB`
+                            label: `${Math.round(bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB') * 100) / 100}GB`
                         }
                     },
                     {

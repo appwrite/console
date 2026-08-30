@@ -13,6 +13,7 @@
         Card,
         Tooltip
     } from '@appwrite.io/pink-svelte';
+    import { ID } from '@appwrite.io/console';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import {
         IconVue,
@@ -34,7 +35,6 @@
     import { fade } from 'svelte/transition';
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
-    import { PlatformType } from '@appwrite.io/console';
     import {
         ReactFrameworkIcon,
         SvelteFrameworkIcon,
@@ -56,7 +56,7 @@
     } from './store';
     import LlmBanner from './llmBanner.svelte';
 
-    let { key, isConnectPlatform = false, platform = PlatformType.Web }: PlatformProps = $props();
+    let { key, isConnectPlatform = false, platform = 'web' }: PlatformProps = $props();
 
     let showExitModal = $state(false);
     let isCreatingPlatform = $state(false);
@@ -225,13 +225,13 @@ APPWRITE_ENDPOINT = "${sdk.forProject(page.params.region, page.params.project).c
 
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform({
-                projectId,
-                type: PlatformType.Web,
-                name: `${selectedFramework.label} app`,
-                key: key,
-                hostname: finalHostname
-            });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .project.createWebPlatform({
+                    platformId: ID.unique(),
+                    name: `${selectedFramework.label} app`,
+                    hostname: finalHostname
+                });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

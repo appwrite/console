@@ -1,25 +1,22 @@
 <script module lang="ts">
-    import {
-        EmailTemplateLocale,
-        EmailTemplateType,
-        SmsTemplateLocale,
-        SmsTemplateType
-    } from '@appwrite.io/console';
+    import { EmailTemplateLocale, EmailTemplateType, type Models } from '@appwrite.io/console';
 
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import type { EmailTemplateForm } from './store';
 
     export async function loadEmailTemplate(
+        region: string,
         projectId: string,
         type: EmailTemplateType,
-        locale: EmailTemplateLocale
-    ) {
+        locale: EmailTemplateLocale = EmailTemplateLocale.En
+    ): Promise<EmailTemplateForm> {
         try {
-            return await sdk.forConsole.projects.getEmailTemplate({
-                projectId,
-                type: type,
-                locale: locale
+            const template = await sdk.forProject(region, projectId).project.getEmailTemplate({
+                templateId: type,
+                locale
             });
+            return normalizeEmailTemplate(template, type, locale);
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -27,23 +24,18 @@
             });
         }
     }
-    export async function loadSmsTemplate(
-        projectId: string,
-        type: SmsTemplateType,
-        locale: SmsTemplateLocale
-    ) {
-        try {
-            return await sdk.forConsole.projects.getSMSTemplate({
-                projectId,
-                type,
-                locale
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-        }
+
+    function normalizeEmailTemplate(
+        template: Models.EmailTemplate,
+        type: EmailTemplateType,
+        locale: EmailTemplateLocale = EmailTemplateLocale.En
+    ): EmailTemplateForm {
+        return {
+            ...template,
+            type,
+            templateId: template.templateId ?? type,
+            locale: template.locale ?? locale
+        };
     }
 </script>
 
@@ -75,7 +67,12 @@
         templateType = type;
         isTemplateLoading = true;
 
-        $emailTemplate = await loadEmailTemplate(page.params.project, type, EmailTemplateLocale.En);
+        $emailTemplate = await loadEmailTemplate(
+            page.params.region,
+            page.params.project,
+            type,
+            EmailTemplateLocale.En
+        );
         $baseEmailTemplate = { ...$emailTemplate };
 
         isTemplateLoading = false;

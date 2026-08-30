@@ -12,7 +12,7 @@
     import { Link } from '$lib/elements';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { adapterDataList } from './store';
-    import { getFrameworkIcon } from '$lib/stores/sites';
+    import { getFrameworkIcon, type FrameworkAdapterWithStartCommand } from '$lib/stores/sites';
     import { page } from '$app/state';
 
     let {
@@ -28,40 +28,37 @@
     let frameworkKey = $state(site.framework);
     let installCommand = $state(site?.installCommand);
     let buildCommand = $state(site?.buildCommand);
+    let startCommand = $state(site?.startCommand);
     let outputDirectory = $state(site?.outputDirectory);
     let fallback = $state(site?.fallbackFile);
     let adapter: Adapter = $state(site.adapter as Adapter);
 
-    let selectedFramework: Models.Framework = $derived(
+    let selectedFramework = $state(
         frameworks.find((framework) => framework.key === site.framework)
     );
     let showFallback = $derived(adapter === Adapter.Static);
+    let lastFrameworkAdapterKey = $state('');
 
     let isUntouched = $derived(
         installCommand === site?.installCommand &&
             buildCommand === site?.buildCommand &&
+            startCommand === site?.startCommand &&
             outputDirectory === site?.outputDirectory &&
             selectedFramework?.key === site?.framework &&
             (fallback ?? '') === (site?.fallbackFile ?? '') &&
             (adapter ?? '') === (site?.adapter ?? '')
     );
-    let frameworkAdapterData = $derived(
-        selectedFramework.adapters.find((a) => a.key === adapter) ?? selectedFramework.adapters[0]
+    let frameworkAdapterData: FrameworkAdapterWithStartCommand = $derived(
+        (selectedFramework.adapters.find((a) => a.key === adapter) ??
+            selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand
     );
 
     $effect(() => {
-        if (adapter) {
-            const data = selectedFramework.adapters.find((a) => a.key === adapter);
-            if (data) {
-                installCommand = data.installCommand;
-                buildCommand = data.buildCommand;
-                outputDirectory = data.outputDirectory;
-                fallback = data.fallbackFile;
-            }
-        }
-    });
+        if (!selectedFramework) return;
 
-    $effect(() => {
+        const frameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
+        const hasFrameworkSelectionChanged = frameworkAdapterKey !== lastFrameworkAdapterKey;
+
         if (selectedFramework?.key !== site.framework) {
             // Update adapter
             const singleAdapter = selectedFramework?.adapters?.length <= 1;
@@ -78,21 +75,37 @@
             }
 
             //Update values
-            const data =
-                selectedFramework.adapters.find((a) => a.key === adapter) ??
-                selectedFramework.adapters[0];
+            const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
+                selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
             installCommand = data.installCommand;
             buildCommand = data.buildCommand;
+            startCommand = data.startCommand;
             outputDirectory = data.outputDirectory;
             adapter = data.key as Adapter;
             fallback = data.fallbackFile;
-        } else {
-            adapter = site.adapter as Adapter;
-            installCommand = site?.installCommand ?? frameworkAdapterData.installCommand;
-            buildCommand = site?.buildCommand ?? frameworkAdapterData.buildCommand;
-            outputDirectory = site?.outputDirectory ?? frameworkAdapterData.outputDirectory;
-            fallback = site?.fallbackFile ?? frameworkAdapterData.fallbackFile;
+        } else if (hasFrameworkSelectionChanged) {
+            const data = (selectedFramework.adapters.find((a) => a.key === adapter) ??
+                selectedFramework.adapters[0]) as FrameworkAdapterWithStartCommand;
+            const isOriginalAdapter = adapter === site.adapter;
+
+            installCommand = isOriginalAdapter
+                ? (site?.installCommand ?? frameworkAdapterData.installCommand)
+                : data.installCommand;
+            buildCommand = isOriginalAdapter
+                ? (site?.buildCommand ?? frameworkAdapterData.buildCommand)
+                : data.buildCommand;
+            startCommand = isOriginalAdapter
+                ? (site?.startCommand ?? frameworkAdapterData.startCommand)
+                : data.startCommand;
+            outputDirectory = isOriginalAdapter
+                ? (site?.outputDirectory ?? frameworkAdapterData.outputDirectory)
+                : data.outputDirectory;
+            fallback = isOriginalAdapter
+                ? (site?.fallbackFile ?? data.fallbackFile)
+                : data.fallbackFile;
         }
+
+        lastFrameworkAdapterKey = `${selectedFramework.key}:${adapter ?? ''}`;
     });
 
     $effect(() => {
@@ -149,6 +162,7 @@
                 timeout: site.timeout || undefined,
                 installCommand: installCommand || undefined,
                 buildCommand: buildCommand || undefined,
+                startCommand: startCommand || undefined,
                 outputDirectory: outputDirectory || undefined,
                 buildRuntime: (site?.buildRuntime as BuildRuntime) || undefined,
                 adapter: (adptr?.key as Adapter) || undefined,
@@ -178,13 +192,17 @@
         }
     }
 
-    function reset(type: 'installCommand' | 'buildCommand' | 'outputDirectory') {
-        const data = selectedFramework.adapters.find((a) => a.key === adapter);
+    function reset(type: 'installCommand' | 'buildCommand' | 'startCommand' | 'outputDirectory') {
+        const data = selectedFramework.adapters.find(
+            (a) => a.key === adapter
+        ) as FrameworkAdapterWithStartCommand;
 
         if (type === 'installCommand') {
             installCommand = data.installCommand;
         } else if (type === 'buildCommand') {
             buildCommand = data.buildCommand;
+        } else if (type === 'startCommand') {
+            startCommand = data.startCommand;
         } else if (type === 'outputDirectory') {
             outputDirectory = data.outputDirectory;
         }
@@ -292,7 +310,8 @@
                                 secondary
                                 size="s"
                                 on:click={() => reset('installCommand')}
-                                disabled={installCommand === frameworkAdapterData?.installCommand}>
+                                disabled={(installCommand ?? '') ===
+                                    (frameworkAdapterData?.installCommand ?? '')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
@@ -306,11 +325,30 @@
                             <Button
                                 secondary
                                 size="s"
-                                disabled={buildCommand === frameworkAdapterData?.buildCommand}
+                                disabled={(buildCommand ?? '') ===
+                                    (frameworkAdapterData?.buildCommand ?? '')}
                                 on:click={() => reset('buildCommand')}>
                                 Reset
                             </Button>
                         </Layout.Stack>
+                        {#if adapter === Adapter.Ssr}
+                            <Layout.Stack gap="s" direction="row" alignItems="flex-end">
+                                <InputText
+                                    id="startCommand"
+                                    label="Start command"
+                                    bind:value={startCommand}
+                                    placeholder={frameworkAdapterData?.startCommand ||
+                                        'Enter start command'} />
+                                <Button
+                                    secondary
+                                    size="s"
+                                    disabled={(startCommand ?? '') ===
+                                        (frameworkAdapterData?.startCommand ?? '')}
+                                    on:click={() => reset('startCommand')}>
+                                    Reset
+                                </Button>
+                            </Layout.Stack>
+                        {/if}
                         <Layout.Stack gap="s" direction="row" alignItems="flex-end">
                             <InputText
                                 id="outputDirectory"

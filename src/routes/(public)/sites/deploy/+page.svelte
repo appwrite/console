@@ -123,11 +123,13 @@
             const preset = currentUrl.searchParams.get('preset');
             const install = currentUrl.searchParams.get('install');
             const build = currentUrl.searchParams.get('build');
+            const start = currentUrl.searchParams.get('start');
             const output = currentUrl.searchParams.get('output');
 
             if (preset) url.searchParams.set('preset', preset);
             if (install) url.searchParams.set('install', install);
             if (build) url.searchParams.set('build', build);
+            if (start) url.searchParams.set('start', start);
             if (output) url.searchParams.set('output', output);
         }
 

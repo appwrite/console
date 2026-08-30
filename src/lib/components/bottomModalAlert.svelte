@@ -141,11 +141,12 @@
     // the button component cannot have both href and on:click!
     function triggerWindowLink(alert: BottomModalAlertItem, event?: string) {
         const alertAction = alert.cta;
-        const shouldShowUpgrade = canUpgrade($organization?.billingPlanDetails);
+        const shouldShowUpgrade =
+            !alertAction.skipUpgradeRedirect && canUpgrade($organization?.billingPlanDetails);
 
         // for correct event tracking after removal
         const currentModalId = currentModalAlert.id;
-        const organizationId = $project.teamId ?? $organization.$id;
+        const organizationId = $project?.teamId ?? $organization?.$id;
 
         const url = shouldShowUpgrade
             ? getChangePlanUrl(organizationId)

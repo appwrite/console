@@ -56,20 +56,17 @@
 
     async function updatePasswordPolicies() {
         try {
-            const projectSdk = sdk.forConsole.projects;
+            const projectSdk = sdk.forProject(project.region, project.$id).project;
 
-            await projectSdk.updateAuthPasswordHistory({
-                projectId: project.$id,
-                limit: passwordHistoryEnabled ? passwordHistory : 0
+            await projectSdk.updatePasswordHistoryPolicy({
+                total: passwordHistoryEnabled ? passwordHistory : 0
             });
 
-            await projectSdk.updateAuthPasswordDictionary({
-                projectId: project.$id,
+            await projectSdk.updatePasswordDictionaryPolicy({
                 enabled: passwordDictionary
             });
 
-            await projectSdk.updatePersonalDataCheck({
-                projectId: project.$id,
+            await projectSdk.updatePasswordPersonalDataPolicy({
                 enabled: authPersonalDataCheck
             });
 

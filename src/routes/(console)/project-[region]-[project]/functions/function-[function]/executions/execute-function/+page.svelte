@@ -211,7 +211,7 @@
 
                                     <Layout.Stack gap="xs">
                                         {#if headers}
-                                            {#each headers as [name, value], index}
+                                            {#each headers as _, index (index)}
                                                 <Layout.Stack direction="row" alignItems="flex-end">
                                                     <Input.ComboBox
                                                         fullWidth
@@ -221,14 +221,14 @@
                                                         hideEmpty
                                                         options={filteredKeyList}
                                                         id={`key-${index}`}
-                                                        bind:value={name}
-                                                        bind:search={name}>
+                                                        bind:value={headers[index][0]}
+                                                        bind:search={headers[index][0]}>
                                                     </Input.ComboBox>
                                                     <InputText
                                                         label={index === 0 ? 'Value' : ''}
                                                         placeholder="Enter value"
                                                         id={`value-${index}`}
-                                                        bind:value>
+                                                        bind:value={headers[index][1]}>
                                                         <span slot="info">
                                                             <Tooltip>
                                                                 <Layout.Stack alignItems="center">
@@ -248,7 +248,9 @@
                                                     <Button
                                                         text
                                                         icon
-                                                        disabled={(!name || !value) && index === 0}
+                                                        disabled={(!headers[index][0] ||
+                                                            !headers[index][1]) &&
+                                                            index === 0}
                                                         on:click={() => {
                                                             if (index === 0) {
                                                                 headers = [['', '']];

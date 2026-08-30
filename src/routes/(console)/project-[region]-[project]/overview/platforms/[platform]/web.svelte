@@ -9,21 +9,19 @@
     import { project } from '../../../store';
     import { platform } from './store';
     import { extendedHostnameRegex } from '$lib/helpers/string';
+    import type { Models } from '@appwrite.io/console';
 
     let hostname: string = null;
 
     onMount(() => {
-        hostname ??= $platform.hostname;
+        hostname ??= ($platform as Models.PlatformWeb).hostname;
     });
 
     async function updateHostname() {
         try {
-            await sdk.forConsole.projects.updatePlatform({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).project.updateWebPlatform({
                 platformId: $platform.$id,
                 name: $platform.name,
-                key: $platform.key || undefined,
-                store: $platform.store || undefined,
                 hostname
             });
             await invalidate(Dependencies.PLATFORM);
@@ -56,7 +54,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={hostname === $platform.hostname} submit>Update</Button>
+            <Button disabled={hostname === ($platform as Models.PlatformWeb).hostname} submit
+                >Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

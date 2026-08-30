@@ -47,13 +47,17 @@
         onCreateIndex,
         onDeleteIndexes,
         emptyIndexesSheetView,
-        emptyEntitiesSheetView
+        emptyEntitiesSheetView,
+        createIndexForm,
+        createIndexRef = $bindable()
     }: {
         entity: Entity;
         onCreateIndex: (index: CreateIndexesCallbackType) => Promise<void>;
         onDeleteIndexes: (indexKeys: string[]) => Promise<void>;
         emptyIndexesSheetView: Snippet<[() => void]>;
         emptyEntitiesSheetView?: Snippet<[() => void]>;
+        createIndexForm?: Snippet;
+        createIndexRef?: { create: () => Promise<void> };
     } = $props();
 
     let showCreateIndex = $state(false);
@@ -194,7 +198,7 @@
             <Button
                 secondary
                 event="create_index"
-                disabled={!entity.fields?.length}
+                disabled={!createIndexForm && !entity.fields?.length}
                 on:click={() => (showCreateIndex = true)}>
                 <Icon icon={IconPlus} slot="start" size="s" />
                 Create index
@@ -345,9 +349,14 @@
     bind:show={showCreateIndex}
     submit={{
         text: 'Create',
-        onClick: async () => await createIndex.create()
+        onClick: async () =>
+            createIndexForm ? await createIndexRef?.create() : await createIndex.create()
     }}>
-    <CreateIndex {entity} {onCreateIndex} {showCreateIndex} bind:this={createIndex} />
+    {#if createIndexForm}
+        {@render createIndexForm()}
+    {:else}
+        <CreateIndex {entity} {onCreateIndex} {showCreateIndex} bind:this={createIndex} />
+    {/if}
 </SideSheet>
 
 {#if selectedIndex}

@@ -222,7 +222,6 @@ Set via `.env` (copy `.env.example`). All prefixed with `PUBLIC_` for SvelteKit:
 | `PUBLIC_STRIPE_KEY`                  | --                    | Stripe public key (cloud only) |
 | `PUBLIC_GROWTH_ENDPOINT`             | --                    | Analytics endpoint             |
 | `PUBLIC_CONSOLE_FEATURE_FLAGS`       | --                    | Feature flags                  |
-| `PUBLIC_CONSOLE_EMAIL_VERIFICATION`  | `false`               | Require email verification     |
 | `PUBLIC_CONSOLE_MOCK_AI_SUGGESTIONS` | `true`                | Mock AI in dev                 |
 
 ## Common pitfalls

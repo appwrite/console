@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/sveltekit';
 import { isCloud, isProd } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
+import { isVerifyEmailRedirectError } from '$lib/helpers/emailVerification';
 import type { HandleClientError } from '@sveltejs/kit';
 
 Sentry.init({
@@ -12,7 +13,9 @@ Sentry.init({
 });
 
 export const handleError: HandleClientError = ({ error, message, status }) => {
-    console.error(error);
+    if (!isVerifyEmailRedirectError(error)) {
+        console.error(error);
+    }
 
     let type;
     if (error instanceof AppwriteException) {

@@ -1,21 +1,39 @@
+import { page } from '$app/state';
+import { getApiEndpoint } from '$lib/stores/sdk';
 import { Client, Functions, ID, type Models, Sites, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { getApiEndpoint } from '$lib/stores/sdk';
-import { page } from '$app/state';
 
-type UploaderFile = {
+export type UploadKind = 'storage' | 'site-deployment' | 'function-deployment';
+export type UploadGroupKey = 'storage' | 'deployments';
+
+export type UploaderFile = {
     $id: string;
+    clientId: string;
     resourceId: string;
     name: string;
     progress: number;
     size: number;
     status: 'failed' | 'pending' | 'success';
+    kind: UploadKind;
     error?: string;
 };
+
+export type UploadGroupState = {
+    isOpen: boolean;
+    isVisible: boolean;
+};
+
+type UploadGroups = Record<UploadGroupKey, UploadGroupState>;
+
 export type Uploader = {
     isOpen: boolean;
-    isCollapsed: boolean;
     files: UploaderFile[];
+    groups: UploadGroups;
+};
+
+type UploadProgress = {
+    $id: string;
+    progress: number;
 };
 
 const temporaryStorage = (region: string, projectId: string) => {
@@ -39,67 +57,103 @@ const temporaryFunctions = (region: string, projectId: string) => {
     return new Functions(clientProject);
 };
 
+const MAX_CONCURRENT_UPLOADS = 5;
+
+const createInitialGroups = (): UploadGroups => ({
+    storage: {
+        isOpen: true,
+        isVisible: true
+    },
+    deployments: {
+        isOpen: true,
+        isVisible: true
+    }
+});
+
+export function getUploadGroupKey(kind: UploadKind): UploadGroupKey {
+    return kind === 'storage' ? 'storage' : 'deployments';
+}
+
+function hasFilesForGroup(files: UploaderFile[], groupKey: UploadGroupKey) {
+    return files.some((file) => getUploadGroupKey(file.kind) === groupKey);
+}
+
+function refreshUploaderState(state: Uploader) {
+    for (const groupKey of Object.keys(state.groups) as UploadGroupKey[]) {
+        if (!hasFilesForGroup(state.files, groupKey)) {
+            state.groups[groupKey] = {
+                ...createInitialGroups()[groupKey]
+            };
+        }
+    }
+
+    state.isOpen = (Object.keys(state.groups) as UploadGroupKey[]).some(
+        (groupKey) => hasFilesForGroup(state.files, groupKey) && state.groups[groupKey].isVisible
+    );
+
+    return state;
+}
+
 const createUploader = () => {
     const { subscribe, set, update } = writable<Uploader>({
         isOpen: false,
-        isCollapsed: false,
-        files: []
+        files: [],
+        groups: createInitialGroups()
     });
 
-    const updateFile = (id: string, file: Partial<UploaderFile>) => {
-        return update((n) => {
-            const index = n.files.findIndex((f) => f.$id === id);
-            n.files[index] = {
-                ...n.files[index],
+    const updateFile = (clientId: string, file: Partial<UploaderFile>) => {
+        return update((state) => {
+            const index = state.files.findIndex((item) => item.clientId === clientId);
+
+            if (index === -1) {
+                return state;
+            }
+
+            state.files[index] = {
+                ...state.files[index],
                 ...file
             };
 
-            return n;
+            return state;
         });
     };
 
-    return {
-        subscribe,
+    const addFileToQueue = (file: UploaderFile) => {
+        update((state) => {
+            const groupKey = getUploadGroupKey(file.kind);
 
-        close: () =>
-            update((n) => {
-                n.isOpen = !n.isOpen;
-                return n;
-            }),
-        toggle: () =>
-            update((n) => {
-                n.isCollapsed = !n.isCollapsed;
-
-                return n;
-            }),
-        reset: () =>
-            set({
-                isOpen: false,
-                isCollapsed: false,
-                files: []
-            }),
-        uploadFile: async (
-            region: string,
-            projectId: string,
-            bucketId: string,
-            id: string,
-            file: File,
-            permissions: string[]
-        ) => {
-            const newFile: UploaderFile = {
-                $id: id,
-                resourceId: bucketId,
-                name: file.name,
-                size: file.size,
-                progress: 0,
-                status: 'pending'
+            state.files.unshift(file);
+            state.groups[groupKey] = {
+                isOpen: true,
+                isVisible: true
             };
-            update((n) => {
-                n.isOpen = true;
-                n.isCollapsed = false;
-                n.files.unshift(newFile);
-                return n;
-            });
+
+            return refreshUploaderState(state);
+        });
+    };
+
+    const uploadFile = async (
+        region: string,
+        projectId: string,
+        bucketId: string,
+        id: string,
+        file: File,
+        permissions: string[]
+    ) => {
+        const newFile: UploaderFile = {
+            $id: id,
+            clientId: id,
+            resourceId: bucketId,
+            name: file.name,
+            size: file.size,
+            progress: 0,
+            status: 'pending',
+            kind: 'storage'
+        };
+
+        addFileToQueue(newFile);
+
+        try {
             const uploadedFile = await temporaryStorage(region, projectId).createFile({
                 bucketId,
                 fileId: id ?? ID.unique(),
@@ -109,14 +163,102 @@ const createUploader = () => {
                     newFile.$id = progress.$id;
                     newFile.progress = progress.progress;
                     newFile.status = progress.progress === 100 ? 'success' : 'pending';
-                    updateFile(progress.$id, newFile);
+                    updateFile(newFile.clientId, newFile);
                 }
             });
             newFile.$id = uploadedFile.$id;
             newFile.progress = 100;
             newFile.status = 'success';
-            updateFile(newFile.$id, newFile);
-        },
+            updateFile(newFile.clientId, newFile);
+        } catch (e) {
+            newFile.status = 'failed';
+            newFile.error = e?.message ?? 'Upload failed';
+            updateFile(newFile.clientId, newFile);
+            throw e;
+        }
+    };
+
+    const uploadFiles = async (
+        region: string,
+        projectId: string,
+        bucketId: string,
+        files: { id: string; file: File }[],
+        permissions: string[]
+    ) => {
+        const results: PromiseSettledResult<void>[] = [];
+        const executing = new Set<Promise<void>>();
+
+        for (const { id, file } of files) {
+            const task = uploadFile(region, projectId, bucketId, id, file, permissions).then(
+                () => {
+                    results.push({ status: 'fulfilled', value: undefined });
+                    executing.delete(task);
+                },
+                (reason) => {
+                    results.push({ status: 'rejected', reason });
+                    executing.delete(task);
+                }
+            );
+            executing.add(task);
+
+            if (executing.size >= MAX_CONCURRENT_UPLOADS) {
+                await Promise.race(executing);
+            }
+        }
+
+        await Promise.all(executing);
+        return results;
+    };
+
+    const uploadDeployment = async (
+        kind: Extract<UploadKind, 'site-deployment' | 'function-deployment'>,
+        resourceId: string,
+        name: string,
+        size: number,
+        request: (onProgress: (progress: UploadProgress) => void) => Promise<Models.Deployment>
+    ) => {
+        const newDeployment: UploaderFile = {
+            $id: '',
+            clientId: ID.unique(),
+            resourceId,
+            name,
+            size,
+            progress: 0,
+            status: 'pending',
+            kind
+        };
+
+        addFileToQueue(newDeployment);
+
+        try {
+            const uploadedFile = await request((progress) => {
+                newDeployment.$id = progress.$id;
+                newDeployment.progress = progress.progress;
+                newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
+                updateFile(newDeployment.clientId, newDeployment);
+            });
+            newDeployment.$id = uploadedFile.$id;
+            newDeployment.progress = 100;
+            newDeployment.status = 'success';
+            updateFile(newDeployment.clientId, newDeployment);
+        } catch (e) {
+            newDeployment.status = 'failed';
+            newDeployment.error = e?.message ?? 'Upload failed';
+            updateFile(newDeployment.clientId, newDeployment);
+            throw e;
+        }
+    };
+
+    return {
+        subscribe,
+        reset: () =>
+            set({
+                isOpen: false,
+                files: [],
+                groups: createInitialGroups()
+            }),
+        uploadFile,
+        uploadFiles,
         uploadSiteDeployment: async ({
             siteId,
             code,
@@ -130,41 +272,17 @@ const createUploader = () => {
             installCommand?: string;
             outputDirectory?: string;
         }) => {
-            const newDeployment: UploaderFile = {
-                $id: '',
-                resourceId: siteId,
-                name: code.name,
-                size: code.size,
-                progress: 0,
-                status: 'pending'
-            };
-            update((n) => {
-                n.isOpen = true;
-                n.isCollapsed = false;
-                n.files.unshift(newDeployment);
-                return n;
-            });
-            const uploadedFile = await temporarySites(
-                page.params.region,
-                page.params.project
-            ).createDeployment({
-                siteId,
-                code,
-                activate: true,
-                buildCommand,
-                installCommand,
-                outputDirectory,
-                onProgress: (progress) => {
-                    newDeployment.$id = progress.$id;
-                    newDeployment.progress = progress.progress;
-                    newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
-                    updateFile(progress.$id, newDeployment);
-                }
-            });
-            newDeployment.$id = uploadedFile.$id;
-            newDeployment.progress = 100;
-            newDeployment.status = 'success';
-            updateFile(newDeployment.$id, newDeployment);
+            return uploadDeployment('site-deployment', siteId, code.name, code.size, (onProgress) =>
+                temporarySites(page.params.region, page.params.project).createDeployment({
+                    siteId,
+                    code,
+                    activate: true,
+                    buildCommand,
+                    installCommand,
+                    onProgress,
+                    outputDirectory
+                })
+            );
         },
         uploadFunctionDeployment: async ({
             functionId,
@@ -173,52 +291,43 @@ const createUploader = () => {
             functionId: string;
             code: File;
         }) => {
-            const newDeployment: UploaderFile = {
-                $id: '',
-                resourceId: functionId,
-                name: code.name,
-                size: code.size,
-                progress: 0,
-                status: 'pending'
-            };
-            update((n) => {
-                n.isOpen = true;
-                n.isCollapsed = false;
-                n.files.unshift(newDeployment);
-                return n;
-            });
-            const uploadedFile = await temporaryFunctions(
-                page.params.region,
-                page.params.project
-            ).createDeployment({
+            return uploadDeployment(
+                'function-deployment',
                 functionId,
-                code,
-                activate: true,
-                onProgress: (progress) => {
-                    newDeployment.$id = progress.$id;
-                    newDeployment.progress = progress.progress;
-                    newDeployment.status = progress.progress === 100 ? 'success' : 'pending';
-                    updateFile(progress.$id, newDeployment);
-                }
+                code.name,
+                code.size,
+                (onProgress) =>
+                    temporaryFunctions(page.params.region, page.params.project).createDeployment({
+                        functionId,
+                        code,
+                        activate: true,
+                        onProgress
+                    })
+            );
+        },
+        toggleGroup: (groupKey: UploadGroupKey) => {
+            update((state) => {
+                state.groups[groupKey].isOpen = !state.groups[groupKey].isOpen;
+                return refreshUploaderState(state);
             });
-            newDeployment.$id = uploadedFile.$id;
-            newDeployment.progress = 100;
-            newDeployment.status = 'success';
-            updateFile(newDeployment.$id, newDeployment);
+        },
+        hideGroup: (groupKey: UploadGroupKey) => {
+            update((state) => {
+                state.groups[groupKey].isVisible = false;
+                return refreshUploaderState(state);
+            });
         },
         removeFromQueue: (id: string) => {
-            update((n) => {
-                n.files = n.files.filter((f) => f.$id !== id);
-                n.isOpen = n.files.length !== 0;
-                return n;
+            update((state) => {
+                state.files = state.files.filter((file) => file.$id !== id && file.clientId !== id);
+                return refreshUploaderState(state);
             });
         },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {
-                return update((n) => {
-                    n.files = n.files.filter((f) => f.$id !== file.$id);
-
-                    return n;
+                return update((state) => {
+                    state.files = state.files.filter((item) => item.$id !== file.$id);
+                    return refreshUploaderState(state);
                 });
             }
         }

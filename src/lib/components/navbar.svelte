@@ -50,6 +50,12 @@
     import { page } from '$app/state';
     import type { Models } from '@appwrite.io/console';
     import { isProjectBlocked as getIsProjectBlocked } from '$lib/helpers/project';
+    import ImpersonationPicker from '$lib/components/impersonation/picker.svelte';
+    import {
+        readImpersonationTargetUserId,
+        impersonationRevision
+    } from '$lib/appwrite/impersonation';
+    import { IconEye } from '@appwrite.io/pink-icons-svelte';
 
     let showSupport = false;
 
@@ -110,6 +116,19 @@
 
     $: currentOrg = organizations.find((org) => org.isSelected);
     $: isProjectBlocked = getIsProjectBlocked(currentProject);
+
+    let canImpersonate = false;
+
+    // Show impersonation picker when the operator has the capability or impersonation is active.
+    $: {
+        void $impersonationRevision;
+        canImpersonate =
+            $user?.impersonator === true ||
+            !!$user?.impersonatorUserId ||
+            !!readImpersonationTargetUserId();
+    }
+
+    let showImpersonationPicker = false;
 
     beforeNavigate(() => (showAccountMenu = false));
 </script>
@@ -198,6 +217,22 @@
                     </svelte:fragment>
                 </DropList>
             </Layout.Stack>
+            {#if canImpersonate}
+                <ImpersonationPicker bind:show={showImpersonationPicker} />
+                <Tooltip disabled={showImpersonationPicker}>
+                    <Button.Button
+                        variant="text"
+                        aria-label="Impersonate user"
+                        on:click={(event) => {
+                            showImpersonationPicker = true;
+                            (event.currentTarget as HTMLElement).blur();
+                        }}
+                        icon>
+                        <Icon icon={IconEye} />
+                    </Button.Button>
+                    <span slot="tooltip">Impersonate user</span>
+                </Tooltip>
+            {/if}
             <Layout.Stack direction="row">
                 <Tooltip>
                     <Button.Button

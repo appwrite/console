@@ -13,6 +13,7 @@
     import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { getApexDomain } from '$lib/helpers/tlds';
     import type { Models } from '@appwrite.io/console';
+    import { isProxyRuleVerified } from '$lib/components/domains/status';
 
     const routeBase = `${base}/project-${page.params.region}-${page.params.project}/settings/domains`;
 
@@ -58,7 +59,7 @@
 
             await invalidate(Dependencies.DOMAINS);
 
-            const verified = rule?.status !== 'created';
+            const verified = isProxyRuleVerified(rule?.status);
             if (verified) {
                 addNotification({
                     type: 'success',

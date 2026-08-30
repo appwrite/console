@@ -112,23 +112,24 @@
                 label="Media"
                 optionalText="(Optional)" />
             <Layout.Stack gap="s">
-                {#each customData || [] as [key, value], index}
+                {#each customData || [] as _, index (index)}
                     <Layout.Stack direction="row" alignItems="flex-end">
                         <InputText
                             id={`key-${index}`}
-                            bind:value={key}
+                            bind:value={customData[index][0]}
                             placeholder="Enter key"
                             label={index === 0 ? 'Key' : undefined} />
                         <Layout.Stack direction="row" alignItems="flex-end" gap="xs">
                             <InputText
                                 id={`value-${index}`}
-                                bind:value
+                                bind:value={customData[index][1]}
                                 placeholder="Enter value"
                                 label={index === 0 ? 'Value' : undefined} />
                             <Button
                                 icon
                                 compact
-                                disabled={(!key || !value) && index === 0}
+                                disabled={(!customData[index][0] || !customData[index][1]) &&
+                                    index === 0}
                                 on:click={() => {
                                     if (customData.length === 1) {
                                         customData = [['', '']];

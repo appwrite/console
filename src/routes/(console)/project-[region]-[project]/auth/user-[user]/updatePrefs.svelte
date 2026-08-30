@@ -6,7 +6,6 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { user } from './store';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { IconPlus } from '@appwrite.io/pink-icons-svelte';
@@ -16,9 +15,24 @@
     import {
         normalizePrefs,
         createPrefRow,
+        createPrefRows,
         isAddDisabled,
+        parsePrefValue,
         sanitizePrefs
     } from '$lib/helpers/prefs';
+
+    $: {
+        const originalNormalized = normalizePrefs(Object.entries($user?.prefs ?? {}));
+
+        if (
+            !prefs ||
+            (!hasUnsavedPrefsChanges && !deepEqual(lastPrefsNormalized, originalNormalized))
+        ) {
+            prefs = createPrefRows($user?.prefs);
+            lastPrefsNormalized = originalNormalized;
+            hasUnsavedPrefsChanges = false;
+        }
+    }
 
     $: if (prefs) {
         const currentNormalized = normalizePrefs(prefs);
@@ -29,16 +43,8 @@
 
     let prefs: PrefRow[] = null;
     let arePrefsDisabled = true;
-
-    onMount(async () => {
-        const entries = Object.entries($user?.prefs ?? {});
-        prefs =
-            entries.length > 0
-                ? entries.map(([key, value]) =>
-                      createPrefRow(String(key ?? ''), String(value ?? ''))
-                  )
-                : [createPrefRow()];
-    });
+    let hasUnsavedPrefsChanges = false;
+    let lastPrefsNormalized: [string, string][] = [];
 
     async function updatePrefs() {
         try {
@@ -47,12 +53,18 @@
             const updatedPrefs =
                 sanitizedPrefs.length === 0
                     ? {}
-                    : Object.fromEntries(sanitizedPrefs.map((pref) => [pref.key, pref.value]));
+                    : Object.fromEntries(
+                          sanitizedPrefs.map((pref) => [
+                              pref.key,
+                              parsePrefValue(pref.value, $user?.prefs?.[pref.key])
+                          ])
+                      );
 
             await sdk
                 .forProject(page.params.region, page.params.project)
                 .users.updatePrefs({ userId: $user.$id, prefs: updatedPrefs });
             await invalidate(Dependencies.USER);
+            hasUnsavedPrefsChanges = false;
             arePrefsDisabled = true;
 
             addNotification({
@@ -83,6 +95,7 @@
                             value={pref.key}
                             on:input={(e) => {
                                 pref.key = (e.currentTarget as HTMLInputElement).value;
+                                hasUnsavedPrefsChanges = true;
                                 prefs = [...prefs];
                             }}
                             placeholder="Enter key"
@@ -94,6 +107,7 @@
                                 value={pref.value}
                                 on:input={(e) => {
                                     pref.value = (e.currentTarget as HTMLInputElement).value;
+                                    hasUnsavedPrefsChanges = true;
                                     prefs = [...prefs];
                                 }}
                                 placeholder="Enter value"
@@ -105,6 +119,7 @@
                                 disabled={(!pref.key || !pref.value) && index === 0}
                                 on:click={() => {
                                     prefs.splice(index, 1);
+                                    hasUnsavedPrefsChanges = true;
                                     prefs = [...prefs];
                                 }}>
                                 <span class="icon-x" aria-hidden="true"></span>
@@ -119,6 +134,7 @@
                     disabled={isAddDisabled(prefs)}
                     on:click={() => {
                         if (!prefs) return;
+                        hasUnsavedPrefsChanges = true;
                         prefs = [...prefs, createPrefRow()];
                     }}>
                     <Icon icon={IconPlus} slot="start" size="s" />

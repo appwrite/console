@@ -23,6 +23,13 @@
     import RetryDomainModal from './retryDomainModal.svelte';
     import { regionalProtocol } from '../../store';
     import DnsRecordsAction from '$lib/components/domains/dnsRecordsAction.svelte';
+    import {
+        getProxyRuleStatusBadge,
+        getProxyRuleUpdatedPrefix,
+        isProxyRuleLogsViewable,
+        isProxyRuleRetryable,
+        isProxyRuleVerified
+    } from '$lib/components/domains/status';
     import ViewLogsModal from '$lib/components/domains/viewLogsModal.svelte';
     import { timeFromNowShort } from '$lib/helpers/date';
 
@@ -56,7 +63,7 @@
     ];
 
     function updatedLabel(proxyRule: Models.ProxyRule): string {
-        if (proxyRule.status === 'verified') {
+        if (isProxyRuleVerified(proxyRule.status)) {
             return '';
         }
 
@@ -65,14 +72,7 @@
             return '';
         }
 
-        const prefix =
-            proxyRule.status === 'created'
-                ? 'Checked'
-                : proxyRule.status === 'verifying'
-                  ? 'Updated'
-                  : proxyRule.status === 'unverified'
-                    ? 'Failed'
-                    : '';
+        const prefix = getProxyRuleUpdatedPrefix(proxyRule.status);
 
         return prefix + ' ' + timeStr;
     }
@@ -88,10 +88,9 @@
         <Table.Header.Cell column="actions" {root} />
     </svelte:fragment>
     {#each domains.rules as proxyRule (proxyRule.$id)}
-        {@const isRetryable = proxyRule.status === 'created' || proxyRule.status === 'unverified'}
-        {@const isLogsViewable =
-            proxyRule.logs?.length > 0 &&
-            (proxyRule.status === 'verifying' || proxyRule.status === 'unverified')}
+        {@const isRetryable = isProxyRuleRetryable(proxyRule.status)}
+        {@const isLogsViewable = isProxyRuleLogsViewable(proxyRule)}
+        {@const statusBadge = getProxyRuleStatusBadge(proxyRule.status)}
         <Table.Row.Base {root}>
             {#each columns as column}
                 <Table.Cell column={column.id} {root}>
@@ -106,17 +105,11 @@
                                 </Typography.Text>
                             </Link>
                             <Layout.Stack direction="row" gap="s" alignItems="center">
-                                {#if proxyRule.status !== 'verified'}
+                                {#if statusBadge}
                                     <Badge
                                         variant="secondary"
-                                        type={proxyRule.status === 'verifying'
-                                            ? undefined
-                                            : 'error'}
-                                        content={proxyRule.status === 'created'
-                                            ? 'Verification failed'
-                                            : proxyRule.status === 'verifying'
-                                              ? 'Generating certificate'
-                                              : 'Certificate generation failed'}
+                                        type={statusBadge.type}
+                                        content={statusBadge.content}
                                         size="xs" />
                                 {/if}
                                 {#if isRetryable}
@@ -145,7 +138,7 @@
                                 {/if}
                             </Layout.Stack>
                         </Layout.Stack>
-                    {:else if column.id === 'updated' && proxyRule.status !== 'verified'}
+                    {:else if column.id === 'updated' && !isProxyRuleVerified(proxyRule.status)}
                         <Layout.Stack direction="row" justifyContent="flex-end">
                             <Typography.Text
                                 variant="m-400"

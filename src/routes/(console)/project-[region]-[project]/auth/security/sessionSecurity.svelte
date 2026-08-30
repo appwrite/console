@@ -29,12 +29,11 @@
 
     async function updateSessionSecurity() {
         try {
-            await sdk.forConsole.projects.updateSessionAlerts({
-                projectId: project.$id,
-                alerts: authSessionAlerts
+            const projectSdk = sdk.forProject(project.region, project.$id).project;
+            await projectSdk.updateSessionAlertPolicy({
+                enabled: authSessionAlerts
             });
-            await sdk.forConsole.projects.updateSessionInvalidation({
-                projectId: project.$id,
+            await projectSdk.updateSessionInvalidationPolicy({
                 enabled: sessionInvalidation
             });
 

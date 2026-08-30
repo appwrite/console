@@ -115,6 +115,10 @@
             return resources.includes(MigrationResources.Provider);
         }
 
+        if (groupKey === 'backups') {
+            return resources.includes(MigrationResources.Backuppolicy);
+        }
+
         const groupToResource: Record<string, MigrationResource> = {
             users: MigrationResources.User,
             databases: MigrationResources.Database
@@ -135,7 +139,8 @@
             functions: 'function',
             storage: 'bucket',
             sites: 'site',
-            messaging: 'provider'
+            messaging: 'provider',
+            backups: 'backup-policy'
         };
         return map[groupKey] || groupKey;
     };

@@ -1,12 +1,17 @@
 import { writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
+
+type PlatformFormData = {
+    name: string | null;
+    key: string | null;
+    hostname: string | null;
+    type: string | null;
+};
 
 function createPlatformStore() {
-    const { subscribe, update, set } = writable<Partial<Models.Platform>>({
-        $id: null,
+    const { subscribe, update, set } = writable<PlatformFormData>({
         name: null,
+        key: null,
         hostname: null,
-        store: null,
         type: null
     });
 
@@ -16,10 +21,9 @@ function createPlatformStore() {
         set,
         reset() {
             set({
-                $id: null,
                 name: null,
+                key: null,
                 hostname: null,
-                store: null,
                 type: null
             });
         }

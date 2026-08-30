@@ -37,7 +37,7 @@
         return {
             value: runtime.$id,
             label: `${runtime.name} - ${runtime.version}`,
-            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key), 'color')}' style='inline-size: var(--icon-size-m)' />`
+            leadingHtml: `<img src='${$iconPath(getIconFromRuntime(runtime.key) ?? 'empty', 'color')}' style='inline-size: var(--icon-size-m)' />`
         };
     });
 

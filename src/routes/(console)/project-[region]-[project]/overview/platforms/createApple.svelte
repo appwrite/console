@@ -24,13 +24,13 @@
     import { fade } from 'svelte/transition';
     import ConnectionLine from './components/ConnectionLine.svelte';
     import OnboardingPlatformCard from './components/OnboardingPlatformCard.svelte';
-    import { PlatformType } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { app } from '$lib/stores/app';
     import { project } from '../../store';
     import { getCorrectTitle, type PlatformProps } from './store';
     import LlmBanner from './llmBanner.svelte';
 
-    let { isConnectPlatform = false, platform = PlatformType.Appleios }: PlatformProps = $props();
+    let { isConnectPlatform = false, platform = 'apple-ios' }: PlatformProps = $props();
 
     let showExitModal = $state(false);
     let isCreatingPlatform = $state(false);
@@ -70,22 +70,23 @@ client.ping()
 APPWRITE_PROJECT_NAME: "${$project.name}"
 APPWRITE_PUBLIC_ENDPOINT: "${sdk.forProject(page.params.region, page.params.project).client.config.endpoint}"`;
 
-    const platforms: { [key: string]: PlatformType } = {
-        iOS: PlatformType.Appleios,
-        macOS: PlatformType.Applemacos,
-        watchOS: PlatformType.Applewatchos,
-        tvOS: PlatformType.Appletvos
+    const platforms: { [key: string]: string } = {
+        iOS: 'apple-ios',
+        macOS: 'apple-macos',
+        watchOS: 'apple-watchos',
+        tvOS: 'apple-tvos'
     };
 
     async function createApplePlatform() {
         try {
             isCreatingPlatform = true;
-            await sdk.forConsole.projects.createPlatform({
-                projectId,
-                type: platform,
-                name: $createPlatform.name,
-                key: $createPlatform.key || undefined
-            });
+            await sdk
+                .forProject(page.params.region, page.params.project)
+                .project.createApplePlatform({
+                    platformId: ID.unique(),
+                    name: $createPlatform.name,
+                    bundleIdentifier: $createPlatform.key
+                });
 
             isPlatformCreated = true;
             trackEvent(Submit.PlatformCreate, {

@@ -29,11 +29,6 @@
             event: 'domains'
         },
         {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'usage'
-        },
-        {
             href: `${path}/settings`,
             title: 'Settings',
             event: 'settings'

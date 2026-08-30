@@ -90,10 +90,14 @@
         }
 
         if (selectedProjectsToDelete?.length) {
-            const projectsDeletionPromises = selectedProjectsToDelete.map((projectId) => ({
-                projectId,
-                promise: sdk.forConsole.projects.delete({ projectId })
-            }));
+            const projectsDeletionPromises = selectedProjectsToDelete.map((projectId) => {
+                const projectToDelete = projects.find((project) => project.$id === projectId);
+
+                return {
+                    projectId,
+                    promise: sdk.forProject(projectToDelete.region, projectId).project.delete()
+                };
+            });
 
             try {
                 const results = await Promise.allSettled(

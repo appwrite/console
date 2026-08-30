@@ -1,5 +1,6 @@
 <script lang="ts">
     import { regionalConsoleVariables } from '$routes/(console)/project-[region]-[project]/store';
+    import { getProxyRuleStatusBadge } from './status';
 
     import { Badge, Layout, Typography, Table, InteractiveText } from '@appwrite.io/pink-svelte';
 
@@ -24,16 +25,13 @@
             {domain}
         </Typography.Text>
         {#if verified !== undefined}
-            {#if ruleStatus === 'created'}
-                <Badge variant="secondary" type="error" size="xs" content="Verification failed" />
-            {:else if ruleStatus === 'verifying'}
-                <Badge variant="secondary" size="xs" content="Generating certificate" />
-            {:else if ruleStatus === 'unverified'}
+            {@const statusBadge = getProxyRuleStatusBadge(ruleStatus)}
+            {#if statusBadge}
                 <Badge
                     variant="secondary"
-                    type="error"
+                    type={statusBadge.type}
                     size="xs"
-                    content="Certificate generation failed" />
+                    content={statusBadge.content} />
             {:else if verified === true}
                 <Badge variant="secondary" type="success" size="xs" content="Verified" />
             {/if}

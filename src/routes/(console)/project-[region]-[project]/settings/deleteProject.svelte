@@ -11,6 +11,7 @@
     import { project, projectRegion } from '../store';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
+    import { canWriteProjects } from '$lib/stores/roles';
     let error: string;
     let showDelete = false;
     let name: string = null;
@@ -31,9 +32,7 @@
     const handleDelete = async () => {
         try {
             // send the project to correct region pool for deletion!
-            await sdk.forConsoleIn($project.region).projects.delete({
-                projectId: $project.$id
-            });
+            await sdk.forProject($project.region, $project.$id).project.delete();
             await finishAndRedirect();
         } catch (e) {
             error = e.message;
@@ -59,7 +58,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+        <Button secondary disabled={!$canWriteProjects} on:click={() => (showDelete = true)}>
+            Delete
+        </Button>
     </svelte:fragment>
 </CardGrid>
 

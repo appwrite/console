@@ -28,8 +28,7 @@
     async function updateExpire() {
         try {
             if (isApiKey) {
-                await sdk.forConsole.projects.updateKey({
-                    projectId,
+                await sdk.forProject(page.params.region, page.params.project).project.updateKey({
                     keyId: key.$id,
                     name: key.name,
                     scopes: (key as Models.Key).scopes as Scopes[],

@@ -33,6 +33,9 @@
         messaging: {
             root: 'Messaging',
             messages: 'Include messages'
+        },
+        backups: {
+            root: 'Backup policies'
         }
     };
 
@@ -56,6 +59,9 @@
         messaging: {
             root: 'Import all messaging providers, topics and subscribers',
             messages: 'Import all messages'
+        },
+        backups: {
+            root: 'Import all backup policies'
         }
     };
 

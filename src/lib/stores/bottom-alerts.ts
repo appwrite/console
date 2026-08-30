@@ -11,6 +11,7 @@ export type BottomModalAlertAction = {
     hideOnClick?: boolean;
     link: (ctx: { organization: Models.Organization; project: Models.Project }) => string;
     external?: boolean;
+    skipUpgradeRedirect?: boolean;
 };
 
 /**

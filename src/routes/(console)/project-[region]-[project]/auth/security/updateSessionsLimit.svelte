@@ -19,9 +19,8 @@
 
     async function updateSessionsLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthSessionsLimit({
-                projectId: project.$id,
-                limit: maxSessions
+            await sdk.forProject(project.region, project.$id).project.updateSessionLimitPolicy({
+                total: maxSessions
             });
             await invalidate(Dependencies.PROJECT);
 

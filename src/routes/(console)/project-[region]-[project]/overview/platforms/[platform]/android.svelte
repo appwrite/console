@@ -10,21 +10,20 @@
     import { project } from '../../../store';
     import { platform } from './store';
 
-    let key: string = null;
+    import type { Models } from '@appwrite.io/console';
+
+    let applicationId: string = null;
 
     onMount(() => {
-        key ??= $platform.key;
+        applicationId ??= ($platform as Models.PlatformAndroid).applicationId;
     });
 
-    async function updateHostname() {
+    async function updateApplicationId() {
         try {
-            await sdk.forConsole.projects.updatePlatform({
-                projectId: $project.$id,
+            await sdk.forProject($project.region, $project.$id).project.updateAndroidPlatform({
                 platformId: $platform.$id,
                 name: $platform.name,
-                key,
-                store: $platform.store || undefined,
-                hostname: $platform.hostname || undefined
+                applicationId
             });
             await invalidate(Dependencies.PLATFORM);
             trackEvent(Submit.PlatformUpdate, {
@@ -44,21 +43,23 @@
     }
 </script>
 
-<Form onSubmit={updateHostname}>
+<Form onSubmit={updateApplicationId}>
     <CardGrid>
         <svelte:fragment slot="title">Package name</svelte:fragment>
         Your package name is generally the applicationId in your app-level build.gradle file.
         <svelte:fragment slot="aside">
             <InputText
-                id="key"
+                id="applicationId"
                 label="Package name"
-                bind:value={key}
+                bind:value={applicationId}
                 required
                 placeholder="com.company.appname" />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={key === $platform.hostname} submit>Update</Button>
+            <Button
+                disabled={applicationId === ($platform as Models.PlatformAndroid).applicationId}
+                submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

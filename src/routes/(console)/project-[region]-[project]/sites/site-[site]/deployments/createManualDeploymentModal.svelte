@@ -3,7 +3,11 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { InvalidFileType, removeFile } from '$lib/helpers/files';
+    import {
+        getInvalidDeploymentArchiveReason,
+        InvalidFileType,
+        removeFile
+    } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import type { Models } from '@appwrite.io/console';
@@ -22,9 +26,9 @@
     let error: string = '';
 
     $: maxSize =
-        isCloud && $currentPlan
+        isCloud && $currentPlan?.deploymentSize
             ? $currentPlan.deploymentSize * 1000000
-            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT; // already in MB
+            : $consoleVariables._APP_COMPUTE_SIZE_LIMIT;
 
     $: readableMaxSize = humanFileSize(maxSize);
 
@@ -54,9 +58,18 @@
         if (reason === InvalidFileType.EXTENSION) {
             error = 'Only .tar.gz files allowed';
         } else if (reason === InvalidFileType.SIZE) {
-            error = 'File size exceeds 10MB';
+            error = `File size exceeds ${readableMaxSize.value}${readableMaxSize.unit}`;
         } else {
             error = 'Invalid file';
+        }
+    }
+
+    $: if (files?.length) {
+        const reason = getInvalidDeploymentArchiveReason(files, maxSize);
+
+        if (reason) {
+            files = undefined;
+            handleInvalid(new CustomEvent('invalid', { detail: { reason } }));
         }
     }
 
@@ -80,7 +93,7 @@
             Upload a tar.gz file containing your site source code
         </Typography.Text>
         <Upload.Dropzone
-            extensions={['gz', 'tar']}
+            extensions={['gz']}
             bind:files
             {maxSize}
             required
@@ -93,7 +106,7 @@
                         direction="row"
                         gap="s">
                         <Typography.Text variant="l-500">
-                            Drag and drop file here or click to upload
+                            Drag and drop a file here or click to upload
                         </Typography.Text>
                         <Tooltip>
                             <Layout.Stack alignItems="center" justifyContent="center" inline>

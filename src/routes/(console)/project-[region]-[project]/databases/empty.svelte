@@ -21,6 +21,9 @@
     import { isSmallViewport } from '$lib/stores/viewport';
     import type { DatabaseType } from '$database/(entity)';
     import { databaseTypes } from './store';
+    import { flags } from '$lib/flags';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     const {
         disabled,
@@ -57,16 +60,20 @@
                 >Store, organize, and manage your app data</Typography.Text>
         </Layout.Stack>
 
-        <Layout.Grid columns={databaseTypes.length} columnsS={2} columnsXS={1} gap="xl">
-            {#each databaseTypes as db}
-                {#if db.type !== 'dedicateddb' || isCloud}
-                    {@render databaseTypeCard({
-                        type: db.type,
-                        title: db.title,
-                        subtitle: db.subtitle,
-                        image: images[db.type]
-                    })}
-                {/if}
+        {@const isMultiDb = flags.multiDb({ account: $user, organization: $organization })}
+        {@const visibleTypes = databaseTypes.filter((db) => {
+            if (db.type === 'dedicateddb') return isCloud;
+            if (db.type === 'documentsdb' || db.type === 'vectorsdb') return isMultiDb;
+            return true;
+        })}
+        <Layout.Grid columns={visibleTypes.length} columnsS={2} columnsXS={1} gap="xl">
+            {#each visibleTypes as db}
+                {@render databaseTypeCard({
+                    type: db.type,
+                    title: db.title,
+                    subtitle: db.subtitle,
+                    image: images[db.type]
+                })}
             {/each}
         </Layout.Grid>
     </Layout.Stack>
