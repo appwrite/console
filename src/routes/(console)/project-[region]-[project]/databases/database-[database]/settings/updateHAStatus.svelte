@@ -4,6 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
+    import { formatReplicationLag } from '$lib/helpers/timeConversion';
     import { Button, Form, InputSwitch, InputNumber, InputSelect } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -30,11 +31,15 @@
 
     let haEnabled: boolean = $state(database.highAvailability);
     let replicaCount: number = $state(database.highAvailabilityReplicaCount);
-    let syncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
+    let syncMode: HighAvailabilitySyncMode = $state(
+        (database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode
+    );
 
     let initialEnabled = $state(database.highAvailability);
     let initialReplicaCount = $state(database.highAvailabilityReplicaCount);
-    let initialSyncMode: HighAvailabilitySyncMode = $state((database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode);
+    let initialSyncMode: HighAvailabilitySyncMode = $state(
+        (database.highAvailabilitySyncMode ?? 'async') as HighAvailabilitySyncMode
+    );
 
     let showFailoverConfirm = $state(false);
     let isFailingOver = $state(false);
@@ -192,7 +197,7 @@
                                                 type={getHealthType(replica.status)}
                                                 content={replica.status} />
                                             <span class="text u-x-small">
-                                                Lag: {replica.lagSeconds}s
+                                                Lag: {formatReplicationLag(replica.lagSeconds)}
                                             </span>
                                         </Layout.Stack>
                                     </div>

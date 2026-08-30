@@ -4,6 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
+    import { formatReplicationLag } from '$lib/helpers/timeConversion';
     import { Button, Form, InputSelect, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -176,7 +177,9 @@
                                                 </Layout.Stack>
                                                 <span class="text u-x-small">
                                                     {replica.sourceRegion} &rarr; {replica.targetRegion}
-                                                    &bull; Lag: {replica.lagSeconds}s &bull; {replica.hostname}
+                                                    &bull; Lag: {formatReplicationLag(
+                                                        replica.lagSeconds
+                                                    )} &bull; {replica.hostname}
                                                 </span>
                                             </Layout.Stack>
                                             <Button

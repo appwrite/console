@@ -11,6 +11,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Badge, Layout } from '@appwrite.io/pink-svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { formatReplicationLag } from '$lib/helpers/timeConversion';
 
     let {
         database
@@ -35,7 +36,7 @@
         primaryRegion: string;
         standbyRegion: string;
         standbyStatus: 'healthy' | 'degraded' | 'unhealthy' | 'provisioning';
-        lagSeconds: number;
+        lagSeconds: number | null;
         lastSyncedAt: string;
     };
 
@@ -209,7 +210,8 @@
                                         &bull; Standby: {crossRegionStatus.standbyRegion}
                                     </span>
                                     <span class="text u-x-small">
-                                        Lag: {crossRegionStatus.lagSeconds}s &bull; Last synced: {toLocaleDateTime(
+                                        Lag: {formatReplicationLag(crossRegionStatus.lagSeconds)} &bull;
+                                        Last synced: {toLocaleDateTime(
                                             crossRegionStatus.lastSyncedAt
                                         )}
                                     </span>

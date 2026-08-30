@@ -1,5 +1,6 @@
 import {
     calculateTime,
+    formatReplicationLag,
     timeToSeconds,
     timeToMinutes,
     secsToUnit
@@ -167,5 +168,27 @@ describe('Seconds to unit', () => {
         it(`should return ${expected} for ${args}`, () => {
             expect(secsToUnit(...args)).toBe(expected);
         });
+    });
+});
+
+describe('Format replication lag', () => {
+    it('renders an unknown lag as a dash', () => {
+        expect(formatReplicationLag(null)).toBe('-');
+        expect(formatReplicationLag(undefined)).toBe('-');
+    });
+
+    it('renders zero as a bound rather than an exact reading', () => {
+        // MySQL and MongoDB report whole seconds, so their 0 covers everything
+        // up to a second. Printing it as 0s claimed a precision no engine gives.
+        expect(formatReplicationLag(0)).toBe('< 1s');
+    });
+
+    it('renders a sub-second lag in milliseconds', () => {
+        expect(formatReplicationLag(0.184)).toBe('184ms');
+    });
+
+    it('renders a lag of a second or more in the largest fitting unit', () => {
+        expect(formatReplicationLag(7)).toBe('7s');
+        expect(formatReplicationLag(90)).toBe('1m');
     });
 });

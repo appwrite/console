@@ -31,6 +31,27 @@ export function calculateTime(time: number) {
     }
 }
 
+/**
+ * Formats a replication lag reading for display.
+ *
+ * A zero renders as `< 1s` rather than `0s` because it does not mean the same
+ * thing on every engine: MySQL reports `Seconds_Behind_Source` in whole seconds
+ * and MongoDB derives its lag from the oplog timestamp's second granularity, so
+ * neither can distinguish "caught up" from "900ms behind". Only PostgreSQL
+ * reports a true zero, and the reading carries no engine to tell them apart.
+ *
+ * @export
+ * @param {number | null | undefined} lagSeconds - The lag in seconds, or null when the backend took no reading.
+ * @returns {string} The formatted lag, or `-` when the lag is unknown.
+ */
+export function formatReplicationLag(lagSeconds: number | null | undefined): string {
+    if (typeof lagSeconds !== 'number' || Number.isNaN(lagSeconds)) {
+        return '-';
+    }
+
+    return lagSeconds <= 0 ? '< 1s' : calculateTime(lagSeconds);
+}
+
 type Unit = 'ms' | 's' | 'm' | 'h' | 'd' | 'M' | 'y';
 
 export function timeToSeconds(time: number, unit: Unit) {
