@@ -1,35 +1,9 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import InitPromo from '$lib/images/promos/init-2026.png';
 import NewConsolePromo from '$lib/images/promos/new-console.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
-
-if (isCloud) {
-    const initPromo: BottomModalAlertItem = {
-        id: 'modal:init_2026_announcement',
-        src: {
-            dark: InitPromo,
-            light: InitPromo
-        },
-        title: 'Init is happening August 31 - September 4',
-        message:
-            'Five days of product launches, live sessions, and community events. Claim your ticket to join.',
-        plan: 'free',
-        importance: 8,
-        scope: 'everywhere',
-        cta: {
-            text: 'Claim your ticket',
-            link: () => 'https://new.appwrite.io/init',
-            external: true,
-            hideOnClick: true,
-            skipUpgradeRedirect: true
-        },
-        show: true
-    };
-    listOfPromotions.push(initPromo);
-}
 
 if (isCloud) {
     const newConsolePromo: BottomModalAlertItem = {
