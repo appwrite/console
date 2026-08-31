@@ -88,9 +88,7 @@
         's-16vcpu-64gb': { label: 'Scale - 16 vCPU, 64GB RAM', price: 1230 },
         's-16vcpu-128gb': { label: 'Scale Plus - 16 vCPU, 128GB RAM', price: 2090 },
         's-32vcpu-128gb': { label: 'Scale Pro - 32 vCPU, 128GB RAM', price: 2950 },
-        's-32vcpu-256gb': { label: 'Scale Max - 32 vCPU, 256GB RAM', price: 5040 },
-        's-48vcpu-192gb': { label: 'Scale Ultra - 48 vCPU, 192GB RAM', price: 5290 },
-        's-48vcpu-384gb': { label: 'Scale Ultra Plus - 48 vCPU, 384GB RAM', price: 8980 }
+        's-32vcpu-256gb': { label: 'Scale Max - 32 vCPU, 256GB RAM', price: 5040 }
     };
 
     const tierOptions = Object.entries(tiers).map(([value, { label, price }]) => ({

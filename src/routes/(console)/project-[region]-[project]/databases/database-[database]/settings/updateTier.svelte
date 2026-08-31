@@ -27,9 +27,7 @@
         { value: 's-16vcpu-64gb', label: 'Scale - 16 vCPU, 64 GB RAM' },
         { value: 's-16vcpu-128gb', label: 'Scale Plus - 16 vCPU, 128 GB RAM' },
         { value: 's-32vcpu-128gb', label: 'Scale Pro - 32 vCPU, 128 GB RAM' },
-        { value: 's-32vcpu-256gb', label: 'Scale Max - 32 vCPU, 256 GB RAM' },
-        { value: 's-48vcpu-192gb', label: 'Scale Ultra - 48 vCPU, 192 GB RAM' },
-        { value: 's-48vcpu-384gb', label: 'Scale Ultra Plus - 48 vCPU, 384 GB RAM' }
+        { value: 's-32vcpu-256gb', label: 'Scale Max - 32 vCPU, 256 GB RAM' }
     ];
 
     const tierResources: Record<string, { cpu: number; memory: number }> = {
@@ -44,9 +42,7 @@
         's-16vcpu-64gb': { cpu: 16, memory: 65536 },
         's-16vcpu-128gb': { cpu: 16, memory: 131072 },
         's-32vcpu-128gb': { cpu: 32, memory: 131072 },
-        's-32vcpu-256gb': { cpu: 32, memory: 262144 },
-        's-48vcpu-192gb': { cpu: 48, memory: 196608 },
-        's-48vcpu-384gb': { cpu: 48, memory: 393216 }
+        's-32vcpu-256gb': { cpu: 32, memory: 262144 }
     };
 
     let selectedTier: string = $state(database.tier);
