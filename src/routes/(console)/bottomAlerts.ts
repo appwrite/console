@@ -20,7 +20,8 @@ if (isCloud) {
         scope: 'everywhere',
         cta: {
             text: 'Try it now',
-            link: () => 'https://appwrite.io/?ref=old-console&source=promo_card',
+            link: () =>
+                'https://appwrite.io/?utm_source=old-console&utm_medium=promo_card&utm_campaign=new-console',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
