@@ -14,13 +14,13 @@ if (isCloud) {
         },
         title: 'Introducing the new Appwrite Console',
         message:
-            'Rebuilt from the ground up. Faster, cleaner, and everything you’re working on comes with you.',
+            'Rebuilt from the ground up using the power of TanStack Start. Faster, cleaner, and everything you’re working on comes with you.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
             text: 'Try it now',
-            link: () => 'https://new.appwrite.io/?ref=old-console&source=promo_card',
+            link: () => 'https://appwrite.io/?ref=old-console&source=promo_card',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
