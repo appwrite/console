@@ -2,6 +2,7 @@ import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 import InitPromo from '$lib/images/promos/init-2026.png';
+import NewConsolePromo from '$lib/images/promos/new-console.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
@@ -28,6 +29,31 @@ if (isCloud) {
         show: true
     };
     listOfPromotions.push(initPromo);
+}
+
+if (isCloud) {
+    const newConsolePromo: BottomModalAlertItem = {
+        id: 'modal:new_console_announcement',
+        src: {
+            dark: NewConsolePromo,
+            light: NewConsolePromo
+        },
+        title: 'Introducing the new Appwrite Console',
+        message:
+            'Rebuilt from the ground up. Faster, cleaner, and everything you’re working on comes with you.',
+        plan: 'free',
+        importance: 8,
+        scope: 'everywhere',
+        cta: {
+            text: 'Try it now',
+            link: () => 'https://cloud.appwrite.io/console?ref=old-console&source=promo_card',
+            external: true,
+            hideOnClick: true,
+            skipUpgradeRedirect: true
+        },
+        show: true
+    };
+    listOfPromotions.push(newConsolePromo);
 }
 
 export function addBottomModalAlerts() {
