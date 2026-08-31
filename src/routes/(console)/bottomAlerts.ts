@@ -1,33 +1,34 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import InitPromo from '$lib/images/promos/init-2026.png';
+import NewConsolePromo from '$lib/images/promos/new-console.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const initPromo: BottomModalAlertItem = {
-        id: 'modal:init_2026_announcement',
+    const newConsolePromo: BottomModalAlertItem = {
+        id: 'modal:new_console_announcement',
         src: {
-            dark: InitPromo,
-            light: InitPromo
+            dark: NewConsolePromo,
+            light: NewConsolePromo
         },
-        title: 'Init is happening August 31 - September 4',
+        title: 'Introducing the new Appwrite Console',
         message:
-            'Five days of product launches, live sessions, and community events. Claim your ticket to join.',
+            'Rebuilt from the ground up using the power of TanStack Start. Faster, cleaner, and everything you’re working on comes with you.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Claim your ticket',
-            link: () => 'https://new.appwrite.io/init',
+            text: 'Try it now',
+            link: () =>
+                'https://appwrite.io/?utm_source=old-console&utm_medium=promo_card&utm_campaign=new-console',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(initPromo);
+    listOfPromotions.push(newConsolePromo);
 }
 
 export function addBottomModalAlerts() {
