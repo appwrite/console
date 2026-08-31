@@ -134,7 +134,13 @@
         's-4vcpu-16gb': 2000,
         's-4vcpu-32gb': 4000,
         's-8vcpu-32gb': 5000,
-        's-8vcpu-64gb': 10000
+        's-8vcpu-64gb': 10000,
+        's-16vcpu-64gb': 10000,
+        's-16vcpu-128gb': 10000,
+        's-32vcpu-128gb': 10000,
+        's-32vcpu-256gb': 10000,
+        's-48vcpu-192gb': 10000,
+        's-48vcpu-384gb': 10000
     };
 
     const tierMaxConnections = $derived(tierConnectionLimits[database.tier] ?? null);
