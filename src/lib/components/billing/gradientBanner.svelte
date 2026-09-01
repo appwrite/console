@@ -6,9 +6,17 @@
     import { isTabletViewport } from '$lib/stores/viewport';
     import PinkBackground from '$lib/images/pink-background.svg';
     import { bannerSpacing } from '$lib/layout/headerAlert.svelte';
-    import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+    import { createEventDispatcher, getContext, onMount, onDestroy } from 'svelte';
 
     export let variant: 'gradient' | 'image' = 'gradient';
+
+    /**
+     * An AlertStack parent is itself fixed and measures its children to offset the shell. This
+     * banner is position:fixed, so inside a stack it measures as 0 and the stack resets the
+     * header offset we just set, leaving the banner covering the navigation until the next
+     * resize. Mirror headerAlert.svelte and stand down when the stack is in charge.
+     */
+    const isInStack: boolean = getContext('isInAlertStack') ?? false;
 
     let container: HTMLElement;
     const dispatch = createEventDispatcher();
@@ -20,6 +28,8 @@
     });
 
     const setNavigationHeight = () => {
+        if (isInStack) return;
+
         const alertHeight = container?.getBoundingClientRect()?.height || 0;
         const { header, sidebar, content } = queryLayoutElements();
         const headerHeight = header?.getBoundingClientRect().height || 0;
@@ -51,6 +61,7 @@
 <div
     bind:this={container}
     class:darker={variant === 'image'}
+    class:in-stack={isInStack}
     class="top-banner alert is-action is-action-and-top-sticky">
     {#if variant === 'gradient'}
         <div class="top-banner-bg">
@@ -91,6 +102,11 @@
         z-index: 100;
         position: fixed;
         padding: 0.8rem;
+
+        &.in-stack {
+            position: relative;
+            z-index: unset;
+        }
 
         &.darker {
             background: var(--bgcolor-neutral-default);

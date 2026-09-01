@@ -44,7 +44,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
+    import { BottomModalAlert, NewConsoleBanner } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
@@ -324,6 +324,19 @@
     }
 
     $registerSearchers(orgSearcher, projectsSearcher);
+
+    onMount(() => {
+        // Same shape as newDevUpgradePro: promo tier (importance 1) so it can never outrank a
+        // payment or usage warning, dismissal keyed on the alert id in localStorage.
+        if (isCloud && !localStorage.getItem('newConsoleBanner')) {
+            headerAlert.add({
+                id: 'newConsoleBanner',
+                component: NewConsoleBanner,
+                show: true,
+                importance: 1
+            });
+        }
+    });
 
     $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
 </script>
