@@ -44,8 +44,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
-    import NewConsoleBanner from '$lib/components/newConsoleBanner.svelte';
+    import { BottomModalAlert, NewConsoleBanner } from '$lib/components';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
