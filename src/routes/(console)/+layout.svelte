@@ -45,7 +45,10 @@
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
     import { BottomModalAlert, NewConsoleBanner } from '$lib/components';
-    import { shouldShowNotification } from '$lib/helpers/notifications';
+    import {
+        NEW_CONSOLE_BANNER_ID,
+        canShowNewConsoleBanner
+    } from '$lib/components/newConsoleBanner.svelte';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
@@ -329,9 +332,9 @@
     onMount(() => {
         // Same shape as newDevUpgradePro: promo tier (importance 1) so it can never outrank a
         // payment or usage warning, dismissal keyed on the alert id in localStorage.
-        if (isCloud && shouldShowNotification('newConsoleBanner')) {
+        if (isCloud && canShowNewConsoleBanner()) {
             headerAlert.add({
-                id: 'newConsoleBanner',
+                id: NEW_CONSOLE_BANNER_ID,
                 component: NewConsoleBanner,
                 show: true,
                 importance: 1

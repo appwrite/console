@@ -35,7 +35,9 @@ function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefIte
         notificationPrefs: parsedPrefs
     };
 
-    sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
+    // Returned so callers can observe a rejected write. Existing callers ignore it and keep
+    // their previous fire-and-forget behaviour.
+    return sdk.forConsole.account.updatePrefs({ prefs: newPrefs });
 }
 
 /**
@@ -73,7 +75,7 @@ export function hideNotification(id: string, options: NotificationCoolOffOptions
         expiry: expiryTime
     };
 
-    updateNotificationPrefs(parsedBannerPrefs);
+    return updateNotificationPrefs(parsedBannerPrefs);
 }
 
 /**
