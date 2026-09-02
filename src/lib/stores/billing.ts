@@ -32,6 +32,7 @@ import { user } from './user';
 
 import BudgetLimitAlert from '$routes/(console)/organization-[organization]/budgetLimitAlert.svelte';
 import TeamReadonlyAlert from '$routes/(console)/organization-[organization]/teamReadonlyAlert.svelte';
+import ProgramMembershipAlert from '$routes/(console)/organization-[organization]/programMembershipAlert.svelte';
 import EnterpriseTrial from '$routes/(console)/organization-[organization]/enterpriseTrial.svelte';
 
 export const roles = [
@@ -60,6 +61,22 @@ export const roles = [
 export const teamStatusReadonly = 'readonly';
 export const teamStatusUpgrading = 'upgrading';
 export const billingLimitOutstandingInvoice = 'outstanding_invoice';
+export const programMembershipUnverified = 'program_membership_unverified';
+export const programMembershipInvalid = 'program_membership_invalid';
+
+/**
+ * Set once verification of a program membership starts failing because the linked
+ * GitHub identity can no longer be used. The API returns it, but the SDK's
+ * `Models.Organization` doesn't declare it yet.
+ */
+export function getProgramMembershipUnverifiedSince(
+    organization: Models.Organization
+): string | null {
+    return (
+        (organization as unknown as { programMembershipUnverifiedSince?: string })
+            ?.programMembershipUnverifiedSince ?? null
+    );
+}
 
 export const paymentMethods = derived(
     page,
@@ -442,6 +459,47 @@ export function calculateTrialDay(org: Models.Organization) {
     return days;
 }
 
+/**
+ * Keeps both program-membership banners in step with the organization.
+ *
+ * Exported because the layout gates checkForUsageLimit on the organization id, so an organization
+ * that is reverified or restricted without changing id would otherwise keep whichever banner it
+ * had — and a stale one outranks the alerts below it and renders nothing in their place.
+ *
+ * @returns whether the organization is restricted for a program membership reason
+ */
+export function syncProgramMembershipAlerts(organization: Models.Organization): boolean {
+    const restricted =
+        organization?.status === teamStatusReadonly &&
+        (organization?.remarks === programMembershipUnverified ||
+            organization?.remarks === programMembershipInvalid);
+
+    // Warning window: the GitHub link is dead but access isn't restricted yet.
+    const warning =
+        !!organization &&
+        organization?.status !== teamStatusReadonly &&
+        !!getProgramMembershipUnverifiedSince(organization);
+
+    // add() no-ops on a known id, so show has to be pushed on every call.
+    headerAlert.add({
+        id: 'programMembershipRestricted',
+        component: ProgramMembershipAlert,
+        show: restricted,
+        importance: 11
+    });
+    headerAlert.updateShow('programMembershipRestricted', restricted);
+
+    headerAlert.add({
+        id: 'programMembershipWarning',
+        component: ProgramMembershipAlert,
+        show: warning,
+        importance: 9
+    });
+    headerAlert.updateShow('programMembershipWarning', warning);
+
+    return restricted;
+}
+
 export async function checkForUsageLimit(organization: Models.Organization) {
     if (
         organization?.status === teamStatusReadonly &&
@@ -453,6 +511,11 @@ export async function checkForUsageLimit(organization: Models.Organization) {
             show: true,
             importance: 11
         });
+        readOnly.set(true);
+        return;
+    }
+
+    if (syncProgramMembershipAlerts(organization)) {
         readOnly.set(true);
         return;
     }

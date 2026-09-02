@@ -8,8 +8,9 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
-    import { Card, Empty, Icon, Layout, Table } from '@appwrite.io/pink-svelte';
-    import { IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import { Card, Empty, Icon, Layout, Table, Tooltip } from '@appwrite.io/pink-svelte';
+    import { IconRefresh, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import { reconnectGithubIdentity } from '$lib/helpers/github';
     import DualTimeView from '$lib/components/dualTimeView.svelte';
 
     // Apps authorized through the OAuth2 server use an `oauth2:<appId>` provider
@@ -17,6 +18,20 @@
     $: signInIdentities = $identities.filter(
         (identity) => !identity.provider?.startsWith('oauth2:')
     );
+
+    function reconnectIdentity(provider: string) {
+        try {
+            // the flow redirects away, so track before handing off to GitHub.
+            trackEvent(Submit.AccountReconnectIdentity, { provider });
+            reconnectGithubIdentity();
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.AccountReconnectIdentity);
+        }
+    }
 
     async function deleteIdentity(id: string) {
         try {
@@ -58,7 +73,7 @@
                     { id: 'email' },
                     { id: 'createdAt' },
                     { id: 'expiryDate' },
-                    { id: 'actions', width: 40 }
+                    { id: 'actions', width: 80 }
                 ]}>
                 <svelte:fragment slot="header" let:root>
                     <Table.Header.Cell column="provider" {root}>Provider</Table.Header.Cell>
@@ -96,9 +111,25 @@
                             {/if}
                         </Table.Cell>
                         <Table.Cell column="actions" {root}>
-                            <Button text on:click={() => deleteIdentity(identity.$id)}>
-                                <Icon icon={IconTrash} size="s" />
-                            </Button>
+                            <Layout.Stack direction="row" gap="xxs" alignItems="center">
+                                {#if identity.provider === 'github'}
+                                    <Tooltip>
+                                        <Button
+                                            text
+                                            icon
+                                            ariaLabel="Reconnect GitHub"
+                                            on:click={() => reconnectIdentity(identity.provider)}>
+                                            <Icon icon={IconRefresh} size="s" />
+                                        </Button>
+                                        <span slot="tooltip">
+                                            Reconnect to refresh this identity’s access
+                                        </span>
+                                    </Tooltip>
+                                {/if}
+                                <Button text on:click={() => deleteIdentity(identity.$id)}>
+                                    <Icon icon={IconTrash} size="s" />
+                                </Button>
+                            </Layout.Stack>
                         </Table.Cell>
                     </Table.Row.Base>
                 {/each}
