@@ -1,19 +1,19 @@
 <script lang="ts" context="module">
     import { shouldShowNotification } from '$lib/helpers/notifications';
+    import { isLocallySnoozed, readLocalSnooze } from '$lib/helpers/localSnooze';
 
     export const NEW_CONSOLE_BANNER_ID = 'newConsoleBanner';
 
     /**
-     * Account prefs are the source of truth for the snooze: they carry the backoff count and
-     * follow the user across devices. This local key only covers the case where that write is
-     * rejected, so a dismissal is never silently lost.
+     * Account prefs are the source of truth for the snooze: they carry the hide count and follow
+     * the user across devices. This local key only covers a rejected prefs write, so a dismissal
+     * is never silently lost.
      */
-    const SNOOZE_FALLBACK_KEY = 'newConsoleBanner:snoozedUntil';
-    const SNOOZE_FALLBACK_MS = 7 * 24 * 60 * 60 * 1000;
+    export const SNOOZE_FALLBACK_KEY = 'newConsoleBanner:snooze';
+    export const SNOOZE_COOL_OFF_HOURS = 24 * 7;
 
     export function canShowNewConsoleBanner(): boolean {
-        const until = Number(localStorage.getItem(SNOOZE_FALLBACK_KEY) ?? 0);
-        if (Number.isFinite(until) && Date.now() < until) return false;
+        if (isLocallySnoozed(readLocalSnooze(SNOOZE_FALLBACK_KEY), Date.now())) return false;
 
         return shouldShowNotification(NEW_CONSOLE_BANNER_ID);
     }
@@ -25,6 +25,7 @@
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
     import { isTabletViewport } from '$lib/stores/viewport';
     import { hideNotification } from '$lib/helpers/notifications';
+    import { clearLocalSnooze, nextLocalSnooze, writeLocalSnooze } from '$lib/helpers/localSnooze';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from './billing/gradientBanner.svelte';
@@ -47,12 +48,23 @@
         // a week at first, doubling each time. Someone who keeps closing it stops seeing it, but a
         // single stray click on the X does not remove the message for the whole rollout.
         try {
-            await hideNotification(id, { coolOffPeriod: 24 * 7, exponentialBackoff: true });
-            localStorage.removeItem(SNOOZE_FALLBACK_KEY);
+            await hideNotification(id, {
+                coolOffPeriod: SNOOZE_COOL_OFF_HOURS,
+                exponentialBackoff: true
+            });
+            clearLocalSnooze(SNOOZE_FALLBACK_KEY);
         } catch {
             // Prefs rejected the write, so the snooze would be lost on the next load. Hold it in
-            // this browser instead: a flat week, no backoff, cleared once prefs accept a write.
-            localStorage.setItem(SNOOZE_FALLBACK_KEY, String(Date.now() + SNOOZE_FALLBACK_MS));
+            // this browser instead, escalating on the same curve so repeated failures continue
+            // the sequence rather than restarting at a week. Cleared once a write succeeds.
+            writeLocalSnooze(
+                SNOOZE_FALLBACK_KEY,
+                nextLocalSnooze(
+                    readLocalSnooze(SNOOZE_FALLBACK_KEY),
+                    SNOOZE_COOL_OFF_HOURS,
+                    Date.now()
+                )
+            );
         }
     }
 </script>
