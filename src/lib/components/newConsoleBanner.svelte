@@ -2,7 +2,8 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { isSmallViewport } from '$lib/stores/viewport';
+    import { isTabletViewport } from '$lib/stores/viewport';
+    import { hideNotification } from '$lib/helpers/notifications';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from './billing/gradientBanner.svelte';
@@ -13,7 +14,11 @@
 
     function handleClose() {
         const { id } = $activeHeaderAlert;
-        localStorage.setItem(id, new Date().getTime().toString());
+
+        // A migration runs for months, so dismissal is a snooze rather than a permanent opt-out:
+        // a week at first, doubling each time. Someone who keeps closing it stops seeing it, but a
+        // single stray click on the X does not remove the message for the whole rollout.
+        hideNotification(id, { coolOffPeriod: 24 * 7, exponentialBackoff: true });
         trackEvent('close_new_console_banner', { source: 'new_console_banner' });
 
         // Clear the store entry, not just this component. headerAlert.get() picks the highest
@@ -28,15 +33,15 @@
         gap="m"
         alignItems="center"
         alignContent="center"
-        direction={$isSmallViewport ? 'column' : 'row'}>
-        <Typography.Text>
+        justifyContent="center"
+        direction={$isTabletViewport ? 'column' : 'row'}>
+        <Typography.Text align={$isTabletViewport ? 'center' : 'start'}>
             Introducing the new Appwrite Console, rebuilt from the ground up.
         </Typography.Text>
 
         <Button
             secondary
             external
-            fullWidthMobile
             class="u-line-height-1"
             {href}
             on:click={() => trackEvent('click_new_console', { source: 'new_console_banner' })}>
