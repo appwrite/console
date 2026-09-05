@@ -4,11 +4,16 @@ const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] as const
 export type Size = (typeof sizes)[number];
 
 export function calculateSize(bytes: number, decimals = 1, base: 1000 | 1024 = 1000) {
-    if (bytes === 0) return '0 Bytes';
+    // Guard non-finite/negative input (e.g. an undefined API size coerced to NaN):
+    // without this the log math yields `NaN`/out-of-range indexes and the UI renders
+    // strings like "NaN undefined" or "500 undefined".
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes';
 
     const dm = decimals < 0 ? 0 : decimals;
 
-    const i = Math.floor(Math.log(bytes) / Math.log(base));
+    // Clamp the unit index so sub-1-byte and astronomically large values still map to a
+    // real unit rather than reading `sizes[-1]`/`sizes[9]` as `undefined`.
+    const i = Math.min(Math.max(Math.floor(Math.log(bytes) / Math.log(base)), 0), sizes.length - 1);
 
     return parseFloat((bytes / Math.pow(base, i)).toFixed(dm)) + ' ' + sizes[i];
 }
