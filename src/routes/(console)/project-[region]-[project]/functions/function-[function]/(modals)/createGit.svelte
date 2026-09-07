@@ -9,13 +9,13 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
+    import { getProviderRepositoryUrl, getVcsProvider } from '$lib/stores/git';
     import {
         Runtime,
         VCSReferenceType,
         type Models,
         type ProjectKeyScopes
     } from '@appwrite.io/console';
-    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import { func } from '../store';
     import { page } from '$app/state';
@@ -29,6 +29,14 @@
     let commit: string = null;
     let activate = true;
     let error = '';
+
+    // '' when the provider's host is unknown client-side (e.g. Gitea), in which
+    // case the repository is shown as plain text rather than a broken link.
+    $: repositoryUrl = getProviderRepositoryUrl(
+        $installation?.provider ?? 'github',
+        $repository?.organization,
+        $repository?.name
+    );
 
     async function loadInstallations() {
         if (!$func?.installationId && installations?.total > 0) {
@@ -142,7 +150,7 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s">
-                        <Icon size="s" icon={IconGithub} />
+                        <Icon size="s" icon={getVcsProvider($installation?.provider).icon} />
                         <Skeleton variant="line" width={100} height={19.6} />
                     </Layout.Stack>
                 </Layout.Stack>
@@ -159,14 +167,18 @@
                     alignItems="center"
                     gap="xs">
                     <Layout.Stack direction="row" alignItems="center" gap="s" inline>
-                        <Icon icon={IconGithub} />
-                        <Link
-                            external
-                            href={`https://github.com/${$repository?.organization}/${$repository?.name}`}>
-                            <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                        <Icon icon={getVcsProvider($installation?.provider).icon} />
+                        {#if repositoryUrl}
+                            <Link external href={repositoryUrl}>
+                                <Layout.Stack direction="row" alignItems="center" gap="s" inline>
+                                    {$repository?.organization}/{$repository?.name}
+                                </Layout.Stack>
+                            </Link>
+                        {:else}
+                            <Typography.Text>
                                 {$repository?.organization}/{$repository?.name}
-                            </Layout.Stack>
-                        </Link>
+                            </Typography.Text>
+                        {/if}
                     </Layout.Stack>
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         Last updated {timeFromNow($repository?.pushedAt)}

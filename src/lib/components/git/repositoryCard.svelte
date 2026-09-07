@@ -6,10 +6,18 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Card, Icon, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
+    import { installation } from '$lib/stores/vcs';
+    import { getProviderOrganizationUrl } from '$lib/stores/git';
+    import IconOrigin from './IconOrigin.svelte';
 
     export let repository: Models.ProviderRepository;
 
     const dispatch = createEventDispatcher();
+
+    // ProviderRepository carries no provider, so read it off the owning installation.
+    $: provider = $installation?.provider ?? 'github';
+    // '' when the provider's host is unknown client-side (e.g. Gitea).
+    $: organizationUrl = getProviderOrganizationUrl(provider, repository.organization);
 </script>
 
 <Card.Base padding="xs" radius="s" variant="secondary">
@@ -24,7 +32,9 @@
             alignItems="flex-start"
             gap="s"
             style="min-width: 0; flex: 1 1 16rem;">
-            <Icon icon={IconGithub} color="--fgcolor-neutral-primary" />
+            <Icon
+                icon={provider === 'origin' ? IconOrigin : IconGithub}
+                color="--fgcolor-neutral-primary" />
             <Layout.Stack gap="xxxs" style="min-width: 0; flex: 1 1 auto;">
                 <Typography.Text variant="m-400" color="--fgcolor-neutral-primary">
                     <span class="repository-copy">{repository.name}</span>
@@ -38,13 +48,15 @@
                     <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
                         •
                     </Typography.Caption>
-                    <Link
-                        size="s"
-                        variant="muted"
-                        external
-                        href={`https://github.com/${repository.organization}`}>
-                        <span class="repository-copy">{repository.organization}</span>
-                    </Link>
+                    {#if organizationUrl}
+                        <Link size="s" variant="muted" external href={organizationUrl}>
+                            <span class="repository-copy">{repository.organization}</span>
+                        </Link>
+                    {:else}
+                        <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary">
+                            <span class="repository-copy">{repository.organization}</span>
+                        </Typography.Caption>
+                    {/if}
                 </Layout.Stack>
             </Layout.Stack>
         </Layout.Stack>
