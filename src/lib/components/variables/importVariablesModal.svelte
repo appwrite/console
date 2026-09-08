@@ -5,7 +5,7 @@
     import type { Models } from '@appwrite.io/console';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import { Icon, Layout, Selector, Tooltip, Typography, Upload } from '@appwrite.io/pink-svelte';
-    import { parse } from '$lib/helpers/envfile';
+    import { parse, readEnvFile } from '$lib/helpers/envfile';
     import { removeFile } from '$lib/helpers/files';
     import { validateVariables } from '$lib/helpers/variables';
 
@@ -31,7 +31,7 @@
                 throw new Error('No file selected');
             }
 
-            const uploaded = parse(await files[0].text());
+            const uploaded = parse(await readEnvFile(files[0]));
 
             if (!Object.keys(uploaded).length) {
                 throw new Error('No variables found');
