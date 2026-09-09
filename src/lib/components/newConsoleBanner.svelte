@@ -2,7 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Button } from '$lib/elements/forms';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import { isTabletViewport } from '$lib/stores/viewport';
+    import { isSmallViewport } from '$lib/stores/viewport';
     import { hideNotification } from '$lib/helpers/notifications';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { activeHeaderAlert } from '$routes/(console)/store';
@@ -35,8 +35,8 @@
         alignItems="center"
         alignContent="center"
         justifyContent="center"
-        direction={$isTabletViewport ? 'column' : 'row'}>
-        <Typography.Text align={$isTabletViewport ? 'center' : 'start'}>
+        direction={$isSmallViewport ? 'column' : 'row'}>
+        <Typography.Text align={$isSmallViewport ? 'center' : 'start'}>
             Introducing the new Appwrite Console, rebuilt from the ground up.
         </Typography.Text>
 
