@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { getOrganizationIdFromUrl, getProjectIdFromUrl } from '../helpers/url';
+import { dismissNewConsolePromotion } from './new-console';
 
 type Metadata = {
     id: string;
@@ -34,6 +35,7 @@ export async function enterCreditCard(page: Page) {
 export async function createProProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./create-organization');
+        await dismissNewConsolePromotion(page);
         await page.locator('id=name').fill('test org');
         await page.getByRole('radio', { name: /^Pro\b/ }).check();
         // `create organization` because there's already free created on start!

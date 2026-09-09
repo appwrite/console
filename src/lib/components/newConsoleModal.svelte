@@ -148,6 +148,7 @@
     .scrim[open] {
         display: grid;
         place-items: center;
+        align-items: safe center;
     }
 
     .scrim::backdrop {
