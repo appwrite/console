@@ -104,7 +104,7 @@
         "vite": "npm:rolldown-vite@latest",
         "minimatch": "10.2.3",
         "brace-expansion": ">=5.0.9",
-        "js-yaml": "^4.3.1",
+        "js-yaml": "^4.3.2",
         "immutable": "^5.1.8",
         "flatted": "^3.4.2",
         "devalue": "^5.8.1",
