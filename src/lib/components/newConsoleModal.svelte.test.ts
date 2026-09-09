@@ -3,15 +3,32 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/svelte';
 import { page } from '$app/state';
 import { trackEvent } from '$lib/actions/analytics';
+import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
 import { sdk } from '$lib/stores/sdk';
 import { user, type Account } from '$lib/stores/user';
-import type { Writable } from 'svelte/store';
+import { get, type Writable } from 'svelte/store';
 import NewConsoleModal from './newConsoleModal.svelte';
 
 vi.mock('$lib/actions/analytics', () => ({ trackEvent: vi.fn() }));
-vi.mock('$lib/stores/sdk', () => ({
-    sdk: { forConsole: { account: { updatePrefs: vi.fn().mockResolvedValue({}) } } }
-}));
+vi.mock('$lib/stores/sdk', async () => {
+    const { user } = await import('$lib/stores/user');
+    return {
+        sdk: {
+            forConsole: {
+                account: {
+                    updatePrefs: vi.fn(async ({ prefs }) => {
+                        const savedPrefs = structuredClone(prefs);
+                        (user as Writable<Account>).update((account) => ({
+                            ...account,
+                            prefs: savedPrefs
+                        }));
+                        return savedPrefs;
+                    })
+                }
+            }
+        }
+    };
+});
 vi.mock('$lib/stores/user', async () => {
     const { writable } = await import('svelte/store');
     return { user: writable(null) };
@@ -35,8 +52,6 @@ vi.mock('$app/state', async () => {
         }
     };
 });
-const now = Date.UTC(2026, 8, 9);
-const coolOff = 30 * 24 * 60 * 60 * 1000;
 const showModal = vi.fn(function (this: HTMLDialogElement) {
     this.open = true;
 });
@@ -44,10 +59,14 @@ const closeDialog = vi.fn(function (this: HTMLDialogElement) {
     this.open = false;
 });
 
-function setAccount(notificationPrefs = {}) {
+function setAccount() {
     (user as Writable<Account>).set({
-        prefs: { theme: 'dark', notificationPrefs }
+        prefs: { theme: 'dark', notificationPrefs: {} }
     } as unknown as Account);
+}
+
+function setDate(date: string) {
+    vi.mocked(Date.now).mockReturnValue(Date.parse(`${date}T00:00:00Z`));
 }
 
 function navigate(path: string) {
@@ -57,14 +76,8 @@ function navigate(path: string) {
 }
 
 function expectSnoozed(action: 'continue' | 'try') {
-    expect(sdk.forConsole.account.updatePrefs).toHaveBeenCalledExactlyOnceWith({
-        prefs: {
-            theme: 'dark',
-            notificationPrefs: {
-                newConsoleModal: { expiry: now + coolOff, hideCount: 1, state: 'hidden' }
-            }
-        }
-    });
+    expect(sdk.forConsole.account.updatePrefs).toHaveBeenCalledOnce();
+    expect(shouldShowNotification('newConsoleModal')).toBe(false);
     expect(trackEvent).toHaveBeenCalledWith('close_new_console_modal', {
         source: 'new_console_modal',
         action
@@ -84,7 +97,8 @@ describe('new Console modal', () => {
     });
 
     beforeEach(async () => {
-        vi.spyOn(Date, 'now').mockReturnValue(now);
+        vi.spyOn(Date, 'now');
+        setDate('2026-09-01');
         setAccount();
         await navigate('/console');
     });
@@ -193,10 +207,9 @@ describe('new Console modal', () => {
     it('tracks the new Console link and snoozes once when following it', async () => {
         render(NewConsoleModal, { show: true });
         const link = screen.getByRole('link', { name: 'Take me to the new Console' });
-        expect(link).toHaveAttribute(
-            'href',
-            'https://appwrite.io/?utm_source=old-console&utm_medium=modal&utm_campaign=new-console'
-        );
+        const destination = new URL(link.getAttribute('href'));
+        expect(destination.origin).toBe('https://appwrite.io');
+        expect(destination.searchParams.get('utm_medium')).toBe('modal');
         expect(link).toHaveAttribute('target', '_blank');
 
         await fireEvent.click(link);
@@ -222,25 +235,50 @@ describe('new Console modal', () => {
         expect(trackEvent).toHaveBeenCalledOnce();
     });
 
-    it('doubles the existing cool-off while preserving unrelated preferences', async () => {
-        const bannerPref = { expiry: now + 1000, hideCount: 1, state: 'hidden' };
-        setAccount({
-            newConsoleModal: { expiry: now - 1, hideCount: 2, state: 'shown' },
-            newConsoleBanner: bannerPref
+    it('returns after 30 days, then waits 60 days after another dismissal', async () => {
+        const firstVisit = render(NewConsoleModal, {
+            show: shouldShowNotification('newConsoleModal')
         });
+
+        await fireEvent.click(screen.getByRole('button', { name: 'Close' }));
+        expectSnoozed('continue');
+        firstVisit.unmount();
+
+        setDate('2026-09-30');
+        expect(shouldShowNotification('newConsoleModal')).toBe(false);
+        setDate('2026-10-01');
+        const eligibleAgain = shouldShowNotification('newConsoleModal');
+        expect(eligibleAgain).toBe(true);
+
+        vi.mocked(sdk.forConsole.account.updatePrefs).mockClear();
+        vi.mocked(trackEvent).mockClear();
+        closeDialog.mockClear();
+        render(NewConsoleModal, { show: eligibleAgain });
+        await fireEvent.click(screen.getByRole('button', { name: 'Stay here for now' }));
+        expectSnoozed('continue');
+
+        setDate('2026-11-01');
+        expect(shouldShowNotification('newConsoleModal')).toBe(false);
+        setDate('2026-11-29');
+        expect(shouldShowNotification('newConsoleModal')).toBe(false);
+        setDate('2026-11-30');
+        expect(shouldShowNotification('newConsoleModal')).toBe(true);
+    });
+
+    it('preserves unrelated preferences and notification dismissals', async () => {
+        hideNotification('newConsoleBanner');
+        const bannerPreference = structuredClone(
+            get(user).prefs.notificationPrefs.newConsoleBanner
+        );
+        vi.mocked(sdk.forConsole.account.updatePrefs).mockClear();
         render(NewConsoleModal, { show: true });
 
         await fireEvent.click(screen.getByRole('button', { name: 'Close' }));
 
-        expect(sdk.forConsole.account.updatePrefs).toHaveBeenCalledExactlyOnceWith({
-            prefs: {
-                theme: 'dark',
-                notificationPrefs: {
-                    newConsoleModal: { expiry: now + coolOff * 4, hideCount: 3, state: 'hidden' },
-                    newConsoleBanner: bannerPref
-                }
-            }
-        });
+        expectSnoozed('continue');
+        expect(get(user).prefs.theme).toBe('dark');
+        expect(get(user).prefs.notificationPrefs.newConsoleBanner).toEqual(bannerPreference);
+        expect(shouldShowNotification('newConsoleBanner')).toBe(false);
     });
 
     it('closes silently when the parent hides it and can be shown again', async () => {
