@@ -1,14 +1,24 @@
 <script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/state';
     import { trackEvent } from '$lib/actions/analytics';
-    import { Button } from '$lib/elements/forms';
+    import { disableCommands } from '$lib/commandCenter';
     import { hideNotification } from '$lib/helpers/notifications';
     import NewConsoleCover from '$lib/images/promos/new-console-modal.png';
-    import { Alert, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { Alert, Button, Icon, Typography } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight, IconX } from '@appwrite.io/pink-icons-svelte';
 
-    export let show = false;
+    let { show = $bindable(false) }: { show?: boolean } = $props();
+    const isOnOnboarding = $derived(
+        page.url.pathname === `${base}/onboarding` ||
+            page.url.pathname.startsWith(`${base}/onboarding/`)
+    );
 
-    // TODO: replace with the confirmed retirement date once it is set.
+    $effect(() => {
+        $disableCommands(show && !isOnOnboarding);
+    });
+
+    // @todo: replace with the confirmed retirement date once it is set.
     const SUNSET_NOTE = 'The old Console will be retired in the coming weeks.';
 
     // utm_medium separates this from the banner and the promo card.
@@ -22,44 +32,53 @@
     let recorded = false;
 
     function close(action: 'try' | 'continue') {
-        if (!recorded) {
-            recorded = true;
-            trackEvent('close_new_console_modal', { source: 'new_console_modal', action });
-            hideNotification('newConsoleModal', {
-                coolOffPeriod: COOL_OFF_HOURS,
-                exponentialBackoff: true
-            });
-        }
+        if (!show || recorded) return;
+
+        recorded = true;
+        trackEvent('close_new_console_modal', { source: 'new_console_modal', action });
+        hideNotification('newConsoleModal', {
+            coolOffPeriod: COOL_OFF_HOURS,
+            exponentialBackoff: true
+        });
 
         show = false;
     }
 
-    function onKeydown(event: KeyboardEvent) {
-        if (show && event.key === 'Escape') close('continue');
-    }
+    function openDialog(node: HTMLDialogElement) {
+        const previousFocus = document.activeElement;
+        recorded = false;
+        // Native modality contains keyboard focus and makes the rest of the page inert.
+        node.showModal();
 
-    // Moves the reading cursor into the dialog so Escape and the actions are reachable at once.
-    function focusOnMount(node: HTMLElement) {
-        node.focus({ preventScroll: true });
+        return {
+            destroy() {
+                node.close();
+                // Also restore focus when Svelte removes the dialog during teardown.
+                if (previousFocus instanceof HTMLElement && previousFocus.isConnected) {
+                    previousFocus.focus({ preventScroll: true });
+                }
+            }
+        };
     }
 </script>
 
-<svelte:window on:keydown={onKeydown} />
-
-{#if show}
-    <div
+{#if show && !isOnOnboarding}
+    <dialog
         class="scrim"
-        role="presentation"
+        aria-labelledby="new-console-title"
+        use:openDialog
+        oncancel={(event) => {
+            event.preventDefault();
+            close('continue');
+        }}
+        onkeydown={(event) => {
+            // Let the native cancel event close only this dialog, not a background wizard.
+            if (event.key === 'Escape') event.stopPropagation();
+        }}
         onclick={(event) => {
             if (event.target === event.currentTarget) close('continue');
         }}>
-        <div
-            class="dialog"
-            role="dialog"
-            tabindex="-1"
-            aria-modal="true"
-            aria-labelledby="new-console-title"
-            use:focusOnMount>
+        <div class="dialog">
             <button
                 class="dismiss"
                 type="button"
@@ -87,32 +106,51 @@
             </div>
 
             <div class="actions">
-                <Button
+                <Button.Anchor
                     {href}
-                    external
-                    on:click={() => {
+                    size="s"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onclick={() => {
                         trackEvent('click_new_console', { source: 'new_console_modal' });
                         close('try');
                     }}>
                     Take me to the new Console
                     <Icon icon={IconArrowSmRight} size="s" slot="end" />
-                </Button>
+                </Button.Anchor>
 
-                <Button text on:click={() => close('continue')}>Stay here for now</Button>
+                <Button.Button
+                    type="button"
+                    variant="text"
+                    size="s"
+                    onclick={() => close('continue')}>Stay here for now</Button.Button>
             </div>
         </div>
-    </div>
+    </dialog>
 {/if}
 
 <style lang="scss">
     .scrim {
+        box-sizing: border-box;
         position: fixed;
         inset: 0;
-        z-index: 1000;
-        display: grid;
-        place-items: center;
+        inline-size: 100%;
+        max-inline-size: 100%;
+        block-size: 100%;
+        max-block-size: 100%;
+        margin: 0;
+        border: none;
+        background: transparent;
         padding: var(--space-6, 12px);
         overflow-y: auto;
+    }
+
+    .scrim[open] {
+        display: grid;
+        place-items: center;
+    }
+
+    .scrim::backdrop {
         background: var(--overlay-scrim);
         backdrop-filter: blur(4px);
     }

@@ -342,11 +342,8 @@
     let showNewConsoleModal = false;
 
     onMount(() => {
-        // Never during onboarding: a first run is the worst moment to interrupt.
-        const isOnOnboarding = page.url.pathname.includes(base + '/onboarding');
-
-        showNewConsoleModal =
-            isCloud && !isOnOnboarding && shouldShowNotification('newConsoleModal');
+        // The modal reacts to onboarding navigation without recording a dismissal.
+        showNewConsoleModal = isCloud && shouldShowNotification('newConsoleModal');
     });
 
     $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
