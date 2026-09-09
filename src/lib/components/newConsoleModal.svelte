@@ -28,13 +28,21 @@
         });
     }
 
+    // `show` starts false and is flipped on by the parent, so a bare `if (!show)` would fire on
+    // mount and snooze the modal before it was ever seen. Only treat it as an exit once it has
+    // actually been open.
+    let wasShown = false;
+    $: if (show) wasShown = true;
+
     // Catches every exit: the close button, Escape, the backdrop, and the footer button. Whatever
     // route the user takes out of the modal counts as choosing to stay on the old Console.
-    $: if (!show) record('continue');
+    $: if (wasShown && !show) record('continue');
 </script>
 
-<Modal bind:show size="l" title="Try the new Appwrite Console">
-    <Typography.Text slot="description">
+<!-- autoClose={false}: Modal closes itself on navigation, and this component treats any
+     close as the user choosing to stay on the old Console. Navigating is not a choice. -->
+<Modal bind:show autoClose={false} size="m" title="Try the new Appwrite Console">
+    <Typography.Text>
         We rebuilt the Console from the ground up. It's faster, it's cleaner, and everything you're
         working on comes with you. Nothing to migrate.
     </Typography.Text>
