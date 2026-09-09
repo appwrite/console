@@ -1,0 +1,55 @@
+<script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
+    import { Modal } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { hideNotification } from '$lib/helpers/notifications';
+    import { Typography } from '@appwrite.io/pink-svelte';
+
+    export let show = false;
+
+    // utm_medium separates this from the banner and the promo card.
+    const href =
+        'https://appwrite.io/?utm_source=old-console&utm_medium=modal&utm_campaign=new-console';
+
+    // The most interruptive of the three surfaces, so it snoozes for a month rather than the
+    // banner's week, and still doubles on each dismissal.
+    const COOL_OFF_HOURS = 24 * 30;
+
+    let recorded = false;
+
+    function record(action: 'try' | 'continue') {
+        if (recorded) return;
+        recorded = true;
+
+        trackEvent('close_new_console_modal', { source: 'new_console_modal', action });
+        hideNotification('newConsoleModal', {
+            coolOffPeriod: COOL_OFF_HOURS,
+            exponentialBackoff: true
+        });
+    }
+
+    // Catches every exit: the close button, Escape, the backdrop, and the footer button. Whatever
+    // route the user takes out of the modal counts as choosing to stay on the old Console.
+    $: if (!show) record('continue');
+</script>
+
+<Modal bind:show size="l" title="Try the new Appwrite Console">
+    <Typography.Text slot="description">
+        We rebuilt the Console from the ground up. It's faster, it's cleaner, and everything you're
+        working on comes with you. Nothing to migrate.
+    </Typography.Text>
+
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (show = false)}>Continue with the old Console</Button>
+
+        <Button
+            {href}
+            external
+            on:click={() => {
+                record('try');
+                show = false;
+            }}>
+            Try the new Console
+        </Button>
+    </svelte:fragment>
+</Modal>

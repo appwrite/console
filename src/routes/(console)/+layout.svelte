@@ -44,7 +44,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert, NewConsoleBanner } from '$lib/components';
+    import { BottomModalAlert, NewConsoleBanner, NewConsoleModal } from '$lib/components';
     import { shouldShowNotification } from '$lib/helpers/notifications';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
@@ -339,6 +339,16 @@
         }
     });
 
+    let showNewConsoleModal = false;
+
+    onMount(() => {
+        // Never during onboarding: a first run is the worst moment to interrupt.
+        const isOnOnboarding = page.url.pathname.includes(base + '/onboarding');
+
+        showNewConsoleModal =
+            isCloud && !isOnOnboarding && shouldShowNotification('newConsoleModal');
+    });
+
     $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
 </script>
 
@@ -375,3 +385,5 @@
 {/if}
 
 <BottomModalAlert />
+
+<NewConsoleModal bind:show={showNewConsoleModal} />
