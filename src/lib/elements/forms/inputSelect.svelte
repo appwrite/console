@@ -11,14 +11,7 @@
     export let placeholder = '';
     export let required = false;
     export let disabled = false;
-    export let options: {
-        value: string | boolean | number | null;
-        label: string;
-        disabled?: boolean;
-        leadingIcon?: ComponentType;
-        leadingHtml?: string;
-        badge?: string;
-    }[];
+    
     export let leadingIcon: ComponentType | undefined = undefined;
 
     let error: string;
@@ -44,22 +37,19 @@
     }
 </script>
 
-<Input.Select
-    {id}
-    {label}
-    {options}
-    {optionalText}
-    {placeholder}
-    {disabled}
-    {autofocus}
-    {leadingIcon}
-    helper={error ?? helper}
-    {required}
-    state={error ? 'error' : 'default'}
-    data-command-center-ignore
-    on:invalid={handleInvalid}
-    on:input
-    on:change
-    bind:value>
+<Input
+  {id}
+  {label}
+  {placeholder}
+  {disabled}
+  {autofocus}
+  {leadingIcon}
+  helper={error ?? helper}
+  {required}
+  state={error ? 'error' : 'default'}
+  data-command-center-ignore
+  on:invalid={handleInvalid}
+  on:input={(e) => value = e.target.value}
+  bind:value>
     <slot name="info" slot="info" />
-</Input.Select>
+</Input>
