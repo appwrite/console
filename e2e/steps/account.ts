@@ -1,4 +1,4 @@
-import { test, type Page } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 type Metadata = {
     name: string;
@@ -27,6 +27,8 @@ export function registerUserStep(page: Page): Promise<Metadata> {
         await inputs.terms.check({ force: true });
         await page.getByRole('button', { name: 'Sign up', exact: true }).click();
         await page.waitForURL('./onboarding/create-project');
+        await expect(page.getByRole('button', { name: 'Create', exact: true })).toBeVisible();
+        await expect(page.getByRole('dialog', { name: 'The new Appwrite Console' })).toHaveCount(0);
 
         return values;
     });

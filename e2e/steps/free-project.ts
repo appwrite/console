@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { getOrganizationIdFromUrl, getProjectIdFromUrl } from '../helpers/url';
+import { dismissNewConsolePromotion } from './new-console';
 
 type Metadata = {
     id: string;
@@ -10,6 +11,7 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
         await page.goto('./');
         await page.waitForURL(/\/organization-[^/]+/);
+        await dismissNewConsolePromotion(page);
         return getOrganizationIdFromUrl(page.url());
     });
 
