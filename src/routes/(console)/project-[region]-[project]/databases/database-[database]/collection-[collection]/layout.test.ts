@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DatabaseType } from '$database/(entity)/helpers/terminology';
+import { get } from 'svelte/store';
 import { load } from './+layout';
+import { load as loadRecord } from '../[...rest]/+page';
+import { databaseRowSheetOptions } from '../table-[table]/store';
+import { noSqlDocument } from './store';
 
 const { getEntity } = vi.hoisted(() => ({ getEntity: vi.fn() }));
 
@@ -26,9 +30,19 @@ function event(type: DatabaseType, suffix = '') {
     } as unknown as Parameters<typeof load>[0];
 }
 
+function recordEvent(type: DatabaseType, rest: string) {
+    return {
+        ...event(type),
+        params: { ...params, rest },
+        url: new URL(`https://console.example${databasePath}/${rest}?limit=50`)
+    } as unknown as Parameters<typeof loadRecord>[0];
+}
+
 describe('collection layout', () => {
     beforeEach(() => {
         getEntity.mockReset();
+        databaseRowSheetOptions.update((options) => ({ ...options, show: false, rowId: null }));
+        noSqlDocument.reset();
     });
 
     it.each([
@@ -56,5 +70,55 @@ describe('collection layout', () => {
             databaseId: params.database,
             entityId: params.collection
         });
+    });
+
+    it.each(['legacy', 'tablesdb'] as const)(
+        'opens the requested row after following a %s document link',
+        async (type) => {
+            await expect(
+                loadRecord(recordEvent(type, 'collection-items/document-record'))
+            ).rejects.toMatchObject({
+                status: 308,
+                location: `${databasePath}/collection-items?limit=50`
+            });
+            await expect(load(event(type, '?limit=50'))).rejects.toMatchObject({
+                status: 308,
+                location: `${databasePath}/table-items?limit=50`
+            });
+
+            expect(get(databaseRowSheetOptions)).toMatchObject({
+                rowId: 'record',
+                show: true,
+                title: 'Update row'
+            });
+            expect(get(noSqlDocument).documentId).toBeNull();
+        }
+    );
+
+    it.each(['documentsdb', 'vectorsdb'] as const)(
+        'keeps a %s document link on the collection sheet',
+        async (type) => {
+            await expect(
+                loadRecord(recordEvent(type, 'collection-items/document-record'))
+            ).rejects.toMatchObject({
+                status: 308,
+                location: `${databasePath}/collection-items?limit=50`
+            });
+
+            expect(get(noSqlDocument).documentId).toBe('record');
+            expect(get(databaseRowSheetOptions).show).toBe(false);
+        }
+    );
+
+    it('keeps table row links working', async () => {
+        await expect(
+            loadRecord(recordEvent('tablesdb', 'table-items/row-record'))
+        ).rejects.toMatchObject({
+            status: 308,
+            location: `${databasePath}/table-items?limit=50`
+        });
+
+        expect(get(databaseRowSheetOptions)).toMatchObject({ rowId: 'record', show: true });
+        expect(get(noSqlDocument).documentId).toBeNull();
     });
 });

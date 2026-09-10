@@ -4,8 +4,9 @@ import { AppwriteException } from '@appwrite.io/console';
 import { databaseRowSheetOptions } from '../table-[table]/store';
 import { noSqlDocument } from '../collection-[collection]/store';
 import { resolveRoute } from '$lib/stores/navigation';
+import { toDatabaseType } from '$database/(entity)';
 
-export const load: PageLoad = async ({ params, url }) => {
+export const load: PageLoad = async ({ params, url, parent }) => {
     const restSegments = params.rest ? params.rest.split('/').filter(Boolean) : [];
     const baseUrl = resolveRoute(
         '/(console)/project-[region]-[project]/databases/database-[database]',
@@ -36,7 +37,19 @@ export const load: PageLoad = async ({ params, url }) => {
     const documentMatch = lastSegment.match(/^document-([^/]+)$/);
     if (documentMatch) {
         const documentId = documentMatch[1];
-        noSqlDocument.update({ documentId });
+        const { database } = await parent();
+        const type = toDatabaseType(database.type);
+
+        if (type === 'legacy' || type === 'tablesdb') {
+            databaseRowSheetOptions.update((options) => ({
+                ...options,
+                rowId: documentId,
+                show: true,
+                title: 'Update row'
+            }));
+        } else {
+            noSqlDocument.update({ documentId });
+        }
 
         const parentSegments = restSegments.slice(0, -1);
         const newPath = `${baseUrl}/${parentSegments.join('/')}`;
