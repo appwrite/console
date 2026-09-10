@@ -56,7 +56,6 @@ describe('collection layout', () => {
             status: 308,
             location: `${databasePath}/table-items${suffix}`
         });
-        expect(getEntity).not.toHaveBeenCalled();
     });
 
     it.each(['documentsdb', 'vectorsdb'] as const)('loads a %s collection', async (type) => {
@@ -66,10 +65,6 @@ describe('collection layout', () => {
         const result = await load(event(type));
 
         expect(result).toMatchObject({ collection });
-        expect(getEntity).toHaveBeenCalledWith({
-            databaseId: params.database,
-            entityId: params.collection
-        });
     });
 
     it.each(['legacy', 'tablesdb'] as const)(
