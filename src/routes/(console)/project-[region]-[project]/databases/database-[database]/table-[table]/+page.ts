@@ -7,6 +7,22 @@ import { buildGridQueries, extractSortFromQueries, loadGridRows } from '$databas
 
 export const load: PageLoad = async ({ params, depends, url, route, parent }) => {
     const { table } = await parent();
+
+    if (!table) {
+        return {
+            offset: 0,
+            limit: SPREADSHEET_PAGE_LIMIT,
+            view: View.Grid,
+            query: '',
+            currentSort: { column: null, direction: 'default' },
+            parsedQueries: new Map(),
+            rows: {
+                total: 0,
+                rows: []
+            }
+        };
+    }
+
     depends(Dependencies.ROWS);
 
     const page = getPage(url);

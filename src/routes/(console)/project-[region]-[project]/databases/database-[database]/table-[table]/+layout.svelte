@@ -165,7 +165,8 @@
                 }
             },
             icon: IconPlus,
-            group: 'rows'
+            group: 'rows',
+            disabled: !table || !$canWriteTables
         },
         {
             label: 'Create column',
@@ -175,7 +176,7 @@
             },
             icon: IconPlus,
             group: 'columns',
-            disabled: !$canWriteTables
+            disabled: !table || !$canWriteTables
         },
         {
             label: 'Go to rows',
@@ -257,7 +258,7 @@
             },
             icon: IconPlus,
             group: 'indexes',
-            disabled: !$canWriteTables
+            disabled: !table || !$canWriteTables
         }
     ]);
 
@@ -385,7 +386,16 @@
     <title>{table?.name ?? 'Table'} - Appwrite</title>
 </svelte:head>
 
-<slot />
+{#if table}
+    <slot />
+{:else}
+    <Layout.Stack alignItems="center" justifyContent="center" style="min-height: 400px;">
+        <Typography.Title size="m">Table deleted or not found</Typography.Title>
+        <Typography.Text>
+            The table you're looking for no longer exists or could not be found.
+        </Typography.Text>
+    </Layout.Stack>
+{/if}
 
 <SideSheet
     closeOnBlur={false}
