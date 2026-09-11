@@ -3,6 +3,7 @@ import type { LayoutLoad } from './$types';
 import { Dependencies } from '$lib/constants';
 import { Breadcrumbs, toDatabaseType, useDatabaseSdk } from '$database/(entity)';
 import { guardResourceBlock } from '$lib/helpers/project';
+import { AppwriteException } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends, parent }) => {
     const { database, project } = await parent();
@@ -15,10 +16,18 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
         toDatabaseType(database.type)
     );
 
-    const table = await databaseSdk.getEntity({
-        databaseId: params.database,
-        entityId: params.table
-    });
+    let table = null;
+
+    try {
+        table = await databaseSdk.getEntity({
+            databaseId: params.database,
+            entityId: params.table
+        });
+    } catch (e) {
+        if (!(e instanceof AppwriteException) || e.code !== 404) {
+            throw e;
+        }
+    }
 
     return {
         table,
