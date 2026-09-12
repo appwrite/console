@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import { Avatar, CardGrid, PaginationInline } from '$lib/components';
+    import { Container } from '$lib/layout';
     import { Button as FormButton } from '$lib/elements/forms';
     import { getApiEndpoint } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
@@ -97,7 +98,7 @@
                         Add installation
                     </FormButton>
                 </div>
-
+<Container disableMarginBlock>
                 <Table.Root
                     let:root
                     columns={[
@@ -160,6 +161,7 @@
                         </Table.Row.Base>
                     {/each}
                 </Table.Root>
+                </Container>
                 {#if total > limit}
                     <Layout.Stack justifyContent="space-between">
                         <p class="text">Total installations: {total}</p>
