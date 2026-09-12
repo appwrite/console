@@ -7,7 +7,8 @@
     import {
         getInvalidDeploymentArchiveReason,
         InvalidFileType,
-        removeFile
+        removeFile,
+        DEPLOYMENT_ARCHIVE_EXTENSIONS
     } from '$lib/helpers/files';
     import { addNotification } from '$lib/stores/notifications';
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
@@ -93,7 +94,7 @@
             Upload a tar.gz file containing your function source code
         </Typography.Text>
         <Upload.Dropzone
-            extensions={['gz']}
+            extensions={DEPLOYMENT_ARCHIVE_EXTENSIONS}
             bind:files
             {maxSize}
             required

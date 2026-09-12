@@ -22,7 +22,8 @@
     import {
         getInvalidDeploymentArchiveReason,
         InvalidFileType,
-        removeFile
+        removeFile,
+        DEPLOYMENT_ARCHIVE_EXTENSIONS
     } from '$lib/helpers/files';
     import { isCloud } from '$lib/system';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -224,7 +225,7 @@
                 <Upload.Dropzone
                     bind:files
                     title="Upload function"
-                    extensions={['gz']}
+                    extensions={DEPLOYMENT_ARCHIVE_EXTENSIONS}
                     {maxSize}
                     required
                     on:invalid={handleInvalid}>

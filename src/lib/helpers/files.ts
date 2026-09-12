@@ -80,6 +80,16 @@ export async function gzipUpload(files: FileList) {
     return uploadFile;
 }
 
+/**
+ * Extensions accepted for manual deployment archives.
+ *
+ * 'tar.gz' must be listed alongside 'gz': the file picker `accept` attribute is
+ * built from these extensions, and on macOS a bare '.gz' token does not match
+ * 'code.tar.gz' files (their UTI is the compound tar+gzip type), so the picker
+ * greys them out.
+ */
+export const DEPLOYMENT_ARCHIVE_EXTENSIONS = ['gz', 'tar.gz'];
+
 export function getInvalidDeploymentArchiveReason(
     files: FileList | File[] | null | undefined,
     maxSize?: number

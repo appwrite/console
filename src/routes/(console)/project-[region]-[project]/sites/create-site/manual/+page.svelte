@@ -19,7 +19,8 @@
     import {
         getInvalidDeploymentArchiveReason,
         InvalidFileType,
-        removeFile
+        removeFile,
+        DEPLOYMENT_ARCHIVE_EXTENSIONS
     } from '$lib/helpers/files';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { isCloud } from '$lib/system';
@@ -219,7 +220,7 @@
                     Upload a tar.gz containing your site source code
                 </Typography.Text>
                 <Upload.Dropzone
-                    extensions={['gz']}
+                    extensions={DEPLOYMENT_ARCHIVE_EXTENSIONS}
                     bind:files
                     {maxSize}
                     required
