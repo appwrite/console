@@ -227,7 +227,7 @@
 
                         <div style="width: 140px" class="u-flex-vertical policy-item-caption">
                             <Typography.Caption variant="400" color="--fgcolor-neutral-tertiary"
-                                >Next
+                                >Next from
                             </Typography.Caption>
 
                             <Typography.Caption variant="400" color="--fgcolor-neutral-secondary">
