@@ -293,4 +293,14 @@ describe('migration destination cancellation', () => {
         expect(screen.getByLabelText('Project name')).toHaveValue('Replacement');
     });
 
+    it('finishes cancellation when the new project was already deleted', async () => {
+        api.deleteProject.mockRejectedValue({ code: 404, message: 'Project not found' });
+        render(MigrationWizard);
+        await next();
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(invalidate).toHaveBeenCalledWith(Dependencies.PROJECTS);
+        expect(addNotification).not.toHaveBeenCalled();
+    });
+
 });
