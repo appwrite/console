@@ -40,10 +40,9 @@
 
 <script lang="ts">
     import { createConservative } from '$lib/helpers/stores';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
-    import { InputSelect, InputTags } from '$lib/elements/forms';
-    import { Icon, Tooltip, Typography } from '@appwrite.io/pink-svelte';
+    import { InputSelect } from '$lib/elements/forms';
     import RequiredArrayCheckboxes from './requiredArrayCheckboxes.svelte';
+    import EnumElements from './enumElements.svelte';
 
     export let editing = false;
     export let disabled = false;
@@ -88,19 +87,7 @@
     ].filter(Boolean);
 </script>
 
-<InputTags
-    required
-    id="elements"
-    label="Elements"
-    bind:tags={data.elements}
-    placeholder="Add elements here">
-    <Tooltip slot="info" maxWidth="15rem">
-        <Icon icon={IconInfo} size="s" />
-        <Typography.Caption variant="400" slot="tooltip">
-            Enum elements have a maximum length of 255 characters. This limit can not be exceeded.
-        </Typography.Caption>
-    </Tooltip>
-</InputTags>
+<EnumElements bind:elements={data.elements} {disabled} />
 
 <InputSelect
     id="default"
