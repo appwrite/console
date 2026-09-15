@@ -5,6 +5,21 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('preserves loaded elements exactly and follows changes to the edited column', async () => {
+    const { rerender } = render(EnumElements, { elements: ['New York, NY', '0', 'A  B'] });
+
+    expect(
+        screen
+            .getAllByRole('button', { name: /^Remove / })
+            .map((button) => button.getAttribute('aria-label'))
+    ).toEqual(['Remove New York, NY', 'Remove 0', 'Remove A  B']);
+
+    await rerender({ elements: ['Nizhny Novgorod'] });
+
+    expect(screen.getByRole('button', { name: 'Remove Nizhny Novgorod' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Remove New York, NY' })).not.toBeInTheDocument();
+});
+
 it('keeps a multi-word enum element together when submitted', async () => {
     const user = userEvent.setup();
     render(EnumElements);
