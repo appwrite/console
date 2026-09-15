@@ -414,4 +414,41 @@ describe('migration destination cancellation', () => {
         await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
         expect(api.deleteProject).toHaveBeenCalledOnce();
     });
+
+    it('finishes using an existing project after releasing the wizard-created destination', async () => {
+        api.listProjects.mockResolvedValue({
+            projects: [{ ...created, $id: 'existing', name: 'Existing destination', region: 'syd' }]
+        });
+        render(MigrationWizard);
+        await fireEvent.click(await screen.findByRole('radio', { name: /Create new project/ }));
+        await next();
+        await fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        await fireEvent.click(screen.getByRole('radio', { name: /Existing project/ }));
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await screen.findByRole('button', { name: 'Update' });
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        await selectResources();
+        await fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await waitFor(() =>
+            expect(goto).toHaveBeenCalledWith(
+                expect.stringContaining('/project-syd-existing/settings/migrations')
+            )
+        );
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        expect(get(selectedProject)).toBeNull();
+    });
+
+    it('displays the prepared project name when creation returns after the input changes', async () => {
+        const creation = deferred<typeof created>();
+        api.createProject.mockReturnValue(creation.promise);
+        render(MigrationWizard);
+        const input = await screen.findByLabelText('Project name');
+        await fireEvent.input(input, { target: { value: 'Imported project' } });
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await fireEvent.input(input, { target: { value: 'Changed while creating' } });
+        await act(() => creation.resolve(created));
+        await screen.findByRole('button', { name: 'Update' });
+        expect(screen.getByText('Imported project')).toBeVisible();
+        expect(screen.queryByText('Changed while creating')).not.toBeInTheDocument();
+    });
 });

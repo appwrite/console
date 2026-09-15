@@ -129,10 +129,6 @@
         }
     }
 
-    function getProjectName(): string {
-        return isExisting ? currentSelectedProject.name : newProjName || 'New project';
-    }
-
     async function prepareProject(): Promise<Models.Project | null> {
         const organization = selectedOrg;
         const name = newProjName.trim();
@@ -348,7 +344,7 @@
                         <Icon icon={IconAppwrite} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variant="m-500">
-                            {capitalize(getProjectName())}
+                            {capitalize(targetProject?.name ?? 'New project')}
                         </Typography.Text>
                     </Layout.Stack>
 
