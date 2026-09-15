@@ -224,4 +224,17 @@ describe('migration destination cancellation', () => {
         expect(invalidate).toHaveBeenCalledWith(Dependencies.PROJECTS);
     });
 
+    it('uses the created project region and ID even if the selected region changes', async () => {
+        api.createProject.mockResolvedValue({ ...created, region: 'syd' });
+        render(MigrationWizard);
+        await next();
+        await act(() => selectedRegion.set(Region.Fra));
+        await cancel();
+        await waitFor(() => expect(api.deleteProject).toHaveBeenCalledOnce());
+        expect(sdk.forProject).toHaveBeenLastCalledWith('syd', 'destination');
+        expect(api.createProject).toHaveBeenCalledWith(
+            expect.objectContaining({ region: Region.Fra })
+        );
+    });
+
 });
