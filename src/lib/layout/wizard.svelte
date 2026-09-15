@@ -18,6 +18,7 @@
               columnSize?: 's' | 'm' | 'l';
               stickySide?: boolean;
               onExit?: () => void;
+              beforeExit?: () => Promise<boolean>;
           }
         | {
               title?: string;
@@ -30,6 +31,7 @@
               columnSize?: 's' | 'm' | 'l';
               stickySide?: boolean;
               onExit?: () => void;
+              beforeExit?: () => Promise<boolean>;
           };
 
     export let title: $$Props['title'] = '';
@@ -42,6 +44,42 @@
     export let columnSize: $$Props['columnSize'] = 'm';
     export let stickySide: $$Props['stickySide'] = false;
     export let onExit: $$Props['onExit'] = undefined;
+    export let beforeExit: $$Props['beforeExit'] = undefined;
+
+    let exiting = false;
+    let pendingHref: string | null = null;
+
+    $: if (!showExitModal && !exiting) pendingHref = null;
+
+    function requestExit(href: string | null) {
+        if (exiting) return;
+        pendingHref = href;
+        if (confirmExit) {
+            showExitModal = true;
+        } else {
+            void exit();
+        }
+    }
+
+    async function exit() {
+        if (exiting) return;
+        exiting = true;
+        const destination = pendingHref;
+        try {
+            if (beforeExit && !(await beforeExit())) return;
+            trackEvent('wizard_exit', { from: 'prompt' });
+            wizard.hide();
+            onExit?.();
+            onExit = null;
+            if (destination) {
+                // Navigation URLs already include the application base path.
+                // eslint-disable-next-line svelte/no-navigation-without-resolve
+                await goto(destination);
+            }
+        } finally {
+            exiting = false;
+        }
+    }
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -60,7 +98,10 @@
 
     const goBack = () => goto(href);
 
-    onMount(() => ($isNewWizardStatusOpen = true));
+    onMount(() => {
+        $isNewWizardStatusOpen = true;
+        if (beforeExit) return wizard.setExitHandler(requestExit);
+    });
 
     onDestroy(() => ($isNewWizardStatusOpen = false));
 </script>
@@ -95,22 +136,7 @@
 </Layout.Wizard>
 
 {#if showExitModal}
-    <WizardExitModal
-        {href}
-        bind:show={showExitModal}
-        on:exit={() => {
-            trackEvent('wizard_exit', {
-                from: 'prompt'
-            });
-
-            wizard.hide();
-            if (onExit) {
-                onExit();
-
-                // clear exit
-                onExit = null;
-            }
-        }}>
+    <WizardExitModal {href} bind:show={showExitModal} on:exit={exit}>
         <slot name="exit">
             Are you sure you want to exit from this process? All data will be deleted. This action
             is irreversible.

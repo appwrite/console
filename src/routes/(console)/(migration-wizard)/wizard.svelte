@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { capitalize } from '$lib/helpers/string';
     import ResourceForm from './resource-form.svelte';
     import { requestedMigration } from '$routes/store';
@@ -38,6 +39,7 @@
 
     const onExit = () => {
         formData.reset();
+        selectedProject.set(null);
         requestedMigration.set(null);
     };
 
@@ -50,6 +52,9 @@
     let creatingProject = false;
     let errorInResources = false;
     let migrationStarted = false;
+    let migrationAttempted = false;
+    let cancelling = false;
+    let creation: Promise<Models.Project | null> | null = null;
     let projectSdkInstance: ReturnType<typeof sdk.forProject> | null = null;
 
     let projects = [] as Models.ProjectList['projects'];
@@ -57,7 +62,51 @@
 
     let newProjName = '';
     let projectType: 'existing' | 'new' = 'existing';
+    let targetProject: Models.Project | null = null;
     let newlyCreatedProject: Models.Project | null = null;
+    let createdFor: { organization: string; name: string; region: string } | null = null;
+
+    async function discardCreatedProject() {
+        if (!newlyCreatedProject || migrationAttempted) return;
+        try {
+            await sdk
+                .forProject(newlyCreatedProject.region, newlyCreatedProject.$id)
+                .project.delete();
+        } catch (error) {
+            if (error.code !== 404) throw error;
+        }
+        newlyCreatedProject = null;
+        createdFor = null;
+        await invalidate(Dependencies.PROJECTS);
+    }
+
+    async function beforeExit() {
+        if (migrationStarted) return false;
+        cancelling = true;
+        try {
+            await creation;
+            await discardCreatedProject();
+            return true;
+        } catch (error) {
+            addNotification({ type: 'error', message: error.message });
+            return false;
+        } finally {
+            cancelling = false;
+        }
+    }
+
+    async function next() {
+        if (creatingProject || cancelling) return;
+        creatingProject = true;
+        creation = prepareProject();
+        const project = await creation;
+        creation = null;
+        creatingProject = false;
+        if (!project || cancelling) return;
+        targetProject = project;
+        projectSdkInstance = sdk.forProject(project.region, project.$id);
+        showResources = true;
+    }
 
     async function getProjects(orgId: string | null) {
         if (!orgId) {
@@ -76,42 +125,53 @@
             if (projectType === 'existing') {
                 const first = projects[0];
                 $selectedProject = first.$id;
-                projectSdkInstance = sdk.forProject(first.region, first.region);
+                projectSdkInstance = sdk.forProject(first.region, first.$id);
             }
         }
     }
 
-    function getProjectName(): string {
-        return isExisting ? currentSelectedProject.name : newProjName || 'New project';
-    }
-
-    async function createNewProject() {
-        creatingProject = true;
-
+    async function prepareProject(): Promise<Models.Project | null> {
+        const organization = selectedOrg;
+        const name = newProjName.trim();
+        const region = $selectedRegion;
+        const existing = isExisting ? currentSelectedProject : null;
         try {
-            return await sdk.forConsole.organization(selectedOrg).createProject({
+            if (existing) {
+                await discardCreatedProject();
+                return existing;
+            }
+            if (
+                newlyCreatedProject &&
+                createdFor?.organization === organization &&
+                createdFor.name === name &&
+                createdFor.region === region
+            ) {
+                return newlyCreatedProject;
+            }
+            await discardCreatedProject();
+            newlyCreatedProject = await sdk.forConsole.organization(organization).createProject({
                 projectId: ID.unique(),
-                name: newProjName,
-                region: $selectedRegion
+                name,
+                region
             });
+            createdFor = { organization, name, region };
+            migrationAttempted = false;
+            return newlyCreatedProject;
         } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-
+            addNotification({ type: 'error', message: error.message });
             return null;
-        } finally {
-            creatingProject = false;
         }
     }
 
     const onFinish = async () => {
-        if ($provider.provider !== 'appwrite') return;
+        if ($provider.provider !== 'appwrite' || migrationStarted || cancelling) return;
 
         migrationStarted = true;
         const resources = migrationFormToResources($formData, $provider.provider);
 
+        // A failed response can still mean the server started importing data.
+        // From this point, the destination must be kept even if the user exits.
+        migrationAttempted = true;
         try {
             await projectSdkInstance.migrations.createAppwriteMigration({
                 resources: resources as AppwriteMigrationResource[],
@@ -125,8 +185,8 @@
                 message: 'Migration started'
             });
             onExit();
+            wizard.hide();
             await invalidate(Dependencies.PROJECTS);
-            const targetProject = newlyCreatedProject ?? currentSelectedProject;
             await goto(
                 `${base}/project-${targetProject.region ?? 'default'}-${targetProject.$id}/settings/migrations`
             );
@@ -146,16 +206,18 @@
 
     $: isExisting = projectType === 'existing';
 
-    $: if (isExisting && $selectedProject) {
+    $: if (isExisting && currentSelectedProject) {
         projectSdkInstance = sdk.forProject(
             currentSelectedProject.region,
             currentSelectedProject.$id
         );
     }
 
-    $: disableNextButton = isExisting
-        ? !$selectedProject
-        : newProjName.trim() === '' || creatingProject;
+    $: disableNextButton =
+        creatingProject ||
+        cancelling ||
+        loadingProjects ||
+        (isExisting ? !currentSelectedProject : newProjName.trim() === '');
 
     $: isFinalsButtonEnabled =
         showResources &&
@@ -166,7 +228,15 @@
         );
 </script>
 
-<Wizard title="Create migration" bind:showExitModal confirmExit {onExit}>
+<Wizard title="Create migration" bind:showExitModal confirmExit {onExit} {beforeExit}>
+    <svelte:fragment slot="exit">
+        {#if newlyCreatedProject && !migrationAttempted}
+            Exit this migration and delete the new project "{newlyCreatedProject.name}"?
+        {:else}
+            Exit this migration setup? Existing projects and any migration already submitted will be
+            kept.
+        {/if}
+    </svelte:fragment>
     <Layout.Stack gap="xl">
         {#if !showResources}
             <Layout.Stack gap="xxl">
@@ -181,7 +251,7 @@
                                 label: project.name,
                                 value: project.$id
                             }))}
-                            disabled={loadingProjects} />
+                            disabled={loadingProjects || creatingProject || cancelling} />
                     </Fieldset>
                 {/if}
 
@@ -253,21 +323,7 @@
                                 <Button.Button
                                     size="s"
                                     disabled={disableNextButton}
-                                    on:click={async () => {
-                                        if (isExisting) {
-                                            showResources = true;
-                                        } else {
-                                            const project = await createNewProject();
-                                            if (project !== null) {
-                                                newlyCreatedProject = project;
-                                                projectSdkInstance = sdk.forProject(
-                                                    project.region,
-                                                    project.$id
-                                                );
-                                                showResources = true;
-                                            }
-                                        }
-                                    }}>
+                                    on:click={next}>
                                     {#if creatingProject}
                                         <Spinner size="s" />
                                     {/if}
@@ -290,13 +346,14 @@
                         <Icon icon={IconAppwrite} color="--fgcolor-neutral-primary" />
 
                         <Typography.Text variant="m-500">
-                            {capitalize(getProjectName())}
+                            {capitalize(targetProject?.name ?? 'New project')}
                         </Typography.Text>
                     </Layout.Stack>
 
                     <Button.Button
                         size="s"
                         variant="secondary"
+                        disabled={migrationStarted || cancelling}
                         on:click={() => (showResources = !showResources)}>
                         Update
                     </Button.Button>
@@ -376,14 +433,17 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button.Button variant="secondary" on:click={() => (showExitModal = true)}>
+        <Button.Button
+            variant="secondary"
+            disabled={migrationStarted || cancelling}
+            on:click={() => (showExitModal = true)}>
             Cancel
         </Button.Button>
 
         <Button.Button
             variant="primary"
             on:click={onFinish}
-            disabled={!isFinalsButtonEnabled || migrationStarted}>
+            disabled={!isFinalsButtonEnabled || migrationStarted || cancelling}>
             {#if migrationStarted}
                 <Spinner size="s" />
             {/if}

@@ -10,6 +10,7 @@ export type WizardStore = {
     cover?: Component;
     interceptor?: () => Promise<void>;
     finalAction?: () => Promise<void>;
+    exitHandler?: (href: string | null) => void;
     nextDisabled: boolean;
     step: number;
     interceptorNotificationEnabled: boolean;
@@ -27,6 +28,7 @@ function createWizardStore() {
         nextDisabled: false,
         step: 1,
         finalAction: null,
+        exitHandler: null,
         props: {}
     });
 
@@ -49,6 +51,7 @@ function createWizardStore() {
                 n.cover = null;
                 n.nextDisabled = false;
                 n.finalAction = null;
+                n.exitHandler = null;
                 n.props = props;
                 trackEvent('wizard_start');
                 return n;
@@ -65,6 +68,18 @@ function createWizardStore() {
                 return n;
             });
         },
+        setExitHandler: (handler: WizardStore['exitHandler']) => {
+            update((n) => {
+                n.exitHandler = handler;
+                return n;
+            });
+            return () => {
+                update((n) => {
+                    if (n.exitHandler === handler) n.exitHandler = null;
+                    return n;
+                });
+            };
+        },
         hide: () =>
             update((n) => {
                 n.show = false;
@@ -76,6 +91,7 @@ function createWizardStore() {
                 n.cover = null;
                 n.nextDisabled = false;
                 n.finalAction = null;
+                n.exitHandler = null;
 
                 return n;
             }),

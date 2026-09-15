@@ -111,11 +111,19 @@
     beforeNavigate((navigation) => {
         if (navigation.willUnload) return;
         if (!($wizard.show || $wizard.cover)) return;
-        if (navigation.type === 'popstate') {
+        if ($wizard.exitHandler) {
             navigation.cancel();
-        }
-        if (navigation.type !== 'leave') {
-            wizard.hide();
+            $wizard.exitHandler(
+                navigation.type === 'popstate' ? null : (navigation.to?.url.href ?? null)
+            );
+            return;
+        } else {
+            if (navigation.type === 'popstate') {
+                navigation.cancel();
+            }
+            if (navigation.type !== 'leave') {
+                wizard.hide();
+            }
         }
 
         if (!isInDatabasesRoute(navigation.from.route)) {
