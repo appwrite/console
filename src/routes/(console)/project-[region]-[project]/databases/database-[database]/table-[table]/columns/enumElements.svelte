@@ -46,7 +46,7 @@
             helper={error ||
                 'Press Enter or choose Add to add a value. Maximum 255 characters per element.'}
             state={error ? 'error' : 'default'}
-            pattern=".{(0, 255)}"
+            pattern={'\\s*.{0,255}\\s*'}
             required={!elements.length}
             {disabled}
             bind:value

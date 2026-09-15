@@ -85,6 +85,8 @@ it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', asyn
     const input = screen.getByRole('textbox', { name: 'Elements' });
     await user.click(input);
     await user.paste(character.repeat(256));
+    expect(input).toHaveAttribute('pattern', '\\s*.{0,255}\\s*');
+    expect(input).toBeInvalid();
     await user.click(screen.getByRole('button', { name: 'Add' }));
 
     expect(screen.getByText('Enum elements cannot exceed 255 characters.')).toBeInTheDocument();
@@ -93,6 +95,7 @@ it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', asyn
 
     await user.clear(input);
     await user.paste(character.repeat(255));
+    expect(input).toBeValid();
     await user.click(screen.getByRole('button', { name: 'Add' }));
 
     expect(screen.getAllByRole('button', { name: /^Remove / })).toHaveLength(1);
@@ -100,6 +103,21 @@ it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', asyn
     expect(
         screen.queryByText('Enum elements cannot exceed 255 characters.')
     ).not.toBeInTheDocument();
+});
+
+it('applies native length validation to the trimmed value', async () => {
+    const user = userEvent.setup();
+    render(EnumElements);
+    const input = screen.getByRole('textbox', { name: 'Elements' });
+    await user.click(input);
+    await user.paste(`  ${'界'.repeat(255)}  `);
+
+    expect(input).toBeValid();
+    await user.keyboard('{Enter}');
+    expect(screen.getByRole('button', { name: /^Remove / })).toHaveAttribute(
+        'aria-label',
+        `Remove ${'界'.repeat(255)}`
+    );
 });
 
 it('rejects whitespace-only elements and trims only outside the value', async () => {
