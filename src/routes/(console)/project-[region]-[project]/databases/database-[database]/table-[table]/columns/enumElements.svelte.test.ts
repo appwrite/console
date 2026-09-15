@@ -5,6 +5,25 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('prevents edits while disabled and supports enabling the same control', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(EnumElements, { elements: ['New York'], disabled: true });
+    const input = screen.getByRole('textbox', { name: /^Elements/ });
+    const remove = screen.getByRole('button', { name: 'Remove New York' });
+
+    expect(input).toBeDisabled();
+    expect(remove).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+    await user.click(remove);
+    expect(remove).toBeInTheDocument();
+
+    await rerender({ elements: ['New York'], disabled: false });
+    await user.type(input, 'Tokyo{Enter}');
+
+    expect(screen.getByRole('button', { name: 'Remove Tokyo' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remove New York' })).toBeInTheDocument();
+});
+
 it('waits for composition to finish when focus leaves during IME input', async () => {
     render(EnumElements);
     const input = screen.getByRole('textbox', { name: 'Elements' });
