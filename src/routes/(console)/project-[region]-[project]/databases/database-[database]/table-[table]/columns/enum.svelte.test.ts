@@ -1,7 +1,7 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import EnumColumn, { submitEnum } from './enum.svelte';
+import EnumColumn, { submitEnum, updateEnum } from './enum.svelte';
 import { sdk } from '$lib/stores/sdk';
 
 vi.mock('$lib/elements/forms', async () => ({
@@ -90,5 +90,36 @@ it('creates an enum with complete values and the selected multi-word default', a
         required: false,
         xdefault: 'New York, NY',
         array: false
+    });
+});
+
+it.each([
+    ['city', undefined],
+    ['destination', 'destination']
+])('edits complete enum values with key %s and the original route key', async (key, newKey) => {
+    const user = userEvent.setup();
+    const updateEnumColumn = vi.fn().mockResolvedValue({});
+    vi.mocked(sdk.forProject).mockReturnValue({ tablesDB: { updateEnumColumn } } as never);
+    const data = {
+        key,
+        elements: ['New York, NY', 'Tokyo'],
+        default: 'New York, NY',
+        required: false,
+        array: false
+    };
+    render(EnumColumn, { data, editing: true });
+
+    await user.type(screen.getByRole('textbox', { name: /^Elements/ }), 'Nizhny Novgorod{Enter}');
+    await user.click(screen.getByRole('button', { name: 'Remove Tokyo' }));
+    await updateEnum('database', 'table', data, 'city');
+
+    expect(updateEnumColumn).toHaveBeenCalledExactlyOnceWith({
+        databaseId: 'database',
+        tableId: 'table',
+        key: 'city',
+        elements: ['New York, NY', 'Nizhny Novgorod'],
+        required: false,
+        xdefault: 'New York, NY',
+        newKey
     });
 });
