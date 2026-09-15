@@ -1,7 +1,8 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import EnumColumn from './enum.svelte';
+import EnumColumn, { submitEnum } from './enum.svelte';
+import { sdk } from '$lib/stores/sdk';
 
 vi.mock('$lib/elements/forms', async () => ({
     InputSelect: (await import('$lib/elements/forms/inputSelect.svelte')).default
@@ -66,4 +67,28 @@ it.each(['Required', 'Array'])('restores a valid default after toggling %s', asy
     await user.click(toggle);
     expect(data.default).toBe('New York');
     expect(select).toBeEnabled();
+});
+
+it('creates an enum with complete values and the selected multi-word default', async () => {
+    const user = userEvent.setup();
+    const createEnumColumn = vi.fn().mockResolvedValue({});
+    vi.mocked(sdk.forProject).mockReturnValue({ tablesDB: { createEnumColumn } } as never);
+    const data = { elements: [], default: null, required: false, array: false };
+    render(EnumColumn, { data });
+
+    await user.type(screen.getByRole('textbox', { name: /^Elements/ }), 'New York, NY{Enter}');
+    await user.click(screen.getByRole('combobox', { name: /^Default value/ }));
+    await user.click(screen.getByRole('option', { name: 'New York, NY' }));
+    await submitEnum('database', 'table', 'city', data);
+
+    expect(sdk.forProject).toHaveBeenCalledWith('fra', 'project');
+    expect(createEnumColumn).toHaveBeenCalledExactlyOnceWith({
+        databaseId: 'database',
+        tableId: 'table',
+        key: 'city',
+        elements: ['New York, NY'],
+        required: false,
+        xdefault: 'New York, NY',
+        array: false
+    });
 });
