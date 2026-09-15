@@ -189,4 +189,14 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 
+    it('reuses the same project after Update and Next', async () => {
+        render(MigrationWizard);
+        await next();
+        await fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await screen.findByRole('button', { name: 'Update' });
+        expect(api.createProject).toHaveBeenCalledOnce();
+        expect(api.deleteProject).not.toHaveBeenCalled();
+    });
+
 });
