@@ -5,6 +5,24 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('removes the chosen value and restores input focus and required validation', async () => {
+    const user = userEvent.setup();
+    render(EnumElements, { elements: ['New York', 'Tokyo'] });
+    const input = screen.getByRole('textbox', { name: /^Elements/ });
+
+    await user.click(screen.getByRole('button', { name: 'Remove New York' }));
+
+    expect(screen.queryByRole('button', { name: 'Remove New York' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remove Tokyo' })).toBeInTheDocument();
+    expect(input).toHaveFocus();
+
+    await user.click(screen.getByRole('button', { name: 'Remove Tokyo' }));
+
+    expect(input).toHaveFocus();
+    expect(input).toBeRequired();
+    expect(input).toBeInvalid();
+});
+
 it('does not commit the Enter key used to confirm an IME composition', async () => {
     const user = userEvent.setup();
     render(EnumElements);

@@ -9,6 +9,13 @@
 
     let value = $state('');
     let error = $state('');
+    let container: HTMLDivElement;
+
+    function remove(index: number) {
+        if (disabled) return;
+        elements = elements.filter((_, position) => position !== index);
+        container.querySelector('input')?.focus();
+    }
 
     function add() {
         if (disabled) return;
@@ -30,35 +37,37 @@
     }
 </script>
 
-<Layout.Stack gap="s">
-    <Input.Text
-        id="elements"
-        label="Elements"
-        placeholder="Add an element"
-        helper={error ||
-            'Press Enter or choose Add to add a value. Maximum 255 characters per element.'}
-        state={error ? 'error' : 'default'}
-        pattern=".{(0, 255)}"
-        required={!elements.length}
-        {disabled}
-        bind:value
-        on:input={() => (error = '')}
-        onkeydown={keydown}
-        onblur={add}>
-        <Button.Button slot="end" type="button" variant="text" {disabled} on:click={add}>
-            Add
-        </Button.Button>
-    </Input.Text>
-    <Layout.Stack direction="row" wrap="wrap" gap="s">
-        {#each elements as element, index}
-            <Tag
-                size="s"
-                {disabled}
-                aria-label={`Remove ${element}`}
-                on:click={() => (elements = elements.filter((_, position) => position !== index))}>
-                {element}
-                <Icon slot="end" icon={IconX} size="s" />
-            </Tag>
-        {/each}
+<div bind:this={container}>
+    <Layout.Stack gap="s">
+        <Input.Text
+            id="elements"
+            label="Elements"
+            placeholder="Add an element"
+            helper={error ||
+                'Press Enter or choose Add to add a value. Maximum 255 characters per element.'}
+            state={error ? 'error' : 'default'}
+            pattern=".{(0, 255)}"
+            required={!elements.length}
+            {disabled}
+            bind:value
+            on:input={() => (error = '')}
+            onkeydown={keydown}
+            onblur={add}>
+            <Button.Button slot="end" type="button" variant="text" {disabled} on:click={add}>
+                Add
+            </Button.Button>
+        </Input.Text>
+        <Layout.Stack direction="row" wrap="wrap" gap="s">
+            {#each elements as element, index}
+                <Tag
+                    size="s"
+                    {disabled}
+                    aria-label={`Remove ${element}`}
+                    on:click={() => remove(index)}>
+                    {element}
+                    <Icon slot="end" icon={IconX} size="s" />
+                </Tag>
+            {/each}
+        </Layout.Stack>
     </Layout.Stack>
-</Layout.Stack>
+</div>
