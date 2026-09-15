@@ -303,4 +303,17 @@ describe('migration destination cancellation', () => {
         expect(addNotification).not.toHaveBeenCalled();
     });
 
+    it('waits for deletion to finish before hiding the wizard', async () => {
+        const deletion = deferred<object>();
+        api.deleteProject.mockReturnValue(deletion.promise);
+        render(MigrationWizard);
+        await next();
+        await cancel();
+        expect(wizard.hide).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+        await act(() => deletion.resolve({}));
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+    });
+
 });
