@@ -5,6 +5,19 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('ignores exact duplicates while preserving case-sensitive enum values', async () => {
+    const user = userEvent.setup();
+    render(EnumElements, { elements: ['Home'] });
+    const input = screen.getByRole('textbox', { name: /^Elements/ });
+
+    await user.type(input, 'Home{Enter}home{Enter}');
+
+    expect(screen.getAllByRole('button', { name: /^Remove / })).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Remove Home' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Remove home' })).toBeInTheDocument();
+    expect(input).toHaveValue('');
+});
+
 it('preserves loaded elements exactly and follows changes to the edited column', async () => {
     const { rerender } = render(EnumElements, { elements: ['New York, NY', '0', 'A  B'] });
 

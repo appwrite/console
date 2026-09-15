@@ -11,7 +11,7 @@
 
     function add() {
         if (disabled || !value) return;
-        elements = [...elements, value];
+        if (!elements.includes(value)) elements = [...elements, value];
         value = '';
     }
 
