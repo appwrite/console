@@ -199,4 +199,29 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 
+    it('deletes the previous unused project before creating one with changed settings', async () => {
+        render(MigrationWizard);
+        await next();
+        await fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        await fireEvent.input(screen.getByLabelText('Project name'), {
+            target: { value: 'Replacement' }
+        });
+        api.createProject.mockResolvedValue({
+            ...created,
+            $id: 'replacement',
+            name: 'Replacement'
+        });
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await screen.findByRole('button', { name: 'Update' });
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        expect(api.createProject).toHaveBeenCalledTimes(2);
+        expect(api.deleteProject.mock.invocationCallOrder[0]).toBeLessThan(
+            api.createProject.mock.invocationCallOrder[1]
+        );
+        expect(api.createProject).toHaveBeenLastCalledWith(
+            expect.objectContaining({ name: 'Replacement' })
+        );
+        expect(invalidate).toHaveBeenCalledWith(Dependencies.PROJECTS);
+    });
+
 });
