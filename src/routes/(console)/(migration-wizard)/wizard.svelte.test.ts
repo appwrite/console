@@ -3,7 +3,9 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { sdk } from '$lib/stores/sdk';
 import { wizard } from '$lib/stores/wizard';
 import { formData, provider, selectedProject, selectedRegion } from '.';
-import { goto, invalidate } from '$app/navigation';
+import { beforeNavigate, goto, invalidate } from '$app/navigation';
+import type { BeforeNavigate } from '@sveltejs/kit';
+import Shell from '$lib/layout/shell.svelte';
 import { addNotification } from '$lib/stores/notifications';
 import { Dependencies } from '$lib/constants';
 import { get } from 'svelte/store';
@@ -24,7 +26,10 @@ vi.mock('$lib/commandCenter', async () => {
 vi.mock('$lib/actions/analytics', () => ({ trackEvent: vi.fn() }));
 vi.mock('$lib/stores/sdk', () => ({
     sdk: {
-        forConsole: { organization: vi.fn(() => api) },
+        forConsole: {
+            organization: vi.fn(() => api),
+            avatars: { getInitials: () => new URL('http://localhost/avatar') }
+        },
         forProject: vi.fn(() => ({
             project: { delete: api.deleteProject },
             migrations: { createAppwriteMigration: api.createMigration }
@@ -32,13 +37,38 @@ vi.mock('$lib/stores/sdk', () => ({
     }
 }));
 vi.mock('$app/state', () => ({
-    page: { data: { organizations: { teams: [{ $id: 'team', name: 'My team' }] } } }
+    page: {
+        params: {},
+        url: new URL('http://localhost/console/organization-current'),
+        data: { organizations: { teams: [{ $id: 'team', name: 'My team' }] } }
+    }
 }));
-vi.mock('$app/navigation', () => ({ goto: vi.fn(), invalidate: vi.fn() }));
+vi.mock('$app/navigation', () => ({
+    goto: vi.fn(),
+    invalidate: vi.fn(),
+    beforeNavigate: vi.fn(),
+    afterNavigate: vi.fn()
+}));
+vi.mock('$app/stores', async () => {
+    const { readable } = await import('svelte/store');
+    return { page: readable({ data: {} }) };
+});
+vi.mock('$lib/helpers/sidebar', () => ({
+    getSidebarState: () => 'closed',
+    isInDatabasesRoute: () => false,
+    updateSidebarState: vi.fn()
+}));
+vi.mock('$lib/helpers/project', () => ({ isProjectBlocked: () => false }));
+vi.mock('$lib/layout/navigation.svelte', () => ({ default: () => {} }));
+vi.mock('$lib/components/impersonation/banner.svelte', () => ({ default: () => {} }));
 vi.mock('$lib/stores/notifications', () => ({ addNotification: vi.fn() }));
 vi.mock('$lib/stores/organization', async () => {
     const { writable } = await import('svelte/store');
-    return { regions: writable({ regions: [] }) };
+    return {
+        regions: writable({ regions: [] }),
+        organization: writable(null),
+        organizationList: writable({ teams: [] })
+    };
 });
 vi.mock('$routes/store', async () => {
     const { writable } = await import('svelte/store');
@@ -48,7 +78,9 @@ vi.mock('$lib/layout', async () => ({
     Wizard: (await import('$lib/layout/wizard.svelte')).default
 }));
 vi.mock('$lib/components', async () => ({
-    EyebrowHeading: (await import('$lib/components/eyebrowHeading.svelte')).default
+    EyebrowHeading: (await import('$lib/components/eyebrowHeading.svelte')).default,
+    Navbar: () => {},
+    Sidebar: () => {}
 }));
 vi.mock('$lib/elements/forms', async () => ({
     InputText: (await import('$lib/elements/forms/inputText.svelte')).default,
@@ -60,6 +92,47 @@ vi.mock('./resource-form.svelte', async () => ({
 }));
 
 const created = { $id: 'destination', name: 'Imported project', region: 'fra' };
+
+function renderWithShell() {
+    wizard.start(MigrationWizard);
+    render(Shell, { showHeader: false, showFooter: false });
+    const component = render(MigrationWizard);
+    const before = vi.mocked(beforeNavigate).mock.calls.at(-1)[0];
+    return { component, before };
+}
+
+async function navigate(
+    before: (navigation: BeforeNavigate) => void,
+    path: string,
+    type: 'link' | 'popstate' | 'goto' = 'link'
+) {
+    const cancel = vi.fn();
+    const navigation = {
+        type,
+        from: {
+            url: new URL('http://localhost/console/organization-current'),
+            route: { id: '/(console)/organization-[organization]' },
+            params: {},
+            scroll: null
+        },
+        to: {
+            url: new URL(path, 'http://localhost'),
+            route: { id: '/(console)/organization-[organization]' },
+            params: {},
+            scroll: null
+        },
+        willUnload: false,
+        complete: Promise.resolve(),
+        cancel,
+        ...(type === 'popstate'
+            ? { delta: -1, event: new PopStateEvent('popstate') }
+            : type === 'link'
+              ? { event: new MouseEvent('click') as PointerEvent }
+              : {})
+    } as BeforeNavigate;
+    await act(() => before(navigation));
+    return cancel;
+}
 
 async function next() {
     await fireEvent.input(await screen.findByLabelText('Project name'), {
@@ -92,6 +165,7 @@ async function selectResources() {
 
 describe('migration destination cancellation', () => {
     beforeAll(() => {
+        vi.stubGlobal('scrollTo', vi.fn());
         vi.stubGlobal(
             'IntersectionObserver',
             class {
@@ -118,6 +192,7 @@ describe('migration destination cancellation', () => {
 
     beforeEach(() => {
         vi.resetAllMocks();
+        wizard.hide();
         vi.mocked(sdk.forConsole.organization).mockReturnValue(api as never);
         vi.mocked(sdk.forProject).mockReturnValue({
             project: { delete: api.deleteProject },
@@ -453,9 +528,10 @@ describe('migration destination cancellation', () => {
     });
 
     it('cleans up when browser Back requests and confirms exit', async () => {
-        render(MigrationWizard);
+        const { before } = renderWithShell();
         await next();
-        await act(() => get(wizard).exitHandler(null));
+        const cancellation = await navigate(before, '/organization-previous', 'popstate');
+        expect(cancellation).toHaveBeenCalledOnce();
         await fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
         );
@@ -467,24 +543,28 @@ describe('migration destination cancellation', () => {
     it('resumes an internal link only after confirmed cleanup succeeds', async () => {
         const deletion = deferred<object>();
         api.deleteProject.mockReturnValue(deletion.promise);
-        render(MigrationWizard);
+        const { before } = renderWithShell();
         await next();
-        await act(() => get(wizard).exitHandler('/organization-next'));
+        expect(await navigate(before, '/organization-next')).toHaveBeenCalledOnce();
         await fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
         );
         expect(goto).not.toHaveBeenCalled();
         expect(wizard.hide).not.toHaveBeenCalled();
         await act(() => deletion.resolve({}));
-        await waitFor(() => expect(goto).toHaveBeenCalledWith('/organization-next'));
+        await waitFor(() =>
+            expect(goto).toHaveBeenCalledWith('http://localhost/organization-next')
+        );
         expect(api.deleteProject).toHaveBeenCalledOnce();
-        expect(get(wizard).exitHandler).toBeNull();
+        expect(
+            await navigate(before, 'http://localhost/organization-next', 'goto')
+        ).not.toHaveBeenCalled();
     });
 
     it('forgets a dismissed navigation request before a later Cancel exit', async () => {
-        render(MigrationWizard);
+        const { before } = renderWithShell();
         await next();
-        await act(() => get(wizard).exitHandler('/organization-next'));
+        expect(await navigate(before, '/organization-next')).toHaveBeenCalledOnce();
         await fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' })
         );
@@ -496,9 +576,9 @@ describe('migration destination cancellation', () => {
 
     it('stays on the current page after navigation cleanup fails', async () => {
         api.deleteProject.mockRejectedValueOnce(new Error('Deletion failed'));
-        render(MigrationWizard);
+        const { before } = renderWithShell();
         await next();
-        await act(() => get(wizard).exitHandler('/organization-next'));
+        expect(await navigate(before, '/organization-next')).toHaveBeenCalledOnce();
         await fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
         );
@@ -518,25 +598,28 @@ describe('migration destination cancellation', () => {
     it('ignores another navigation request while confirmed cleanup is pending', async () => {
         const deletion = deferred<object>();
         api.deleteProject.mockReturnValue(deletion.promise);
-        render(MigrationWizard);
+        const { before } = renderWithShell();
         await next();
-        await act(() => get(wizard).exitHandler('/organization-first'));
+        expect(await navigate(before, '/organization-first')).toHaveBeenCalledOnce();
         await fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
         );
-        await act(() => get(wizard).exitHandler('/organization-second'));
+        expect(await navigate(before, '/organization-second')).toHaveBeenCalledOnce();
         await act(() => deletion.resolve({}));
-        await waitFor(() => expect(goto).toHaveBeenCalledWith('/organization-first'));
+        await waitFor(() =>
+            expect(goto).toHaveBeenCalledWith('http://localhost/organization-first')
+        );
         expect(goto).toHaveBeenCalledOnce();
         expect(api.deleteProject).toHaveBeenCalledOnce();
     });
 
     it('clears the owned navigation handler when the wizard is unmounted', async () => {
-        const component = render(MigrationWizard);
+        const { component, before } = renderWithShell();
         await screen.findByLabelText('Project name');
-        expect(get(wizard).exitHandler).toEqual(expect.any(Function));
         component.unmount();
-        expect(get(wizard).exitHandler).toBeNull();
+
+        expect(await navigate(before, '/organization-next')).not.toHaveBeenCalled();
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 });
