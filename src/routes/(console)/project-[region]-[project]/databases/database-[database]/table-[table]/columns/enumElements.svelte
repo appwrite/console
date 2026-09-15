@@ -43,7 +43,8 @@
         {disabled}
         bind:value
         on:input={() => (error = '')}
-        onkeydown={keydown}>
+        onkeydown={keydown}
+        onblur={add}>
         <Button.Button slot="end" type="button" variant="text" {disabled} on:click={add}>
             Add
         </Button.Button>

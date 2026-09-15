@@ -5,6 +5,23 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('commits a complete value on Tab without trapping keyboard focus', async () => {
+    const user = userEvent.setup();
+    render(EnumElements);
+    const input = screen.getByRole('textbox', { name: 'Elements' });
+
+    await user.type(input, 'New York');
+    await user.tab();
+
+    expect(screen.getByRole('button', { name: 'Remove New York' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveFocus();
+    expect(input).toHaveValue('');
+
+    await user.click(input);
+    await user.tab();
+    expect(screen.getAllByRole('button', { name: /^Remove / })).toHaveLength(1);
+});
+
 it('adds with Enter without submitting the surrounding form', async () => {
     const user = userEvent.setup();
     const form = document.createElement('form');
