@@ -166,4 +166,27 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 
+    it('keeps the new project when exit confirmation is dismissed', async () => {
+        render(MigrationWizard);
+        await next();
+        await fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' })
+        );
+        expect(api.deleteProject).not.toHaveBeenCalled();
+        expect(wizard.hide).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'Update' })).toBeVisible();
+        await cancel();
+        await waitFor(() => expect(api.deleteProject).toHaveBeenCalledOnce());
+    });
+
+    it('exits before project creation without deleting anything', async () => {
+        render(MigrationWizard);
+        await screen.findByLabelText('Project name');
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.createProject).not.toHaveBeenCalled();
+        expect(api.deleteProject).not.toHaveBeenCalled();
+    });
+
 });
