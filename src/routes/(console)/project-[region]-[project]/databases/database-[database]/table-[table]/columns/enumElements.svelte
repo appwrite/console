@@ -10,8 +10,9 @@
     let value = $state('');
 
     function add() {
-        if (disabled || !value) return;
-        if (!elements.includes(value)) elements = [...elements, value];
+        if (disabled) return;
+        const element = value.trim();
+        if (element && !elements.includes(element)) elements = [...elements, element];
         value = '';
     }
 

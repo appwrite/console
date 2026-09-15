@@ -5,6 +5,28 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it('rejects whitespace-only elements and trims only outside the value', async () => {
+    const user = userEvent.setup();
+    render(EnumElements);
+    const input = screen.getByRole('textbox', { name: 'Elements' });
+
+    await user.type(input, '   {Enter}');
+
+    expect(screen.queryByRole('button', { name: /^Remove / })).not.toBeInTheDocument();
+    expect(input).toHaveValue('');
+    expect(input).toBeRequired();
+    expect(input).toBeInvalid();
+
+    await user.type(input, '  New  York  {Enter}');
+
+    expect(screen.getByRole('button', { name: 'Remove New York' })).toHaveAttribute(
+        'aria-label',
+        'Remove New  York'
+    );
+    expect(input).not.toBeRequired();
+    expect(input).toBeValid();
+});
+
 it('ignores exact duplicates while preserving case-sensitive enum values', async () => {
     const user = userEvent.setup();
     render(EnumElements, { elements: ['Home'] });
