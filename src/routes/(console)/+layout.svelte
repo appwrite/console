@@ -20,6 +20,8 @@
         checkForNewDevUpgradePro,
         checkForUpgradingStatus,
         checkForUsageLimit,
+        getProgramMembershipUnverifiedSince,
+        syncProgramMembershipAlerts,
         checkPaymentAuthorizationRequired,
         paymentExpired,
         showUsageRatesModal
@@ -319,6 +321,28 @@
     }
 
     $: checkForUsageLimits($organization);
+
+    // checkForUsageLimits returns early on a repeat organization id, but status and remarks
+    // change without the id changing. Re-run the canonical check when they do: it owns both the
+    // banners and readOnly, and deciding readOnly here would clobber an invoice or budget hold.
+    let lastProgramMembershipState = null;
+    $: {
+        const org = $organization;
+        const state = org
+            ? `${org.$id}:${org.status}:${org.remarks}:${getProgramMembershipUnverifiedSince(org) ?? ''}`
+            : null;
+
+        if (state !== lastProgramMembershipState) {
+            const seenBefore = lastProgramMembershipState !== null;
+            lastProgramMembershipState = state;
+
+            if (seenBefore && org) {
+                checkForUsageLimit(org);
+            } else {
+                syncProgramMembershipAlerts(org);
+            }
+        }
+    }
 
     $: if ($requestedMigration) {
         openMigrationWizard();
