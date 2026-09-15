@@ -1,9 +1,23 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/svelte';
+import { cleanup, fireEvent, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
+
+it('does not commit the Enter key used to confirm an IME composition', async () => {
+    const user = userEvent.setup();
+    render(EnumElements);
+    const input = screen.getByRole('textbox', { name: 'Elements' });
+    await user.type(input, '東京');
+    await fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+
+    expect(input).toHaveValue('東京');
+    expect(screen.queryByRole('button', { name: /^Remove / })).not.toBeInTheDocument();
+
+    await user.keyboard('{Enter}');
+    expect(screen.getByRole('button', { name: 'Remove 東京' })).toBeInTheDocument();
+});
 
 it('commits a complete value on Tab without trapping keyboard focus', async () => {
     const user = userEvent.setup();
