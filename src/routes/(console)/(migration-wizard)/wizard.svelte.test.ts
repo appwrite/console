@@ -256,4 +256,41 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 
+    it('keeps ownership after a failed deletion so cancellation can retry', async () => {
+        api.deleteProject.mockRejectedValueOnce(new Error('Deletion failed'));
+        render(MigrationWizard);
+        await next();
+        await cancel();
+        await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+                type: 'error',
+                message: 'Deletion failed'
+            })
+        );
+        expect(wizard.hide).not.toHaveBeenCalled();
+        expect(screen.getByRole('button', { name: 'Update' })).toBeVisible();
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not create a replacement while cleanup of the previous destination fails', async () => {
+        render(MigrationWizard);
+        await next();
+        api.deleteProject.mockRejectedValue(new Error('Deletion failed'));
+        await fireEvent.click(screen.getByRole('button', { name: 'Update' }));
+        await fireEvent.input(screen.getByLabelText('Project name'), {
+            target: { value: 'Replacement' }
+        });
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+                type: 'error',
+                message: 'Deletion failed'
+            })
+        );
+        expect(api.createProject).toHaveBeenCalledOnce();
+        expect(screen.getByLabelText('Project name')).toHaveValue('Replacement');
+    });
+
 });
