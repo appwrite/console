@@ -9,6 +9,8 @@
 
     let value = $state('');
     let error = $state('');
+    let composing = false;
+    let commitOnEnd = false;
     let container: HTMLDivElement;
 
     function remove(index: number) {
@@ -18,7 +20,7 @@
     }
 
     function add() {
-        if (disabled) return;
+        if (disabled || composing) return;
         const element = value.trim();
         if ([...element].length > 255) {
             error = 'Enum elements cannot exceed 255 characters.';
@@ -30,8 +32,24 @@
     }
 
     function keydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && !event.isComposing) {
+        if (event.key === 'Enter' && !event.isComposing && !composing) {
             event.preventDefault();
+            add();
+        }
+    }
+
+    function blur() {
+        if (composing) {
+            commitOnEnd = true;
+            return;
+        }
+        add();
+    }
+
+    function compositionEnd() {
+        composing = false;
+        if (commitOnEnd) {
+            commitOnEnd = false;
             add();
         }
     }
@@ -52,7 +70,9 @@
             bind:value
             on:input={() => (error = '')}
             onkeydown={keydown}
-            onblur={add}>
+            onblur={blur}
+            oncompositionstart={() => (composing = true)}
+            oncompositionend={compositionEnd}>
             <Button.Button slot="end" type="button" variant="text" {disabled} on:click={add}>
                 Add
             </Button.Button>
