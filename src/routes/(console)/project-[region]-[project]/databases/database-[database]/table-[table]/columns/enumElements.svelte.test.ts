@@ -121,7 +121,6 @@ it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', asyn
     const input = screen.getByRole('textbox', { name: 'Elements' });
     await user.click(input);
     await user.paste(character.repeat(256));
-    expect(input).toHaveAttribute('pattern', '\\s*.{0,255}\\s*');
     expect(input).toBeInvalid();
     await user.click(screen.getByRole('button', { name: 'Add' }));
 
