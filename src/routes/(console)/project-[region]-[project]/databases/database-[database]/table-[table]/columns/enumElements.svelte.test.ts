@@ -1,9 +1,34 @@
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
+
+it('adds with Enter without submitting the surrounding form', async () => {
+    const user = userEvent.setup();
+    const form = document.createElement('form');
+    const submit = vi.fn((event: Event) => event.preventDefault());
+    form.addEventListener('submit', submit);
+    document.body.append(form);
+    const save = document.createElement('button');
+    save.type = 'submit';
+    save.textContent = 'Save';
+
+    try {
+        render(EnumElements, { target: form });
+        form.append(save);
+        await user.type(screen.getByRole('textbox', { name: 'Elements' }), 'New York{Enter}');
+
+        expect(screen.getByRole('button', { name: 'Remove New York' })).toBeInTheDocument();
+        expect(submit).not.toHaveBeenCalled();
+
+        await user.click(save);
+        expect(submit).toHaveBeenCalledOnce();
+    } finally {
+        form.remove();
+    }
+});
 
 it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', async (character) => {
     const user = userEvent.setup();
