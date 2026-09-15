@@ -316,4 +316,37 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).toHaveBeenCalledOnce();
     });
 
+    it('waits for an in-flight creation and deletes its result after confirmed exit', async () => {
+        const creation = deferred<typeof created>();
+        api.createProject.mockReturnValue(creation.promise);
+        render(MigrationWizard);
+        await fireEvent.input(await screen.findByLabelText('Project name'), {
+            target: { value: 'Imported project' }
+        });
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await waitFor(() => expect(api.createProject).toHaveBeenCalledOnce());
+        await cancel();
+        expect(api.deleteProject).not.toHaveBeenCalled();
+        expect(wizard.hide).not.toHaveBeenCalled();
+        await act(() => creation.resolve(created));
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        expect(screen.queryByRole('button', { name: 'Update' })).not.toBeInTheDocument();
+    });
+
+    it('does not submit a second project creation while Next is pending', async () => {
+        const creation = deferred<typeof created>();
+        api.createProject.mockReturnValue(creation.promise);
+        render(MigrationWizard);
+        await fireEvent.input(await screen.findByLabelText('Project name'), {
+            target: { value: 'Imported project' }
+        });
+        const button = screen.getByRole('button', { name: 'Next' });
+        await fireEvent.click(button);
+        await fireEvent.click(button);
+        expect(api.createProject).toHaveBeenCalledOnce();
+        await act(() => creation.resolve(created));
+        await screen.findByRole('button', { name: 'Update' });
+    });
+
 });
