@@ -237,4 +237,23 @@ describe('migration destination cancellation', () => {
         );
     });
 
+    it('reports creation failure and exits without issuing a delete', async () => {
+        api.createProject.mockRejectedValue(new Error('Creation failed'));
+        render(MigrationWizard);
+        await fireEvent.input(await screen.findByLabelText('Project name'), {
+            target: { value: 'Imported project' }
+        });
+        await fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+        await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+                type: 'error',
+                message: 'Creation failed'
+            })
+        );
+        expect(screen.queryByRole('button', { name: 'Update' })).not.toBeInTheDocument();
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).not.toHaveBeenCalled();
+    });
+
 });
