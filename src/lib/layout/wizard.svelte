@@ -18,6 +18,7 @@
               columnSize?: 's' | 'm' | 'l';
               stickySide?: boolean;
               onExit?: () => void;
+              beforeExit?: () => Promise<boolean>;
           }
         | {
               title?: string;
@@ -30,6 +31,7 @@
               columnSize?: 's' | 'm' | 'l';
               stickySide?: boolean;
               onExit?: () => void;
+              beforeExit?: () => Promise<boolean>;
           };
 
     export let title: $$Props['title'] = '';
@@ -42,6 +44,23 @@
     export let columnSize: $$Props['columnSize'] = 'm';
     export let stickySide: $$Props['stickySide'] = false;
     export let onExit: $$Props['onExit'] = undefined;
+    export let beforeExit: $$Props['beforeExit'] = undefined;
+
+    let exiting = false;
+
+    async function exit() {
+        if (exiting) return;
+        exiting = true;
+        try {
+            if (beforeExit && !(await beforeExit())) return;
+            trackEvent('wizard_exit', { from: 'prompt' });
+            wizard.hide();
+            onExit?.();
+            onExit = null;
+        } finally {
+            exiting = false;
+        }
+    }
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -95,22 +114,7 @@
 </Layout.Wizard>
 
 {#if showExitModal}
-    <WizardExitModal
-        {href}
-        bind:show={showExitModal}
-        on:exit={() => {
-            trackEvent('wizard_exit', {
-                from: 'prompt'
-            });
-
-            wizard.hide();
-            if (onExit) {
-                onExit();
-
-                // clear exit
-                onExit = null;
-            }
-        }}>
+    <WizardExitModal {href} bind:show={showExitModal} on:exit={exit}>
         <slot name="exit">
             Are you sure you want to exit from this process? All data will be deleted. This action
             is irreversible.
