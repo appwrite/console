@@ -404,4 +404,14 @@ describe('migration destination cancellation', () => {
         await waitFor(() => expect(goto).toHaveBeenCalled());
     });
 
+    it('deletes the new destination when Escape exit is confirmed', async () => {
+        render(MigrationWizard);
+        await next();
+        await fireEvent.keyDown(window, { key: 'Escape' });
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+    });
 });
