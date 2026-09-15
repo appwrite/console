@@ -8,12 +8,18 @@
     }: { elements?: string[]; disabled?: boolean } = $props();
 
     let value = $state('');
+    let error = $state('');
 
     function add() {
         if (disabled) return;
         const element = value.trim();
+        if ([...element].length > 255) {
+            error = 'Enum elements cannot exceed 255 characters.';
+            return;
+        }
         if (element && !elements.includes(element)) elements = [...elements, element];
         value = '';
+        error = '';
     }
 
     function keydown(event: KeyboardEvent) {
@@ -29,10 +35,14 @@
         id="elements"
         label="Elements"
         placeholder="Add an element"
-        helper="Press Enter or choose Add to add a value. Elements can contain spaces."
+        helper={error ||
+            'Press Enter or choose Add to add a value. Maximum 255 characters per element.'}
+        state={error ? 'error' : 'default'}
+        pattern=".{(0, 255)}"
         required={!elements.length}
         {disabled}
         bind:value
+        on:input={() => (error = '')}
         onkeydown={keydown}>
         <Button.Button slot="end" type="button" variant="text" {disabled} on:click={add}>
             Add

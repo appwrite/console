@@ -5,6 +5,29 @@ import EnumElements from './enumElements.svelte';
 
 afterEach(cleanup);
 
+it.each(['a', '界', '😀'])('enforces the 255-character boundary for %s', async (character) => {
+    const user = userEvent.setup();
+    render(EnumElements);
+    const input = screen.getByRole('textbox', { name: 'Elements' });
+    await user.click(input);
+    await user.paste(character.repeat(256));
+    await user.click(screen.getByRole('button', { name: 'Add' }));
+
+    expect(screen.getByText('Enum elements cannot exceed 255 characters.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Remove / })).not.toBeInTheDocument();
+    expect(input).toBeInvalid();
+
+    await user.clear(input);
+    await user.paste(character.repeat(255));
+    await user.click(screen.getByRole('button', { name: 'Add' }));
+
+    expect(screen.getAllByRole('button', { name: /^Remove / })).toHaveLength(1);
+    expect(input).toBeValid();
+    expect(
+        screen.queryByText('Enum elements cannot exceed 255 characters.')
+    ).not.toBeInTheDocument();
+});
+
 it('rejects whitespace-only elements and trims only outside the value', async () => {
     const user = userEvent.setup();
     render(EnumElements);
