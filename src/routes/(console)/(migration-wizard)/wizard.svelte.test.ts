@@ -385,4 +385,23 @@ describe('migration destination cancellation', () => {
         expect(get(selectedProject)).toBeNull();
     });
 
+    it('prevents exit while the migration request is still in flight', async () => {
+        const migration = deferred<object>();
+        api.createMigration.mockReturnValue(migration.promise);
+        render(MigrationWizard);
+        await next();
+        await selectResources();
+        await fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+        expect(screen.getByRole('button', { name: 'Update' })).toBeDisabled();
+        await fireEvent.keyDown(window, { key: 'Escape' });
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        expect(wizard.hide).not.toHaveBeenCalled();
+        expect(api.deleteProject).not.toHaveBeenCalled();
+        await act(() => migration.resolve({}));
+        await waitFor(() => expect(goto).toHaveBeenCalled());
+    });
+
 });
