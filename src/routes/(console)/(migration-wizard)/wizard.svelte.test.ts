@@ -451,4 +451,92 @@ describe('migration destination cancellation', () => {
         expect(screen.getByText('Imported project')).toBeVisible();
         expect(screen.queryByText('Changed while creating')).not.toBeInTheDocument();
     });
+
+    it('cleans up when browser Back requests and confirms exit', async () => {
+        render(MigrationWizard);
+        await next();
+        await act(() => get(wizard).exitHandler(null));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        expect(goto).not.toHaveBeenCalled();
+    });
+
+    it('resumes an internal link only after confirmed cleanup succeeds', async () => {
+        const deletion = deferred<object>();
+        api.deleteProject.mockReturnValue(deletion.promise);
+        render(MigrationWizard);
+        await next();
+        await act(() => get(wizard).exitHandler('/organization-next'));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        expect(goto).not.toHaveBeenCalled();
+        expect(wizard.hide).not.toHaveBeenCalled();
+        await act(() => deletion.resolve({}));
+        await waitFor(() => expect(goto).toHaveBeenCalledWith('/organization-next'));
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+        expect(get(wizard).exitHandler).toBeNull();
+    });
+
+    it('forgets a dismissed navigation request before a later Cancel exit', async () => {
+        render(MigrationWizard);
+        await next();
+        await act(() => get(wizard).exitHandler('/organization-next'));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' })
+        );
+        expect(api.deleteProject).not.toHaveBeenCalled();
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(goto).not.toHaveBeenCalled();
+    });
+
+    it('stays on the current page after navigation cleanup fails', async () => {
+        api.deleteProject.mockRejectedValueOnce(new Error('Deletion failed'));
+        render(MigrationWizard);
+        await next();
+        await act(() => get(wizard).exitHandler('/organization-next'));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+                type: 'error',
+                message: 'Deletion failed'
+            })
+        );
+        expect(goto).not.toHaveBeenCalled();
+        expect(wizard.hide).not.toHaveBeenCalled();
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(goto).not.toHaveBeenCalled();
+    });
+
+    it('ignores another navigation request while confirmed cleanup is pending', async () => {
+        const deletion = deferred<object>();
+        api.deleteProject.mockReturnValue(deletion.promise);
+        render(MigrationWizard);
+        await next();
+        await act(() => get(wizard).exitHandler('/organization-first'));
+        await fireEvent.click(
+            within(screen.getByRole('dialog')).getByRole('button', { name: 'Exit' })
+        );
+        await act(() => get(wizard).exitHandler('/organization-second'));
+        await act(() => deletion.resolve({}));
+        await waitFor(() => expect(goto).toHaveBeenCalledWith('/organization-first'));
+        expect(goto).toHaveBeenCalledOnce();
+        expect(api.deleteProject).toHaveBeenCalledOnce();
+    });
+
+    it('clears the owned navigation handler when the wizard is unmounted', async () => {
+        const component = render(MigrationWizard);
+        await screen.findByLabelText('Project name');
+        expect(get(wizard).exitHandler).toEqual(expect.any(Function));
+        component.unmount();
+        expect(get(wizard).exitHandler).toBeNull();
+        expect(api.deleteProject).not.toHaveBeenCalled();
+    });
 });

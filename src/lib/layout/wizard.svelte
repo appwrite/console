@@ -47,16 +47,35 @@
     export let beforeExit: $$Props['beforeExit'] = undefined;
 
     let exiting = false;
+    let pendingHref: string | null = null;
+
+    $: if (!showExitModal && !exiting) pendingHref = null;
+
+    function requestExit(href: string | null) {
+        if (exiting) return;
+        pendingHref = href;
+        if (confirmExit) {
+            showExitModal = true;
+        } else {
+            void exit();
+        }
+    }
 
     async function exit() {
         if (exiting) return;
         exiting = true;
+        const destination = pendingHref;
         try {
             if (beforeExit && !(await beforeExit())) return;
             trackEvent('wizard_exit', { from: 'prompt' });
             wizard.hide();
             onExit?.();
             onExit = null;
+            if (destination) {
+                // Navigation URLs already include the application base path.
+                // eslint-disable-next-line svelte/no-navigation-without-resolve
+                await goto(destination);
+            }
         } finally {
             exiting = false;
         }
@@ -79,7 +98,10 @@
 
     const goBack = () => goto(href);
 
-    onMount(() => ($isNewWizardStatusOpen = true));
+    onMount(() => {
+        $isNewWizardStatusOpen = true;
+        if (beforeExit) return wizard.setExitHandler(requestExit);
+    });
 
     onDestroy(() => ($isNewWizardStatusOpen = false));
 </script>

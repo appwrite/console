@@ -2,6 +2,7 @@
     import { page } from '$app/state';
     import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { capitalize } from '$lib/helpers/string';
     import ResourceForm from './resource-form.svelte';
     import { requestedMigration } from '$routes/store';
@@ -184,6 +185,7 @@
                 message: 'Migration started'
             });
             onExit();
+            wizard.hide();
             await invalidate(Dependencies.PROJECTS);
             await goto(
                 `${base}/project-${targetProject.region ?? 'default'}-${targetProject.$id}/settings/migrations`
