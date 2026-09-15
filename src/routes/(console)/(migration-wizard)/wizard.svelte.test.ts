@@ -349,4 +349,21 @@ describe('migration destination cancellation', () => {
         await screen.findByRole('button', { name: 'Update' });
     });
 
+    it('keeps the project after a migration request fails because importing may have started', async () => {
+        api.createMigration.mockRejectedValue(new Error('Connection lost'));
+        render(MigrationWizard);
+        await next();
+        await selectResources();
+        await fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await waitFor(() =>
+            expect(addNotification).toHaveBeenCalledWith({
+                type: 'error',
+                message: 'Connection lost'
+            })
+        );
+        await cancel();
+        await waitFor(() => expect(wizard.hide).toHaveBeenCalledOnce());
+        expect(api.deleteProject).not.toHaveBeenCalled();
+    });
+
 });
