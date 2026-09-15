@@ -72,6 +72,15 @@
 
     $: handleDefaultState($required || $array);
 
+    $: if (data.elements) {
+        if (typeof data.default === 'string' && !data.elements.includes(data.default)) {
+            data.default = null;
+        }
+        if (typeof savedDefault === 'string' && !data.elements.includes(savedDefault)) {
+            savedDefault = null;
+        }
+    }
+
     $: options = [
         ...(data?.elements ?? []).map((element) => {
             return {

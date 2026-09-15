@@ -1,0 +1,69 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import EnumColumn from './enum.svelte';
+
+vi.mock('$lib/elements/forms', async () => ({
+    InputSelect: (await import('$lib/elements/forms/inputSelect.svelte')).default
+}));
+vi.mock('$app/state', () => ({ page: { params: { region: 'fra', project: 'project' } } }));
+vi.mock('$lib/stores/sdk', () => ({ sdk: { forProject: vi.fn() } }));
+
+afterEach(cleanup);
+
+it('does not restore a default that was removed while the column was required', async () => {
+    const user = userEvent.setup();
+    const data = {
+        elements: ['New York', 'Tokyo'],
+        default: 'New York',
+        required: false,
+        array: false
+    };
+    render(EnumColumn, { data });
+    const toggle = screen.getByRole('checkbox', { name: /^Required/ });
+    await user.click(toggle);
+    await user.click(screen.getByRole('button', { name: 'Remove New York' }));
+    await user.click(toggle);
+
+    expect(data.default).toBeNull();
+    expect(screen.getByRole('combobox', { name: /^Default value/ })).toHaveTextContent('NULL');
+});
+
+it('preserves and selects multi-word defaults and clears a removed default', async () => {
+    const user = userEvent.setup();
+    const data = {
+        elements: ['New York', 'Tokyo'],
+        default: 'New York',
+        required: false,
+        array: false
+    };
+    render(EnumColumn, { data });
+    const select = screen.getByRole('combobox', { name: /^Default value/ });
+    expect(select).toHaveTextContent('New York');
+
+    await user.type(screen.getByRole('textbox', { name: /^Elements/ }), 'Nizhny Novgorod{Enter}');
+    expect(data.default).toBe('New York');
+    await user.click(select);
+    await user.click(screen.getByRole('option', { name: 'Nizhny Novgorod' }));
+    expect(data.default).toBe('Nizhny Novgorod');
+
+    await user.click(screen.getByRole('button', { name: 'Remove Nizhny Novgorod' }));
+    expect(data.default).toBeNull();
+    expect(select).toHaveTextContent('NULL');
+});
+
+it.each(['Required', 'Array'])('restores a valid default after toggling %s', async (name) => {
+    const user = userEvent.setup();
+    const data = { elements: ['New York'], default: 'New York', required: false, array: false };
+    render(EnumColumn, { data });
+    const toggle = screen.getByRole('checkbox', { name: new RegExp(`^${name}`) });
+    const select = screen.getByRole('combobox', { name: /^Default value/ });
+
+    await user.click(toggle);
+    expect(data.default).toBeNull();
+    expect(select).toBeDisabled();
+
+    await user.click(toggle);
+    expect(data.default).toBe('New York');
+    expect(select).toBeEnabled();
+});
