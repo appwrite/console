@@ -366,4 +366,23 @@ describe('migration destination cancellation', () => {
         expect(api.deleteProject).not.toHaveBeenCalled();
     });
 
+    it('keeps a successfully submitted destination and navigates to its migrations', async () => {
+        render(MigrationWizard);
+        await next();
+        await selectResources();
+        await fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await waitFor(() =>
+            expect(goto).toHaveBeenCalledWith(
+                expect.stringContaining('/project-fra-destination/settings/migrations')
+            )
+        );
+        expect(api.createMigration).toHaveBeenCalledWith(
+            expect.objectContaining({ projectId: 'source', endpoint: 'https://source.example/v1' })
+        );
+        expect(api.deleteProject).not.toHaveBeenCalled();
+        expect(invalidate).toHaveBeenCalledWith(Dependencies.PROJECTS);
+        expect(get(formData).users.root).toBe(false);
+        expect(get(selectedProject)).toBeNull();
+    });
+
 });
