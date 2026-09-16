@@ -14,6 +14,7 @@
     import { Icon, Layout, Popover } from '@appwrite.io/pink-svelte';
     import {
         roles,
+        selfHostedRoles,
         isProjectSpecificRole,
         parseProjectRole,
         buildProjectRole
@@ -33,6 +34,7 @@
 
     const supportsProjectRoles = $derived(isCloud && !!$currentPlan?.supportsProjectSpecificRoles);
     const defaultRole = isSelfHosted ? 'owner' : 'developer';
+    const availableRoles = isSelfHosted ? selfHostedRoles : roles;
 
     let error = $state<string>(null);
     let accessType = $state<'all' | 'specific'>('all');
@@ -125,7 +127,7 @@
         {/if}
 
         {#if accessType === 'all' || !supportsProjectRoles}
-            <InputSelect id="role" label="Role" required options={roles} bind:value={role}>
+            <InputSelect id="role" label="Role" required options={availableRoles} bind:value={role}>
                 <Layout.Stack direction="row" gap="none" alignItems="center" slot="info">
                     <Popover let:toggle>
                         <Button extraCompact size="s" on:click={toggle}>

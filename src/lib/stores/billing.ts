@@ -93,6 +93,8 @@ function makeBillingPlan(
     return typeof billingPlanOrId === 'string' ? billingIdToPlan(billingPlanOrId) : billingPlanOrId;
 }
 
+export const selfHostedRoles = roles.filter((r) => ['owner', 'developer'].includes(r.value));
+
 export const projectRoles = roles.filter((r) => r.value !== 'billing');
 
 const projectRoleNames = new Set(projectRoles.map((r) => r.value));
