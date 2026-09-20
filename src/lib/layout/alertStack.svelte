@@ -57,6 +57,10 @@
     afterNavigate(() => setNavigationHeight());
 </script>
 
+<!-- The stack owns the shell offset for every alert inside it, so it has to re-measure when
+     the viewport changes and an alert reflows to a different height. -->
+<svelte:window on:resize={setNavigationHeight} />
+
 <div bind:this={container} class="alert-stack">
     <slot />
 </div>

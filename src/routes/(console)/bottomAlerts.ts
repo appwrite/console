@@ -1,33 +1,34 @@
 import { isCloud } from '$lib/system';
 import { isSameDay } from '$lib/helpers/date';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
-import StateOfAppwriteSurvey from '$lib/images/promos/state-of-appwrite-survey.png';
+import NewConsolePromo from '$lib/images/promos/new-console.png';
 
 const listOfPromotions: BottomModalAlertItem[] = [];
 
 if (isCloud) {
-    const stateOfAppwriteSurveyPromo: BottomModalAlertItem = {
-        id: 'modal:state_of_appwrite_survey_announcement',
+    const newConsolePromo: BottomModalAlertItem = {
+        id: 'modal:new_console_announcement',
         src: {
-            dark: StateOfAppwriteSurvey,
-            light: StateOfAppwriteSurvey
+            dark: NewConsolePromo,
+            light: NewConsolePromo
         },
-        title: 'State of Appwrite Cloud',
+        title: 'Introducing the new Appwrite Console',
         message:
-            'Share your experience building with Appwrite Cloud and using AI tools, and help shape our product roadmap for 2026 and beyond.',
+            'Rebuilt from the ground up using the power of TanStack Start. Faster, cleaner, and everything you’re working on comes with you.',
         plan: 'free',
         importance: 8,
         scope: 'everywhere',
         cta: {
-            text: 'Take the survey',
-            link: () => 'https://forms.gle/5cvWxTwhonoDCWsi7',
+            text: 'Try it now',
+            link: () =>
+                'https://appwrite.io/?utm_source=old-console&utm_medium=promo_card&utm_campaign=new-console',
             external: true,
             hideOnClick: true,
             skipUpgradeRedirect: true
         },
         show: true
     };
-    listOfPromotions.push(stateOfAppwriteSurveyPromo);
+    listOfPromotions.push(newConsolePromo);
 }
 
 export function addBottomModalAlerts() {

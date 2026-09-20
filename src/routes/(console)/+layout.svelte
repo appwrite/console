@@ -46,7 +46,8 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { canSeeProjects } from '$lib/stores/roles';
-    import { BottomModalAlert } from '$lib/components';
+    import { BottomModalAlert, NewConsoleBanner, NewConsoleModal } from '$lib/components';
+    import { shouldShowNotification } from '$lib/helpers/notifications';
     import { isSmallViewport } from '$lib/stores/viewport';
     import {
         IconAnnotation,
@@ -349,6 +350,26 @@
 
     $registerSearchers(orgSearcher, projectsSearcher);
 
+    onMount(() => {
+        // Same shape as newDevUpgradePro: promo tier (importance 1) so it can never outrank a
+        // payment or usage warning, dismissal keyed on the alert id in localStorage.
+        if (isCloud && shouldShowNotification('newConsoleBanner')) {
+            headerAlert.add({
+                id: 'newConsoleBanner',
+                component: NewConsoleBanner,
+                show: true,
+                importance: 1
+            });
+        }
+    });
+
+    let showNewConsoleModal = false;
+
+    onMount(() => {
+        // The modal reacts to onboarding navigation without recording a dismissal.
+        showNewConsoleModal = isCloud && shouldShowNotification('newConsoleModal');
+    });
+
     $: (void $headerAlert, ($activeHeaderAlert = headerAlert.getExcluding('impersonation')));
 </script>
 
@@ -385,3 +406,5 @@
 {/if}
 
 <BottomModalAlert />
+
+<NewConsoleModal bind:show={showNewConsoleModal} />
