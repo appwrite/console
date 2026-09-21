@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
     import { Card, Layout, Typography, Icon, Spinner } from '@appwrite.io/pink-svelte';
     import {
         IconCheck,
@@ -76,7 +77,21 @@
     let error = $state<string | null>(null);
     let approving = $state(false);
     let rejecting = $state(false);
-    let busy = $derived(approving || rejecting);
+    // Set once the browser has been handed a web redirect. The consent page stays
+    // on screen until the client's first byte arrives, which on a cold start can
+    // take a while: the buttons must stay disabled for that whole stretch.
+    let redirecting = $state(false);
+    let busy = $derived(approving || rejecting || redirecting);
+
+    onMount(() => {
+        // A back navigation restores this page from the bfcache with `redirecting`
+        // still set; the user must be able to act again.
+        const restore = (event: PageTransitionEvent) => {
+            if (event.persisted) redirecting = false;
+        };
+        window.addEventListener('pageshow', restore);
+        return () => window.removeEventListener('pageshow', restore);
+    });
 
     // The `scope` param carries every requested privilege. Scopes are shown
     // read-only — the client decides what it asks for. authorization_details
@@ -349,8 +364,9 @@
                 onDone?.('approved', result.redirectUrl);
                 return;
             }
+            redirecting = isWebRedirect(result.redirectUrl);
             window.location.href = result.redirectUrl;
-            if (!isWebRedirect(result.redirectUrl)) {
+            if (!redirecting) {
                 onDone?.('approved', result.redirectUrl);
             }
         } catch (e: unknown) {
@@ -377,8 +393,9 @@
                 onDone?.('denied', result.redirectUrl);
                 return;
             }
+            redirecting = isWebRedirect(result.redirectUrl);
             window.location.href = result.redirectUrl;
-            if (!isWebRedirect(result.redirectUrl)) {
+            if (!redirecting) {
                 onDone?.('denied', result.redirectUrl);
             }
         } catch (e: unknown) {
@@ -831,12 +848,12 @@
             <Form onSubmit={approve}>
                 <Layout.Stack gap="s">
                     <Button fullWidth submit disabled={busy || blocked}>
-                        {#if approving}
+                        {#if approving || redirecting}
                             <Spinner size="s" />
                         {:else}
                             <Icon icon={IconCheck} slot="start" size="s" />
                         {/if}
-                        {approving ? 'Authorizing…' : 'Authorize'}
+                        {redirecting ? 'Redirecting…' : approving ? 'Authorizing…' : 'Authorize'}
                     </Button>
                     <Button fullWidth secondary disabled={busy} on:click={reject}>
                         {rejecting ? 'Cancelling…' : 'Cancel'}
